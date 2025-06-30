@@ -22,8 +22,7 @@ Route::get('/pengamal', [PengamalController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('pengamal.index');
 Route::get('/pengamal/create', [PengamalController::class, 'create'])
-    ->middleware(['auth', 'verified'])
-    ->name('pengamal.create');
+    ->middleware(['auth', 'verified']);
 
 Route::post('/pengamal/store', [PengamalController::class, 'store']);
 
