@@ -54,7 +54,7 @@ class PengamalController extends Controller
             'agama.string' => 'Agama harus berupa teks.',
         ]);
 
-        $pengamal = Pengamal::create($validated);
+        Pengamal::create($validated);
 
         return redirect()->back();
     }
