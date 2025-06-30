@@ -8,14 +8,18 @@
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
-
+            <div class=" bg-green-800 ">
+                <center>
+                    <img src="{{ asset('image/logo.png') }}" width="120" alt="Logo">
+                    <p class=" text-white bold text-2xl">YPW KALIMANTAN TIMUR</p>
+                </center>
+            </div>
             <div class="grid gap-6">
                 <!-- Email Address -->
                 <div class="space-y-2">
                     <x-form.label
                         for="email"
-                        :value="__('Email')"
-                    />
+                        :value="__('Email')" />
 
                     <x-form.input-with-icon-wrapper>
                         <x-slot name="icon">
@@ -31,8 +35,7 @@
                             :value="old('email')"
                             placeholder="{{ __('Email') }}"
                             required
-                            autofocus
-                        />
+                            autofocus />
                     </x-form.input-with-icon-wrapper>
                 </div>
 
@@ -40,8 +43,7 @@
                 <div class="space-y-2">
                     <x-form.label
                         for="password"
-                        :value="__('Password')"
-                    />
+                        :value="__('Password')" />
 
                     <x-form.input-with-icon-wrapper>
                         <x-slot name="icon">
@@ -56,8 +58,7 @@
                             name="password"
                             required
                             autocomplete="current-password"
-                            placeholder="{{ __('Password') }}"
-                        />
+                            placeholder="{{ __('Password') }}" />
                     </x-form.input-with-icon-wrapper>
                 </div>
 
@@ -68,8 +69,7 @@
                             id="remember_me"
                             type="checkbox"
                             class="text-purple-500 border-gray-300 rounded focus:border-purple-300 focus:ring focus:ring-purple-500 dark:border-gray-600 dark:bg-dark-eval-1 dark:focus:ring-offset-dark-eval-1"
-                            name="remember"
-                        >
+                            name="remember">
 
                         <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">
                             {{ __('Remember me') }}
@@ -77,9 +77,9 @@
                     </label>
 
                     @if (Route::has('password.request'))
-                        <a class="text-sm text-blue-500 hover:underline" href="{{ route('password.request') }}">
-                            {{ __('Forgot your password?') }}
-                        </a>
+                    <a class="text-sm text-blue-500 hover:underline" href="{{ route('password.request') }}">
+                        {{ __('Forgot your password?') }}
+                    </a>
                     @endif
                 </div>
 
@@ -92,12 +92,12 @@
                 </div>
 
                 @if (Route::has('register'))
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ __('Don’t have an account?') }}
-                        <a href="{{ route('register') }}" class="text-blue-500 hover:underline">
-                            {{ __('Register') }}
-                        </a>
-                    </p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    {{ __('Don’t have an account?') }}
+                    <a href="{{ route('register') }}" class="text-blue-500 hover:underline">
+                        {{ __('Register') }}
+                    </a>
+                </p>
                 @endif
             </div>
         </form>
