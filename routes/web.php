@@ -24,6 +24,15 @@ Route::get('/pengamal', [PengamalController::class, 'index'])
 Route::get('/pengamal/create', [PengamalController::class, 'create'])
     ->middleware(['auth', 'verified']);
 
+Route::get('/pengamal/show/{pengamal}', [PengamalController::class, 'show']);
+Route::delete('/pengamal/show/{pengamal}', [PengamalController::class, 'destroy'])
+    ->middleware(['auth', 'verified']);
+Route::get('/pengamal/edit/{pengamal}', [PengamalController::class, 'edit'])
+    ->middleware(['auth', 'verified'])
+    ->name('pengamal.edit');
+Route::put('/pengamal/update/{pengamal}', [PengamalController::class, 'update'])
+    ->middleware(['auth', 'verified'])
+    ->name('pengamal.update');
 Route::post('/pengamal/store', [PengamalController::class, 'store']);
 
 

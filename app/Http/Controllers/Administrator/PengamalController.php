@@ -56,23 +56,24 @@ class PengamalController extends Controller
 
         Pengamal::create($validated);
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Pengamal created successfully');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Pengamal $pengamal)
     {
-        //
+
+        return view('administrator/pengamal/show', compact('pengamal'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Pengamal $pengamal)
     {
-        //
+        return view('administrator/pengamal/edit', compact('pengamal'));
     }
 
     /**
@@ -91,18 +92,36 @@ class PengamalController extends Controller
             // 'status_perkawinan' => 'nullable|string',
             // 'pekerjaan' => 'nullable|string',
             // 'kewarganegaraan' => 'nullable|string',
+        ], [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.string' => 'NIK harus berupa teks.',
+            'nik.size' => 'NIK harus terdiri dari 16 digit.',
+            'nik.unique' => 'NIK ini sudah terdaftar.',
+
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
+            'nama_lengkap.string' => 'Nama lengkap harus berupa teks.',
+
+            'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
+            'tempat_lahir.string' => 'Tempat lahir harus berupa teks.',
+
+            'jenis_kelamin.in' => 'Jenis kelamin harus L (Laki-laki) atau P (Perempuan).',
+
+            'agama.string' => 'Agama harus berupa teks.',
         ]);
 
         $pengamal->update($validated);
 
-        return response()->json($pengamal);
+        // return response()->json($pengamal);
+        return redirect()->back()->with('success', 'Pengamal updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Pengamal $pengamal)
     {
-        //
+        $pengamal->delete();
+        return redirect()->route('pengamal.index')->with('success', 'Pengamal deleted successfully');
+        // return response()->json(['message' => 'Pengamal deleted successfully']);
     }
 }

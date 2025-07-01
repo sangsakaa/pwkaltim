@@ -49,7 +49,7 @@
                     @foreach ($dataPengamal as $item)
                     <tr>
                         <td class=" text-center">{{ $item->nik }}</td>
-                        <td>{{ $item->nama_lengkap }}</td>
+                        <td><a href="/pengamal/show/{{$item->id}}">{{ $item->nama_lengkap }}</a></td>
                         <td class=" text-center">{{ $item->tanggal_lahir }}</td>
                         <td class=" text-center">{{ $item->tempat_lahir }}</td>
                         <td class=" text-center">{{ $item->jenis_kelamin }}</td>

@@ -3,6 +3,14 @@ import './bootstrap'
 import Alpine from 'alpinejs'
 import collapse from '@alpinejs/collapse'
 import PerfectScrollbar from 'perfect-scrollbar'
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
+toastr.options = {
+    positionClass: "toast-top-right",
+    timeOut: "3000",
+};
+
+window.toastr = toastr;
 
 window.PerfectScrollbar = PerfectScrollbar
 

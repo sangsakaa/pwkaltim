@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="shortcut icon" href="{{ asset('image/logo.png') }}" type="image/x-icon">
 
     <title>{{ config('app.name', 'PWKALTIM') }}</title>
 
@@ -28,8 +30,7 @@
         x-data="mainState"
         class="font-sans antialiased"
         :class="{dark: isDarkMode}"
-        x-cloak
-    >
+        x-cloak>
         <div class="flex flex-col min-h-screen text-gray-900 bg-gray-100 dark:bg-dark-eval-0 dark:text-gray-200">
             {{ $slot }}
 
@@ -42,21 +43,19 @@
                 icon-only
                 variant="secondary"
                 sr-text="Toggle dark mode"
-                x-on:click="toggleTheme"
-            >
+                x-on:click="toggleTheme">
                 <x-heroicon-o-moon
                     x-show="!isDarkMode"
                     aria-hidden="true"
-                    class="w-6 h-6"
-                />
+                    class="w-6 h-6" />
 
                 <x-heroicon-o-sun
                     x-show="isDarkMode"
                     aria-hidden="true"
-                    class="w-6 h-6"
-                />
+                    class="w-6 h-6" />
             </x-button>
         </div>
     </div>
 </body>
+
 </html>
