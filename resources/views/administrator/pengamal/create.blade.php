@@ -32,71 +32,155 @@
                 @csrf
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {{-- Kolom Kiri --}}
                     <div>
                         <div class="mb-3">
-                            <label for="nik" class=" w-full">NIK</label>
-                            <input type="text" name="nik" id="nik" placeholder="Wajib diisie sesui KTP / KIA" class=" w-full rounded-md" maxlength="16" value="{{ old('nik') }}" required>
+                            <label for="nik" class="w-full">NIK</label>
+                            <input type="text" name="nik" id="nik" placeholder="Wajib diisi sesuai KTP / KIA"
+                                class="w-full rounded-md" maxlength="16" value="{{ old('nik') }}" required>
                             @error('nik') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="nama_lengkap" class=" w-full">Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" id="nama_lengkap" class=" w-full rounded-md" value="{{ old('nama_lengkap') }}" required>
+                            <label for="nama_lengkap" class="w-full">Nama Lengkap</label>
+                            <input type="text" name="nama_lengkap" id="nama_lengkap"
+                                class="w-full rounded-md" value="{{ old('nama_lengkap') }}" required>
                             @error('nama_lengkap') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
 
-                        <div class=" grid gap-2 grid-cols-1 sm:grid-cols-2">
-                            <div>
-                                <div class="mb-3">
-                                    <label for="tempat_lahir" class=" w-full">Tempat Lahir</label>
-                                    <input type="text" name="tempat_lahir" id="tempat_lahir" class=" w-full rounded-md" value="{{ old('tempat_lahir') }}">
-                                    @error('tempat_lahir') <div class="text-danger">{{ $message }}</div> @enderror
-                                </div>
-                            </div>
-                            <div>
-                                <div class="mb-3">
-                                    <label for="tanggal_lahir" class=" w-full">Tanggal Lahir</label>
-                                    <input type="date" name="tanggal_lahir" id="tanggal_lahir" class=" w-full rounded-md" value="{{ old('tanggal_lahir') }}">
-                                    @error('tanggal_lahir') <div class="text-danger">{{ $message }}</div> @enderror
-                                </div>
-
-
+                        <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
+                            <div class="mb-3">
+                                <label for="tempat_lahir" class="w-full">Tempat Lahir</label>
+                                <input type="text" name="tempat_lahir" id="tempat_lahir"
+                                    class="w-full rounded-md" value="{{ old('tempat_lahir') }}">
+                                @error('tempat_lahir') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
+                            <div class="mb-3">
+                                <label for="tanggal_lahir" class="w-full">Tanggal Lahir</label>
+                                <input type="date" name="tanggal_lahir" id="tanggal_lahir"
+                                    class="w-full rounded-md" value="{{ old('tanggal_lahir') }}">
+                                @error('tanggal_lahir') <div class="text-danger">{{ $message }}</div> @enderror
+                            </div>
 
+                            <div class="mb-3">
+                                <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
+                                <select name="jenis_kelamin" id="jenis_kelamin" class="w-full rounded-md">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                    <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                </select>
+                                @error('jenis_kelamin') <div class="text-danger">{{ $message }}</div> @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="agama" class="form-label">Agama</label>
+                                <select name="agama" id="agama" class="w-full rounded-md">
+                                    <option value="">-- Pilih --</option>
+                                    <option value="Islam" {{ old('agama') == 'Islam' ? 'selected' : '' }}>Islam</option>
+                                </select>
+                                @error('agama') <div class="text-danger">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-
-
                     </div>
+
+                    {{-- Kolom Kanan --}}
                     <div>
                         <div class="mb-3">
-                            <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                            <select name="jenis_kelamin" id="jenis_kelamin" class=" w-full rounded-md"
-                                <option value="">-- Pilih --</option>
-                                <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                            <label for="province" class="w-full">Provinsi</label>
+                            <select class="w-full rounded-md" id="province" name="province_code">
+                                <option value="">Pilih Provinsi</option>
+                                @foreach ($provinces as $province)
+                                <option value="{{ $province->code }}">{{ $province->name }}</option>
+                                @endforeach
                             </select>
-                            @error('jenis_kelamin') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="agama" class="form-label">Agama</label>
-                            <select name="agama" id="agama" class=" w-full rounded-md"
-                                <option value="">-- Pilih --</option>
-                                <option value="Islam" {{ old('agama') == 'Islam' ? 'selected' : 'Islam' }}>Islam</option>
-                                
+                            <label for="regency" class="w-full">Kabupaten</label>
+                            <select class="w-full rounded-md" id="regency" name="regency_code">
+                                <option value="">Pilih Kabupaten</option>
                             </select>
-                            @error('agama') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
-                        <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
-                            Simpan</button>
-                        <a href="/pengamal" class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600">
-                            Kembali</a>
+
+                        <div class="mb-3">
+                            <label for="district" class="w-full">Kecamatan</label>
+                            <select class="w-full rounded-md" id="district" name="district_code">
+                                <option value="">Pilih Kecamatan</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="village" class="w-full">Desa</label>
+                            <select class="w-full rounded-md" id="village" name="village_code">
+                                <option value="">Pilih Desa</option>
+                            </select>
+                        </div>
                     </div>
+                </div>
+                <div>
+                    <div class="mt-4 flex space-x-2">
+                        <button type="submit"
+                            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+                            Simpan
+                        </button>
+                        <a href="{{ route('pengamal.index') }}"
+                            class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
+                            Kembali
+                        </a>
+                    </div>
+
                 </div>
 
 
             </form>
+            <script>
+                document.getElementById('province').addEventListener('change', function() {
+                    let provinceCode = this.value;
+                    fetch(`/get-regencies/${provinceCode}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            let regency = document.getElementById('regency');
+                            regency.innerHTML = '<option value="">Pilih Kabupaten</option>';
+                            data.forEach(item => {
+                                regency.innerHTML += `<option value="${item.code}">${item.name}</option>`;
+                            });
+
+                            // Reset
+                            document.getElementById('district').innerHTML = '<option value="">Pilih Kecamatan</option>';
+                            document.getElementById('village').innerHTML = '<option value="">Pilih Desa</option>';
+                        });
+                });
+
+                document.getElementById('regency').addEventListener('change', function() {
+                    let regencyCode = this.value;
+                    fetch(`/get-districts/${regencyCode}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            let district = document.getElementById('district');
+                            district.innerHTML = '<option value="">Pilih Kecamatan</option>';
+                            data.forEach(item => {
+                                district.innerHTML += `<option value="${item.code}">${item.name}</option>`;
+                            });
+
+                            document.getElementById('village').innerHTML = '<option value="">Pilih Desa</option>';
+                        });
+                });
+
+                document.getElementById('district').addEventListener('change', function() {
+                    let districtCode = this.value;
+                    fetch(`/get-villages/${districtCode}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            let village = document.getElementById('village');
+                            village.innerHTML = '<option value="">Pilih Desa</option>';
+                            data.forEach(item => {
+                                village.innerHTML += `<option value="${item.code}">${item.name}</option>`;
+                            });
+                        });
+                });
+            </script>
+
         </div>
     </div>
 </x-app-layout>

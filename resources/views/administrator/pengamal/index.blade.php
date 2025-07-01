@@ -35,28 +35,28 @@
             </a>
         </div>
         <div>
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead>
-                    <tr>
-                        <th>NIK</th>
-                        <th>Nama Lengkap</th>
-                        <th>Tanggal Lahir</th>
-                        <th>Tempat Lahir</th>
-                        <th>Jenis Kelamin</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($dataPengamal as $item)
-                    <tr>
-                        <td class=" text-center">{{ $item->nik }}</td>
-                        <td><a href="/pengamal/show/{{$item->id}}">{{ $item->nama_lengkap }}</a></td>
-                        <td class=" text-center">{{ $item->tanggal_lahir }}</td>
-                        <td class=" text-center">{{ $item->tempat_lahir }}</td>
-                        <td class=" text-center">{{ $item->jenis_kelamin }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th>NIK</th>
+                            <th class=" text-left">Nama Lengkap</th>
+                            <th>Alamat Lengkap</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($dataPengamal as $item)
+                        <tr>
+                            <td class=" text-center">{{ $item->nik }}</td>
+                            <td><a href="/pengamal/show/{{$item->id}}">{{ $item->nama_lengkap }}</a></td>
+                            <td class=" text-center"> Kec. {{$item->district->name}} - Desa . {{$item->village->name}}</td>
+
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     </div>

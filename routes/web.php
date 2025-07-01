@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\Pengamal;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Administrator\PengamalController;
-
-
+use App\Http\Controllers\Administrator\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,6 +41,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
+
+// WILAYAH
+Route::get('/get-regencies/{provinceId}', [PengamalController::class, 'getRegencies']);
+Route::get('/get-districts/{regencyId}', [PengamalController::class, 'getDistricts']);
+Route::get('/get-villages/{districtId}', [PengamalController::class, 'getVillages']);
+
 
 
 

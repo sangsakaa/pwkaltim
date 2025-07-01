@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Administrator;
 
+use App\Models\Regency;
+use App\Models\Village;
+use App\Models\District;
 use App\Models\Pengamal;
+use App\Models\Province;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class PengamalController extends Controller
@@ -22,7 +27,8 @@ class PengamalController extends Controller
      */
     public function create()
     {
-        return view('administrator/pengamal/create');
+        $provinces = Province::all();
+        return view('administrator/pengamal/create', compact('provinces'));
     }
 
     /**
@@ -30,6 +36,7 @@ class PengamalController extends Controller
      */
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'nik' => 'required|string|size:16|unique:pengamal,nik',
             'nama_lengkap' => 'required|string',
@@ -37,6 +44,10 @@ class PengamalController extends Controller
             'tempat_lahir' => 'nullable|string',
             'jenis_kelamin' => 'nullable|in:L,P',
             'agama' => 'nullable|string',
+            'province_code' => 'required|string',
+            'regency_code' => 'required|string',
+            'district_code' => 'required|string',
+            'village_code' => 'required|string',
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.string' => 'NIK harus berupa teks.',
@@ -52,9 +63,29 @@ class PengamalController extends Controller
             'jenis_kelamin.in' => 'Jenis kelamin harus L (Laki-laki) atau P (Perempuan).',
 
             'agama.string' => 'Agama harus berupa teks.',
+
+            'province_code.required' => 'Provinsi wajib dipilih.',
+            'regency_code.required' => 'Kabupaten/Kota wajib dipilih.',
+            'district_code.required' => 'Kecamatan wajib dipilih.',
+            'village_code.required' => 'Desa/Kelurahan wajib dipilih.',
         ]);
 
-        Pengamal::create($validated);
+        // Mapping input form ke nama kolom database
+        $data = [
+            'nik' => $validated['nik'],
+            'nama_lengkap' => $validated['nama_lengkap'],
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+            'tempat_lahir' => $validated['tempat_lahir'] ?? null,
+            'jenis_kelamin' => $validated['jenis_kelamin'] ?? null,
+            'agama' => $validated['agama'] ?? null,
+            'provinsi' => $validated['province_code'],
+            'kabupaten' => $validated['regency_code'],
+            'kecamatan' => $validated['district_code'],
+            'desa' => $validated['village_code'],
+        ];
+
+        // Simpan ke database
+        Pengamal::create($data);
 
         return redirect()->back()->with('success', 'Pengamal created successfully');
     }
@@ -64,6 +95,10 @@ class PengamalController extends Controller
      */
     public function show(Pengamal $pengamal)
     {
+        $pengamal = Pengamal::with(['province', 'regency', 'district', 'village'])->find($pengamal->id);
+
+        // akses nama wilayah:
+
 
         return view('administrator/pengamal/show', compact('pengamal'));
     }
@@ -123,5 +158,25 @@ class PengamalController extends Controller
         $pengamal->delete();
         return redirect()->route('pengamal.index')->with('success', 'Pengamal deleted successfully');
         // return response()->json(['message' => 'Pengamal deleted successfully']);
+    }
+
+
+
+    // ajax methods for dynamic dropdowns
+
+
+    public function getRegencies($province_code)
+    {
+        return Regency::where('province_code', $province_code)->get();
+    }
+
+    public function getDistricts($regency_code)
+    {
+        return District::where('regency_code', $regency_code)->get();
+    }
+
+    public function getVillages($district_code)
+    {
+        return Village::where('district_code', $district_code)->get();
     }
 }

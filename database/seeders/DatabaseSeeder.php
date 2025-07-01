@@ -11,13 +11,23 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    // public function run(): void
+    // {
+    //     // User::factory(10)->create();
+
+    //     User::factory()->create([
+    //         'name' => 'Test User',
+    //         'email' => 'test@example.com',
+    //     ]);
+    // }
+
+    // provinsi
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // $this->call(ProvincesTableSeeder::class);
+        // $this->call(RegenciesTableSeeder::class);
+        // $this->call(DistrictsTableSeeder::class);
+        $this->call(VillagesTableSeeder::class);
+        // $this->call(PengamalSeeder::class);
     }
 }
