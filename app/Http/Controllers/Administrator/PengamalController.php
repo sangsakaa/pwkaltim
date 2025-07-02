@@ -8,7 +8,6 @@ use App\Models\District;
 use App\Models\Pengamal;
 use App\Models\Province;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class PengamalController extends Controller
