@@ -35,111 +35,117 @@
                 @else
                 <p>Tidak ada foto.</p>
                 @endif
-
-
-
             </div>
 
             <!-- Detail Informasi -->
-            <div class="w-full md:w-2/3">
+            <div class="w-full ">
                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Detail Data Pengamal <br>{{$pengamal->province->name}} {{ $pengamal->regency->name}} </h2>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-gray-700 dark:text-gray-200">
-                    <div class="grid grid-cols-2">
-                        <div><strong>NIK</strong></div>
-                        <div>: {{ $pengamal->nik }}</div>
-                    </div>
-
-                    <div class="grid grid-cols-2">
-                        <div><strong>Tempat Lahir</strong></div>
-                        <div>: {{ $pengamal->tempat_lahir }}
-
-
+                <div class=" grid grid-cols-1 sm:grid-cols-2 w-full">
+                    <div>
+                        <div class="grid grid-cols-2">
+                            <div><strong>NIK</strong></div>
+                            <div>: {{ $pengamal->nik }}</div>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-2">
-                        <div><strong>Nama Lengkap</strong></div>
-                        <div>: {{ $pengamal->nama_lengkap }}</div>
-                    </div>
-                    <div class="grid grid-cols-2">
-                        <div><strong>Tanggal Lahir</strong></div>
-                        <div>: {{ $pengamal->tanggal_lahir }}</div>
-                    </div>
-                    <div class="grid grid-cols-2">
-                        <div><strong>Jenis Kelamin</strong></div>
-                        <div>: {{ $pengamal->jenis_kelamin }}</div>
-                    </div>
-
-
-                    <div class="grid grid-cols-2">
-                        <div><strong>Kecamatan</strong></div>
-                        <div>: <span>
-                                {{$pengamal->district->name}}
-                            </span>
+                        <div class="grid grid-cols-2">
+                            <div><strong>Nama Lengkap</strong></div>
+                            <div>: {{ $pengamal->nama_lengkap }}</div>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-2">
-                        <div><strong>Agama</strong></div>
-                        <div>: {{ $pengamal->agama }}</div>
-                    </div>
-                    <div class="grid grid-cols-2">
-                        <div><strong>Desa</strong></div>
-                        <div>: <span>
-                                {{$pengamal->village->name}}
-                            </span>
+                        <div class="grid grid-cols-2">
+                            <div><strong>Agama</strong></div>
+                            <div>: {{ $pengamal->agama }}</div>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-2">
-                        <div><strong>Desa</strong></div>
-                        <div>: <span>
-                                {{$pengamal->village->name}}
-                            </span>
+                        <div class="grid grid-cols-2">
+                            <div><strong>Tempat Lahir</strong></div>
+                            <div>: {{ $pengamal->tempat_lahir }}
+                            </div>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-2">
-                        <div><strong>Usia</strong></div>
-                        <div>: {{ \Carbon\Carbon::parse($pengamal->tanggal_lahir)->age }} tahun
-
+                        <div class="grid grid-cols-2">
+                            <div><strong>Tanggal Lahir</strong></div>
+                            <div>: {{ $pengamal->tanggal_lahir }}</div>
+                        </div>
+                        <div class="grid grid-cols-2">
+                            <div><strong>Jenis Kelamin</strong></div>
+                            <div>: {{ $pengamal->jenis_kelamin }}</div>
                         </div>
 
 
+                    </div>
+                    <div class=" ">
 
-                        <!-- Berkas -->
-                        @if ($pengamal->berkas)
-                        <div class="mt-4">
-                            <strong class="text-sm">Berkas:</strong>
-                            <a href="{{ asset('storage/berkas/' . $pengamal->berkas) }}" target="_blank"
-                                class="inline-block mt-1 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm">
-                                Lihat / Unduh Berkas
-                            </a>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4"><strong>Provinsi</strong></div>
+                            <div>: <span>
+                                    {{$pengamal->province->name}}
+                                </span>
+                            </div>
                         </div>
-                        @endif
-
-                        <!-- Tombol Aksi -->
-                        <div class="mt-5 flex gap-3">
-                            <a href="/pengamal/edit/{{ $pengamal->id }}">
-                                <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
-                                    Edit
-                                </button>
-                            </a>
-                            <a href="/pengamal">
-                                <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
-                                    Kembali
-                                </button>
-                            </a>
-                            <form action="/pengamal/show/{{ $pengamal->id }}" method="post"
-                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="px-4 py-1 text-white bg-red-500 rounded hover:bg-red-600">
-                                    Hapus
-                                </button>
-                            </form>
-
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4"><strong>Kabupaten</strong></div>
+                            <div>: <span>
+                                    {{$pengamal->regency->name}}
+                                </span>
+                            </div>
                         </div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4"><strong>Kecamatan</strong></div>
+                            <div>: <span>
+                                    {{$pengamal->district->name}}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4"><strong>Desa</strong></div>
+                            <div>: <span>
+                                    {{$pengamal->village->name}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4"><strong>Desa</strong></div>
+                            <div>: <span>
+                                    {{$pengamal->alamat}}, RT {{$pengamal->rt??'-'}} , {{$pengamal->rw??'-'}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4"><strong>Usia</strong></div>
+                            <div>: {{ \Carbon\Carbon::parse($pengamal->tanggal_lahir)->age }} tahun
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Tombol Aksi -->
+                    <div class="mt-5 flex gap-3">
+                        <a href="/pengamal/edit/{{ $pengamal->id }}">
+                            <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
+                                Edit
+                            </button>
+                        </a>
+                        <a href="/pengamal">
+                            <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
+                                Kembali
+                            </button>
+                        </a>
+                        <form action="/pengamal/show/{{ $pengamal->id }}" method="post"
+                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="px-4 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                                Hapus
+                            </button>
+                        </form>
+                        <a href="https://wa.me/{{$pengamal->no_hp}}?text=Halo%20saya%20tertarik%20dengan%20layanan%20Anda"
+                            target="_blank"
+                            style="display:inline-block; background-color:#25D366; color:white; padding:5px 20px; border-radius:5px; text-decoration:none; font-weight:bold;">
+                            WhatsApp
+                        </a>
+
+
                     </div>
                 </div>
             </div>
+        </div>
 
 </x-app-layout>
