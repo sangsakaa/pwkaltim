@@ -29,9 +29,9 @@
     <div class="p-4 bg-white rounded-md shadow-md dark:bg-dark-eval-1">
         <div class="flex flex-col md:flex-row gap-6">
             <!-- Foto Pengamal -->
-            <div class="w-full md:w-1/6">
+            <div class=" w-1/4 flex items-center justify-center">
                 @if ($pengamal->foto)
-                <img src="{{ asset('storage/' . $pengamal->foto) }}" alt="Foto Pengamal" class="w-32 h-32 object-cover rounded">
+                <img src="{{ asset('storage/' . $pengamal->foto) }}" alt="Foto Pengamal" class=" object-cover rounded">
                 @else
                 <p>Tidak ada foto.</p>
                 @endif
@@ -39,7 +39,7 @@
 
             <!-- Detail Informasi -->
             <div class="w-full ">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Detail Data Pengamal <br>{{$pengamal->province->name}} {{ $pengamal->regency->name}} </h2>
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white ">Detail Data Pengamal </h2>
                 <div class=" grid grid-cols-1 sm:grid-cols-2 w-full">
                     <div>
                         <div class="grid grid-cols-2">
@@ -102,9 +102,9 @@
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4"><strong>Desa</strong></div>
+                            <div class=" w-1/4"><strong>Alamat</strong></div>
                             <div>: <span>
-                                    {{$pengamal->alamat}}, RT {{$pengamal->rt??'-'}} , {{$pengamal->rw??'-'}}
+                                    {{$pengamal->alamat}}, RT {{$pengamal->rt??'-'}} , RW {{$pengamal->rw??'-'}}
                                 </span>
                             </div>
                         </div>

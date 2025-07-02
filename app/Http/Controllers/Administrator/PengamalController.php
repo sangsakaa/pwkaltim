@@ -8,7 +8,9 @@ use App\Models\District;
 use App\Models\Pengamal;
 use App\Models\Province;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 class PengamalController extends Controller
 {
@@ -125,46 +127,96 @@ class PengamalController extends Controller
      */
     public function edit(Pengamal $pengamal)
     {
-        return view('administrator/pengamal/edit', compact('pengamal'));
+        $provinces = Province::all();
+        return view('administrator/pengamal/edit', compact('pengamal', 'provinces'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pengamal $pengamal)
+    public function update(Request $request, $id)
     {
+        // Ambil data pengamal berdasarkan ID
+        $pengamal = Pengamal::findOrFail($id);
+
+        // Validasi input
         $validated = $request->validate([
-            'nik' => 'required|string|size:16|unique:pengamal,nik,' . $pengamal->id,
+            'nik' => [
+                'required',
+                'string',
+                'size:16',
+                Rule::unique('pengamal', 'nik')->ignore($pengamal->id),
+            ],
             'nama_lengkap' => 'required|string',
             'tanggal_lahir' => 'nullable|date',
             'tempat_lahir' => 'nullable|string',
-            'alamat' => 'nullable|string',
             'jenis_kelamin' => 'nullable|in:L,P',
             'agama' => 'nullable|string',
-            // 'status_perkawinan' => 'nullable|string',
-            // 'pekerjaan' => 'nullable|string',
-            // 'kewarganegaraan' => 'nullable|string',
+            'province_code' => 'required|string',
+            'regency_code' => 'required|string',
+            'district_code' => 'required|string',
+            'village_code' => 'required|string',
+            'rt' => 'nullable|string',
+            'rw' => 'nullable|string',
+            'no_hp' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'email' => 'nullable|email',
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.string' => 'NIK harus berupa teks.',
             'nik.size' => 'NIK harus terdiri dari 16 digit.',
             'nik.unique' => 'NIK ini sudah terdaftar.',
-
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'nama_lengkap.string' => 'Nama lengkap harus berupa teks.',
-
             'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
             'tempat_lahir.string' => 'Tempat lahir harus berupa teks.',
-
             'jenis_kelamin.in' => 'Jenis kelamin harus L (Laki-laki) atau P (Perempuan).',
-
             'agama.string' => 'Agama harus berupa teks.',
+            'province_code.required' => 'Provinsi wajib dipilih.',
+            'regency_code.required' => 'Kabupaten/Kota wajib dipilih.',
+            'district_code.required' => 'Kecamatan wajib dipilih.',
+            'village_code.required' => 'Desa/Kelurahan wajib dipilih.',
+            'foto.image' => 'File harus berupa gambar.',
+            'foto.mimes' => 'Format gambar harus jpg, jpeg, atau png.',
+            'foto.max' => 'Ukuran gambar maksimal 2MB.',
+            'email.email' => 'Format email tidak valid.',
         ]);
 
-        $pengamal->update($validated);
+        // Proses foto jika diunggah
+        $fotoPath = $pengamal->foto; // default tetap pakai foto lama
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($pengamal->foto && Storage::disk('public')->exists($pengamal->foto)) {
+                Storage::disk('public')->delete($pengamal->foto);
+            }
 
-        // return response()->json($pengamal);
-        return redirect()->back()->with('success', 'Pengamal updated successfully');
+            // Simpan foto baru
+            $fotoPath = $request->file('foto')->store('foto/pengamal', 'public');
+        }
+
+        // Update data pengamal
+        $pengamal->update([
+            'nik' => $validated['nik'],
+            'nama_lengkap' => $validated['nama_lengkap'],
+            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+            'tempat_lahir' => $validated['tempat_lahir'] ?? null,
+            'jenis_kelamin' => $validated['jenis_kelamin'] ?? null,
+            'agama' => $validated['agama'] ?? null,
+            'provinsi' => $validated['province_code'],
+            'kabupaten' => $validated['regency_code'],
+            'kecamatan' => $validated['district_code'],
+            'desa' => $validated['village_code'],
+            'rt' => $validated['rt'] ?? null,
+            'rw' => $validated['rw'] ?? null,
+            'no_hp' => $validated['no_hp'] ?? null,
+            'alamat' => $validated['alamat'] ?? null,
+            'foto' => $fotoPath,
+            'email' => $validated['email'] ?? null,
+        ]);
+
+        // Redirect dengan notifikasi sukses
+        return redirect()->back()->with('success', 'Pengamal berhasil diperbarui.');
     }
 
     /**
