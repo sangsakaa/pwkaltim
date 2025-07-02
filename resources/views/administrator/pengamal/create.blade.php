@@ -34,13 +34,13 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {{-- Kolom Kiri --}}
                     <div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="nik" class="w-full">NIK</label>
                             <input type="text" name="nik" id="nik" placeholder="Wajib diisi sesuai KTP / KIA"
                                 class="w-full rounded-md" maxlength="16" value="{{ old('nik') }}" required>
                             @error('nik') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="nama_lengkap" class="w-full">Nama Lengkap</label>
                             <input type="text" name="nama_lengkap" id="nama_lengkap"
                                 class="w-full rounded-md" value="{{ old('nama_lengkap') }}" required>
@@ -48,9 +48,9 @@
                         </div>
                         <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
 
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                                <select name="jenis_kelamin" id="jenis_kelamin" class="w-full rounded-md">
+                                <select name="jenis_kelamin" id="jenis_kelamin" class="w-full rounded-md" required>
                                     <option value="">-- Pilih --</option>
                                     <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
@@ -58,32 +58,32 @@
                                 @error('jenis_kelamin') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="agama" class="form-label">Agama</label>
-                                <select name="agama" id="agama" class="w-full rounded-md">
+                                <select name="agama" id="agama" class="w-full rounded-md" required>
                                     <option value="">-- Pilih --</option>
                                     <option value="Islam" {{ old('agama') == 'Islam' ? 'selected' : '' }}>Islam</option>
                                 </select>
                                 @error('agama') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="tempat_lahir" class="w-full">Tempat Lahir</label>
                                 <input type="text" name="tempat_lahir" id="tempat_lahir"
-                                    class="w-full rounded-md" value="{{ old('tempat_lahir') }}">
+                                    class="w-full rounded-md" value="{{ old('tempat_lahir') }}" required>
                                 @error('tempat_lahir') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="tanggal_lahir" class="w-full">Tanggal Lahir</label>
                                 <input type="date" name="tanggal_lahir" id="tanggal_lahir"
-                                    class="w-full rounded-md" value="{{ old('tanggal_lahir') }}">
+                                    class="w-full rounded-md" value="{{ old('tanggal_lahir') }}" required>
                                 @error('tanggal_lahir') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
 
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="province" class="w-full">Provinsi</label>
-                                <select class="w-full rounded-md" id="province" name="province_code">
+                                <select class="w-full rounded-md" id="province" name="province_code" required>
                                     <option value="">Pilih Provinsi</option>
                                     @foreach ($provinces as $province)
                                     <option value="{{ $province->code }}">{{ $province->name }}</option>
@@ -91,23 +91,23 @@
                                 </select>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="regency" class="w-full">Kabupaten / Kota</label>
-                                <select class="w-full rounded-md" id="regency" name="regency_code">
+                                <select class="w-full rounded-md" id="regency" name="regency_code" required>
                                     <option value="">Pilih Kabupaten / Kota</option>
                                 </select>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="district" class="w-full">Kecamatan</label>
-                                <select class="w-full rounded-md" id="district" name="district_code">
+                                <select class="w-full rounded-md" id="district" name="district_code" required>
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="village" class="w-full">Desa / Kelurahan</label>
-                                <select class="w-full rounded-md" id="village" name="village_code">
+                                <select class="w-full rounded-md" id="village" name="village_code" required>
                                     <option value="">Pilih Desa / Kelurahan</option>
                                 </select>
                             </div>
@@ -119,60 +119,58 @@
                         <div class="grid grid-cols-2 gap-2">
 
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="alamat" class="w-full">Alamat</label>
                             <input type="text" name="alamat" id="alamat"
                                 class="w-full rounded-md" value="{{ old('alamat') }}" required>
                             @error('alamat') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
                         <div class=" grid grid-cols-2 gap-2">
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="no_hp" class="w-full">No. HP</label>
                                 <input type="text" name="no_hp" id="no_hp" placeholder="Nomor Handphone"
-                                    class="w-full rounded-md" value="{{ old('no_hp') }}" required>
+                                    class="w-full rounded-md" value="{{ old('no_hp') }}">
                                 @error('no_hp') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="email" class="w-full">Email</label>
                                 <input type="email" name="email" id="email"
-                                    class="w-full rounded-md" value="{{ old('email') }}" required>
+                                    class="w-full rounded-md" value="{{ old('email') }}">
                                 @error('email') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="rt" class="w-full">RT</label>
                                 <input type="text" name="rt" id="rt"
-                                    class="w-full rounded-md" value="{{ old('rt') }}" required>
+                                    class="w-full rounded-md" value="{{ old('rt') }}">
                                 @error('rt') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label for="rw" class="w-full">RW</label>
                                 <input type="text" name="rw" id="rw"
-                                    class="w-full rounded-md" value="{{ old('rw') }}" required>
+                                    class="w-full rounded-md" value="{{ old('rw') }}">
                                 @error('rw') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="foto" class="w-full">Foto </label>
                             <input type="file" name="foto" id="foto"
                                 class="w-full " value="{{ old('foto') }}">
                             @error('foto') <div class="text-danger">{{ $message }}</div> @enderror
                         </div>
+                        <div class="mt-4 flex space-x-2">
+                            <button type="submit"
+                                class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+                                Simpan
+                            </button>
+                            <a href="{{ route('pengamal.index') }}"
+                                class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
+                                Kembali
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div class="mt-4 flex space-x-2">
-                        <button type="submit"
-                            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
-                            Simpan
-                        </button>
-                        <a href="{{ route('pengamal.index') }}"
-                            class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
-                            Kembali
-                        </a>
-                    </div>
 
-                </div>
 
 
             </form>

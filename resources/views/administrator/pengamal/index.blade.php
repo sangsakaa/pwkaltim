@@ -27,37 +27,92 @@
         </div>
     </div>
     <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
-        <div>
-            <a href="/pengamal/create">
-                <button class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
-                    Tambah Pengamal
-                </button>
-            </a>
+        <div class="  flex justify-between items-center ">
+            <div>
+                <a href="/pengamal/create">
+                    <button class=" text-white bg-blue-500 rounded hover:bg-blue-600 px-2 py-1">
+                        Tambah Pengamal
+                    </button>
+                </a>
+            </div>
+            <div>
+                <form action="{{ route('pengamal.index') }}" method="GET" class="flex items-center gap-2 ">
+                    <input type="text" name="search" placeholder="Cari nama atau NIK"
+                        value="{{ request('search') }}"
+                        class="rounded-md py-1 px-2 border w-64">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded-md">
+                        Cari
+                    </button>
+                </form>
+            </div>
         </div>
         <div>
-            <div class="">
-                <table class="min-w-full divide-y divide-gray-200">
+            <div class=" overflow-auto">
+                <table class="  min-w-full divide-y divide-gray-200 border ">
                     <thead>
-                        <tr>
-                            <th>NIK</th>
+                        <tr class="bg-green-900 text-white py-4">
+                            <th class=" py-2">No</th>
+
                             <th class=" text-left">Nama Lengkap</th>
-                            <th>Alamat Lengkap</th>
+                            <th>Desa</th>
+                            <th>Kecamatan</th>
 
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($dataPengamal as $item)
-                        <tr>
-                            <td class=" text-center">{{ $item->nik }}</td>
+                        <tr class="hover:bg-gray-100 border">
+                            <td class=" text-center py-1">{{ $loop->iteration}}</td>
+
                             <td><a href="/pengamal/show/{{$item->id}}">{{ $item->nama_lengkap }}</a></td>
-                            <td class=" text-center"> Kec. {{$item->district->name}} - Desa . {{$item->village->name}}</td>
+                            <td class=" text-left"> Desa . {{$item->village->name??'-'}}</td>
+                            <td class=" text-left"> Kec. {{$item->district->name ??'-'}} </td>
 
                         </tr>
                         @endforeach
+                        <tr>
+                            <td colspan="4" class="text-center">
+                                {{ $dataPengamal->links() }}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        @if(Session::has('success'))
+        toastr.success("{{ Session::get('success') }}");
+        @endif
+
+        @if(Session::has('error'))
+        toastr.error("{{ Session::get('error') }}");
+        @endif
+
+        @if(Session::has('info'))
+        toastr.info("{{ Session::get('info') }}");
+        @endif
+
+        @if(Session::has('warning'))
+        toastr.warning("{{ Session::get('warning') }}");
+        @endif
+    </script>
 </x-app-layout>

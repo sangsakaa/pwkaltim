@@ -17,9 +17,21 @@ class PengamalController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $dataPengamal = Pengamal::all();
+        $query = Pengamal::query();
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                    ->orWhere('nik', 'like', "%{$search}%");
+            });
+        }
+
+        $dataPengamal = $query->paginate(10)->withQueryString(); // penting agar pagination menyimpan query `search`
+
+
         return view('administrator/pengamal/index',compact('dataPengamal'));
     }
 
@@ -128,7 +140,7 @@ class PengamalController extends Controller
     public function edit(Pengamal $pengamal)
     {
         $provinces = Province::all();
-        return view('administrator/pengamal/edit', compact('pengamal', 'provinces'));
+        return view('administrator/pengamal/edit', compact('pengamal', 'provinces'))->with('success', 'Pengamal berhasil diperbarui.');
     }
 
     /**
@@ -224,10 +236,12 @@ class PengamalController extends Controller
      */
     public function destroy(Pengamal $pengamal)
     {
-        $pengamal->delete();
-        return redirect()->route('pengamal.index')->with('success', 'Pengamal deleted successfully');
-        // return response()->json(['message' => 'Pengamal deleted successfully']);
+        $pengamal->delete(); // Ini otomatis jadi soft delete jika model pakai SoftDeletes
+        // toastr()->error('An error has occurred please try again later.');
+
+        return redirect()->route('pengamal.index')->with('error', 'Data pengamal berhasil dihapus.');
     }
+
 
 
 

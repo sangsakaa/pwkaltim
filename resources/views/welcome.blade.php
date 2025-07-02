@@ -7,6 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <title>PW KALTIM @yield('title')</title>
     <link rel="shortcut icon" href="{{ asset('image/logo.png') }}" type="image/x-icon">
+
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- Toastr -->
+
+
 </head>
 <style>
     html {

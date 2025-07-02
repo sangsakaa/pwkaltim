@@ -75,21 +75,21 @@
                         <div class="flex grid-cols-2">
                             <div class=" w-1/4"><strong>Provinsi</strong></div>
                             <div>: <span>
-                                    {{$pengamal->province->name}}
+                                    {{$pengamal->province->name??''}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
                             <div class=" w-1/4"><strong>Kabupaten</strong></div>
                             <div>: <span>
-                                    {{$pengamal->regency->name}}
+                                    {{$pengamal->regency->name??''}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
                             <div class=" w-1/4"><strong>Kecamatan</strong></div>
                             <div>: <span>
-                                    {{$pengamal->district->name}}
+                                    {{$pengamal->district->name??''}}
                                 </span>
                             </div>
                         </div>
@@ -97,7 +97,7 @@
                         <div class="flex grid-cols-2">
                             <div class=" w-1/4"><strong>Desa</strong></div>
                             <div>: <span>
-                                    {{$pengamal->village->name}}
+                                    {{$pengamal->village->name??''}}
                                 </span>
                             </div>
                         </div>
@@ -128,14 +128,49 @@
                                 Kembali
                             </button>
                         </a>
-                        <form action="/pengamal/show/{{ $pengamal->id }}" method="post"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                        <form action="/pengamal/show/{{ $pengamal->id }}" method="post" class="form-delete">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="px-4 py-1 text-white bg-red-500 rounded hover:bg-red-600">
                                 Hapus
                             </button>
                         </form>
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+                        <!-- SweetAlert2 -->
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            $(document).ready(function() {
+                                $('.form-delete').on('submit', function(e) {
+                                    e.preventDefault(); // Cegah langsung submit form
+
+                                    const form = this;
+
+                                    Swal.fire({
+                                        title: 'Apakah kamu yakin?',
+                                        text: "Data yang dihapus tidak bisa dikembalikan.",
+                                        icon: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#d33',
+                                        cancelButtonColor: '#3085d6',
+                                        confirmButtonText: 'Ya, hapus!',
+                                        cancelButtonText: 'Batal'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            form.submit();
+                                        } else {
+                                            toastr.info('Penghapusan dibatalkan.');
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+
+
+
+
                         <a href="https://wa.me/{{$pengamal->no_hp}}?text=Halo%20saya%20tertarik%20dengan%20layanan%20Anda"
                             target="_blank"
                             style="display:inline-block; background-color:#25D366; color:white; padding:5px 20px; border-radius:5px; text-decoration:none; font-weight:bold;">

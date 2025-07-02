@@ -10,7 +10,11 @@ class DashboardController extends Controller
     public function index()
     {
         $dataPengamal = \App\Models\Pengamal::count();
-        return view('administrator/dashboard/dashboard',compact('dataPengamal'));
+        $dataKab = \App\Models\Pengamal::get();
+        $jumlahPerProvinsi = $dataKab->groupBy('province.name')->map(function ($item) {
+            return count($item);
+        });
+        return view('administrator/dashboard/dashboard', compact('dataPengamal', 'dataKab', 'jumlahPerProvinsi'));
     }
     
 }

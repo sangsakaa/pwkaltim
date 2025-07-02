@@ -57,7 +57,7 @@
                         <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
                             <div class="mb-3">
                                 <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                                <select name="jenis_kelamin" id="jenis_kelamin" class="w-full rounded-md">
+                                <select name="jenis_kelamin" id="jenis_kelamin" class="w-full rounded-md" required>
                                     <option value="">-- Pilih --</option>
                                     <option value="L" {{ old('jenis_kelamin', $pengamal->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="P" {{ old('jenis_kelamin', $pengamal->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
@@ -78,7 +78,7 @@
                             <div class="mb-3">
                                 <label for="tempat_lahir" class="w-full">Tempat Lahir</label>
                                 <input type="text" name="tempat_lahir" id="tempat_lahir" class="w-full rounded-md"
-                                    value="{{ old('tempat_lahir', $pengamal->tempat_lahir) }}">
+                                    value="{{ old('tempat_lahir', $pengamal->tempat_lahir) }}" required>
                                 @error('tempat_lahir') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
@@ -137,14 +137,14 @@
                             <div class="mb-3">
                                 <label for="no_hp" class="w-full">No. HP</label>
                                 <input type="text" name="no_hp" id="no_hp" class="w-full rounded-md"
-                                    value="{{ old('no_hp', $pengamal->no_hp) }}" required>
+                                    value="{{ old('no_hp', $pengamal->no_hp) }}">
                                 @error('no_hp') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="mb-3">
                                 <label for="email" class="w-full">Email</label>
                                 <input type="email" name="email" id="email" class="w-full rounded-md"
-                                    value="{{ old('email', $pengamal->email) }}" required>
+                                    value="{{ old('email', $pengamal->email) }}">
                                 @error('email') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
@@ -158,7 +158,7 @@
                             <div class="mb-3">
                                 <label for="rw" class="w-full">RW</label>
                                 <input type="text" name="rw" id="rw" class="w-full rounded-md"
-                                    value="{{ old('rw', $pengamal->rw) }}" required>
+                                    value="{{ old('rw', $pengamal->rw) }}">
                                 @error('rw') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
                         </div>
@@ -264,7 +264,6 @@
                     province.dispatchEvent(new Event('change'));
                 }
             </script>
-
 
 
         </div>

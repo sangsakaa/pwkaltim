@@ -42,8 +42,33 @@
                 <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem: <span class="" style="font-size: large;">{{ $dataPengamal}}</span></p>
             </div>
             <div class="p-4 bg-green-100 rounded-md shadow">
-                <h2 class="text-lg font-semibold">Aktivitas Terakhir</h2>
-                <p class="text-gray-600">Aktivitas terakhir yang dilakukan oleh administrator.</p>
+                @php
+                $grouped = $dataKab->groupBy('province.name');
+                @endphp
+
+                @foreach($grouped as $provinceName => $items)
+                <h3>{{ $provinceName }}</h3>
+                @php
+                $districts = $items->groupBy('district.name');
+                @endphp
+                <ul>
+                    @foreach($districts as $districtName => $kabList)
+                    <li>{{ $districtName }} ({{ $kabList->count() }})</li>
+                    @endforeach
+                </ul>
+                @endforeach
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
             <div class="p-4 bg-yellow-100 rounded-md shadow">
                 <h2 class="text-lg font-semibold">Statistik Pengguna</h2>

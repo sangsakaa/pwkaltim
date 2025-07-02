@@ -3,10 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use SoftDeletes;
 
 class Pengamal extends Model
 {
  protected $table = 'pengamal';
+
+
+    // Pastikan kolom deleted_at tersedia di database
+    protected $dates = ['deleted_at'];
 
     protected $fillable = [
         'nik',
@@ -26,6 +31,7 @@ class Pengamal extends Model
         'alamat',
         'foto',
         'email',
+
         // 'status_perkawinan',
         // 'pekerjaan',
         // 'kewarganegaraan',
