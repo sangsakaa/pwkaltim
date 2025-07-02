@@ -29,7 +29,7 @@
     <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
         <div>
 
-           
+
 
 
 
@@ -96,7 +96,7 @@
 
                         <button type="submit" class="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600">
                             Update</button>
-                        <a href="/pengamal" class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600">
+                        <a href="/pengamal/show/{{$pengamal->id}}" class="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600">
                             Kembali</a>
                     </div>
                 </div>

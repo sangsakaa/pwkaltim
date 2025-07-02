@@ -31,16 +31,12 @@
             <!-- Foto Pengamal -->
             <div class="w-full md:w-1/6">
                 @if ($pengamal->foto)
-                <img src="{{ asset('storage/foto/' . $pengamal->foto) }}"
-                    alt="Foto Pengamal"
-                    class="w-full h-auto rounded-md object-cover shadow">
+                <img src="{{ asset('storage/' . $pengamal->foto) }}" alt="Foto Pengamal" class="w-32 h-32 object-cover rounded">
                 @else
-                <div class=" bg-green-900">
-                    <img src="{{ asset('image/logo.png') }}"
-                        alt="Foto Default"
-                        class="">
-                </div>
+                <p>Tidak ada foto.</p>
                 @endif
+
+
 
             </div>
 
@@ -56,7 +52,10 @@
 
                     <div class="grid grid-cols-2">
                         <div><strong>Tempat Lahir</strong></div>
-                        <div>: {{ $pengamal->tempat_lahir }}</div>
+                        <div>: {{ $pengamal->tempat_lahir }}
+
+
+                        </div>
                     </div>
                     <div class="grid grid-cols-2">
                         <div><strong>Nama Lengkap</strong></div>
@@ -91,43 +90,56 @@
                             </span>
                         </div>
                     </div>
-
-
-                    <!-- Berkas -->
-                    @if ($pengamal->berkas)
-                    <div class="mt-4">
-                        <strong class="text-sm">Berkas:</strong>
-                        <a href="{{ asset('storage/berkas/' . $pengamal->berkas) }}" target="_blank"
-                            class="inline-block mt-1 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm">
-                            Lihat / Unduh Berkas
-                        </a>
+                    <div class="grid grid-cols-2">
+                        <div><strong>Desa</strong></div>
+                        <div>: <span>
+                                {{$pengamal->village->name}}
+                            </span>
+                        </div>
                     </div>
-                    @endif
+                    <div class="grid grid-cols-2">
+                        <div><strong>Usia</strong></div>
+                        <div>: {{ \Carbon\Carbon::parse($pengamal->tanggal_lahir)->age }} tahun
 
-                    <!-- Tombol Aksi -->
-                    <div class="mt-5 flex gap-3">
-                        <a href="/pengamal/edit/{{ $pengamal->id }}">
-                            <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
-                                Edit
-                            </button>
-                        </a>
-                        <a href="/pengamal">
-                            <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
-                                Kembali
-                            </button>
-                        </a>
-                        <form action="/pengamal/show/{{ $pengamal->id }}" method="post"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="px-4 py-1 text-white bg-red-500 rounded hover:bg-red-600">
-                                Hapus
-                            </button>
-                        </form>
+                        </div>
 
+
+
+                        <!-- Berkas -->
+                        @if ($pengamal->berkas)
+                        <div class="mt-4">
+                            <strong class="text-sm">Berkas:</strong>
+                            <a href="{{ asset('storage/berkas/' . $pengamal->berkas) }}" target="_blank"
+                                class="inline-block mt-1 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm">
+                                Lihat / Unduh Berkas
+                            </a>
+                        </div>
+                        @endif
+
+                        <!-- Tombol Aksi -->
+                        <div class="mt-5 flex gap-3">
+                            <a href="/pengamal/edit/{{ $pengamal->id }}">
+                                <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
+                                    Edit
+                                </button>
+                            </a>
+                            <a href="/pengamal">
+                                <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">
+                                    Kembali
+                                </button>
+                            </a>
+                            <form action="/pengamal/show/{{ $pengamal->id }}" method="post"
+                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="px-4 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                                    Hapus
+                                </button>
+                            </form>
+
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
 </x-app-layout>

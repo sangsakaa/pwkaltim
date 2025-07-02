@@ -37,6 +37,12 @@ class PengamalController extends Controller
     public function store(Request $request)
     {
 
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('foto/pengamal', 'public');
+        }
+
+        // dd($request->all());
         $validated = $request->validate([
             'nik' => 'required|string|size:16|unique:pengamal,nik',
             'nama_lengkap' => 'required|string',
@@ -48,29 +54,38 @@ class PengamalController extends Controller
             'regency_code' => 'required|string',
             'district_code' => 'required|string',
             'village_code' => 'required|string',
+            'rt' => 'nullable|string',
+            'rw' => 'nullable|string',
+            'no_hp' => 'nullable|string',
+            'alamat' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'email' => 'nullable|email',
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.string' => 'NIK harus berupa teks.',
             'nik.size' => 'NIK harus terdiri dari 16 digit.',
             'nik.unique' => 'NIK ini sudah terdaftar.',
-
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'nama_lengkap.string' => 'Nama lengkap harus berupa teks.',
-
             'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
             'tempat_lahir.string' => 'Tempat lahir harus berupa teks.',
-
             'jenis_kelamin.in' => 'Jenis kelamin harus L (Laki-laki) atau P (Perempuan).',
-
             'agama.string' => 'Agama harus berupa teks.',
-
             'province_code.required' => 'Provinsi wajib dipilih.',
             'regency_code.required' => 'Kabupaten/Kota wajib dipilih.',
             'district_code.required' => 'Kecamatan wajib dipilih.',
             'village_code.required' => 'Desa/Kelurahan wajib dipilih.',
+            'foto.image' => 'File harus berupa gambar.',
+            'foto.mimes' => 'Format gambar harus jpg, jpeg, atau png.',
+            'foto.max' => 'Ukuran gambar maksimal 2MB.',
+            'email.email' => 'Format email tidak valid.',
         ]);
 
-        // Mapping input form ke nama kolom database
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('foto/pengamal', 'public');
+        }
+
         $data = [
             'nik' => $validated['nik'],
             'nama_lengkap' => $validated['nama_lengkap'],
@@ -82,10 +97,16 @@ class PengamalController extends Controller
             'kabupaten' => $validated['regency_code'],
             'kecamatan' => $validated['district_code'],
             'desa' => $validated['village_code'],
+            'rt' => $validated['rt'] ?? null,
+            'rw' => $validated['rw'] ?? null,
+            'no_hp' => $validated['no_hp'] ?? null,
+            'alamat' => $validated['alamat'] ?? null,
+            'foto' => $fotoPath,
+            'email' => $validated['email'] ?? null,
         ];
 
-        // Simpan ke database
         Pengamal::create($data);
+
 
         return redirect()->back()->with('success', 'Pengamal created successfully');
     }
