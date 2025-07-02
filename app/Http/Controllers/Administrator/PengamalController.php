@@ -37,10 +37,7 @@ class PengamalController extends Controller
     public function store(Request $request)
     {
 
-        $fotoPath = null;
-        if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('foto/pengamal', 'public');
-        }
+
 
         // dd($request->all());
         $validated = $request->validate([
