@@ -12,4 +12,10 @@ class Province extends Model
     {
         return $this->hasMany(Regency::class, 'province_code', 'code');
     }
+    // app/Models/Province.php
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'code', 'code');
+    }
 }

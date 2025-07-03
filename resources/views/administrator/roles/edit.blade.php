@@ -18,63 +18,51 @@
                 <div>
                     <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo">
                 </div>
-                <div class=" w-full py-2 px-2">
-
+                <div class=" w-full flex items-center justify-center">
+                    <marquee behavior="scroll" direction="left">
+                        Selamat datang di website kami!
+                    </marquee>
                 </div>
             </div>
         </div>
     </div>
     <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
         <div class="  flex justify-between items-center ">
-            <div>
-                <a href="/pengamal/create">
-                    <button class=" text-white bg-blue-500 rounded hover:bg-blue-600 px-2 py-1">
-                        Tambah Pengamal
-                    </button>
-                </a>
-            </div>
-            <div>
-                <form action="{{ route('pengamal.index') }}" method="GET" class="flex items-center gap-2 ">
-                    <input type="text" name="search" placeholder="Cari nama atau NIK"
-                        value="{{ request('search') }}"
-                        class="rounded-md py-1 px-2 border w-64">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded-md">
-                        Cari
-                    </button>
-                </form>
-            </div>
+
         </div>
         <div>
             <div class=" overflow-auto">
-                <table class="  min-w-full divide-y divide-gray-200 border ">
-                    <thead>
-                        <tr class="bg-green-900 text-white py-4">
-                            <th class=" py-2">No</th>
+                <h1>Edit Role: {{ $role->name }}</h1>
 
-                            <th class=" text-left">Nama Lengkap</th>
-                            <th>Desa</th>
-                            <th>Kecamatan</th>
+                <form action="{{ route('roles.update', $role) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class=" w-full grid grid-cols-1 gap-">
+                        <label>Nama Role</label>
+                        <input type="text" name="name" value="{{ $role->name }}" required class=" w-1/2 rounded-md"
+                            placeholder="Masukkan nama role">
+                    </div>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($dataPengamal as $item)
-                        <tr class="hover:bg-gray-100 border">
-                            <td class=" text-center py-1">{{ $loop->iteration}}</td>
-
-                            <td><a href="/pengamal/show/{{$item->id}}">{{ $item->nama_lengkap }}</a></td>
-                            <td class=" text-left"> {{$item->regency->code ??'-'}} - Kabupaten . {{$item->regency->name??'-'}}</td>
-                            <td class=" text-left">{{$item->district->code ??'-'}} - Kec. {{$item->district->name ??'-'}} </td>
-
-                        </tr>
+                    <div>
+                        <label>Permission</label><br>
+                        @foreach($permissions as $permission)
+                        <label>
+                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                {{ $role->permissions->contains('name', $permission->name) ? 'checked' : '' }}>
+                            {{ $permission->name }}
+                        </label><br>
                         @endforeach
-                        <tr>
-                            <td colspan="4" class="text-center">
-                                {{ $dataPengamal->links() }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                    </div>
+
+                    <button type="submit"
+                        class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+                        Simpan
+                    </button>
+                    <a href="/roles"
+                        class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
+                        Kembali
+                    </a>
+                </form>
             </div>
         </div>
     </div>

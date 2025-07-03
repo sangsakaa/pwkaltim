@@ -23,6 +23,25 @@
             href="{{ route('pengamal.index') }}"
             :active="request()->routeIs('pengamal.index')" />
     </x-sidebar.dropdown>
+    <x-sidebar.dropdown
+        title="Pengaturan"
+        :active="Str::startsWith(request()->route()->uri(), 'buttons')">
+        <x-slot name="icon">
+            <x-heroicon-o-view-grid class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+        </x-slot>
+        <x-sidebar.sublink
+            title="Role Management"
+            href="{{ route('roles.index') }}"
+            :active="request()->routeIs('roles.index')" />
+        <x-sidebar.sublink
+            title="User Management"
+            href="{{ route('users.assign-role-index') }}"
+            :active="request()->routeIs('users.assign-role-index')" />
+        <x-sidebar.sublink
+            title="Management Wilayah"
+            href="{{ route('wilayah.index') }}"
+            :active="request()->routeIs('wilayah.index')" />
+    </x-sidebar.dropdown>
 
 
 

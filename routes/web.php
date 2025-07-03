@@ -2,7 +2,9 @@
 
 use App\Models\Pengamal;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\Administrator\PengamalController;
 use App\Http\Controllers\Administrator\DashboardController;
 
@@ -49,9 +51,21 @@ Route::get('/get-regencies/{provinceId}', [PengamalController::class, 'getRegenc
 Route::get('/get-districts/{regencyId}', [PengamalController::class, 'getDistricts']);
 Route::get('/get-villages/{districtId}', [PengamalController::class, 'getVillages']);
 
+// roles and permissions
+Route::resource('roles', RoleController::class);
 
 
 
+// usermanagement
+Route::get('/users/create', [UserRoleController::class, 'create'])->name('users.create');
+Route::post('/users/create', [UserRoleController::class, 'storeUser']);
+Route::get('/users/assign-role', [UserRoleController::class, 'index'])->name('users.assign-role-index');
+Route::get('/users/{user}/assign-role', [UserRoleController::class, 'edit'])->name('users.assign-role');
+Route::post('/users/{user}/assign-role', [UserRoleController::class, 'update'])->name('users.assign-role.update');
+
+// wilayah
+Route::get('/wilayah', [\App\Http\Controllers\WilayahController::class, 'index'])->name('wilayah.index');
+Route::get('/wilayah/{regency}', [\App\Http\Controllers\WilayahController::class, 'show'])->name('wilayah.show');
 
 
 

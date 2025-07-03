@@ -19,9 +19,22 @@ class PengamalController extends Controller
      */
     public function index(Request $request)
     {
+        $user = auth()->user();
+
+        // Gunakan query builder dari awal
         $query = Pengamal::query();
 
-        if ($request->has('search') && $request->search != '') {
+        // Filter berdasarkan role
+        if ($user->hasRole('admin-kabupaten')) {
+            $query->where('kabupaten', $user->code);
+        } elseif ($user->hasRole('admin-kecamatan')) {
+            $query->where('kecamatan', $user->code);
+        } elseif ($user->hasRole('admin-desa')) {
+            $query->where('desa', $user->code);
+        }
+
+        // Filter pencarian jika ada
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
@@ -29,15 +42,12 @@ class PengamalController extends Controller
             });
         }
 
-        $dataPengamal = $query->paginate(10)->withQueryString(); // penting agar pagination menyimpan query `search`
+        // Ambil data dengan pagination dan simpan query search di URL
+        $dataPengamal = $query->paginate(10)->withQueryString();
 
-
-        return view('administrator/pengamal/index',compact('dataPengamal'));
+        return view('administrator.pengamal.index', compact('dataPengamal'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $provinces = Province::all();
