@@ -50,7 +50,7 @@ class PengamalController extends Controller
 
     public function create()
     {
-        $provinces = Province::all();
+        $provinces = Province::where('code', 64)->get(); // Ambil semua provinsi kecuali yang kode 00
         return view('administrator/pengamal/create', compact('provinces'));
     }
 
@@ -80,6 +80,9 @@ class PengamalController extends Controller
             'alamat' => 'nullable|string',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'email' => 'nullable|email',
+            'pekerjaan' => 'required|string',
+            'status_perkawinan' => 'required|string',
+
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.string' => 'NIK harus berupa teks.',
@@ -123,6 +126,8 @@ class PengamalController extends Controller
             'alamat' => $validated['alamat'] ?? null,
             'foto' => $fotoPath,
             'email' => $validated['email'] ?? null,
+            'pekerjaan' => $validated['pekerjaan'] ?? null,
+            'status_perkawinan' => $validated['status_perkawinan'] ?? null,
         ];
 
         Pengamal::create($data);
@@ -159,6 +164,7 @@ class PengamalController extends Controller
     public function update(Request $request, $id)
     {
         // Ambil data pengamal berdasarkan ID
+        // dd($request->all());
         $pengamal = Pengamal::findOrFail($id);
 
         // Validasi input
@@ -184,6 +190,8 @@ class PengamalController extends Controller
             'alamat' => 'nullable|string',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'email' => 'nullable|email',
+            'pekerjaan' => 'required|string',
+            'status_perkawinan' => 'required|string',
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.string' => 'NIK harus berupa teks.',
@@ -235,6 +243,8 @@ class PengamalController extends Controller
             'alamat' => $validated['alamat'] ?? null,
             'foto' => $fotoPath,
             'email' => $validated['email'] ?? null,
+            'pekerjaan' => $validated['pekerjaan'] ?? null,
+            'status_perkawinan' => $validated['status_perkawinan'] ?? null,
         ]);
 
         // Redirect dengan notifikasi sukses

@@ -25,11 +25,16 @@
         </div>
     </div>
     <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
-        <div class="  flex justify-between items-center ">
+        <div class="  sm:flex sm:justify-between grid grid-cols-1 gap-2">
             <div>
                 <a href="/pengamal/create">
                     <button class=" text-white bg-blue-500 rounded hover:bg-blue-600 px-2 py-1">
                         Tambah Pengamal
+                    </button>
+                </a>
+                <a href="/laporan" target="_blank">
+                    <button class=" text-white bg-blue-500 rounded hover:bg-blue-600 px-2 py-1">
+                        PDF
                     </button>
                 </a>
             </div>
@@ -45,14 +50,14 @@
             </div>
         </div>
         <div>
-            <div class=" overflow-auto">
+            <div class=" overflow-auto ">
                 <table class="  min-w-full divide-y divide-gray-200 border ">
                     <thead>
                         <tr class="bg-green-900 text-white py-4">
                             <th class=" py-2">No</th>
 
-                            <th class=" text-left">Nama Lengkap</th>
-                            <th>Desa</th>
+                            <th class=" text-left">Nama</th>
+                            <th>Kabupaten</th>
                             <th>Kecamatan</th>
 
                         </tr>
@@ -63,8 +68,8 @@
                             <td class=" text-center py-1">{{ $loop->iteration}}</td>
 
                             <td><a href="/pengamal/show/{{$item->id}}">{{ $item->nama_lengkap }}</a></td>
-                            <td class=" text-left"> {{$item->regency->code ??'-'}} - Kabupaten . {{$item->regency->name??'-'}}</td>
-                            <td class=" text-left">{{$item->district->code ??'-'}} - Kec. {{$item->district->name ??'-'}} </td>
+                            <td class=" text-left"> {{$item->regency->name??'-'}}</td>
+                            <td class=" text-left">Kec. {{$item->district->name ??'-'}} </td>
 
                         </tr>
                         @endforeach

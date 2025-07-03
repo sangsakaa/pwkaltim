@@ -3,6 +3,7 @@
 use App\Models\Pengamal;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\Administrator\PengamalController;
@@ -67,6 +68,9 @@ Route::post('/users/{user}/assign-role', [UserRoleController::class, 'update'])-
 Route::get('/wilayah', [\App\Http\Controllers\WilayahController::class, 'index'])->name('wilayah.index');
 Route::get('/wilayah/{regency}', [\App\Http\Controllers\WilayahController::class, 'show'])->name('wilayah.show');
 
+
+// laporan
+Route::get('/laporan', [LaporanController::class,  'laporan'])->name('laporan.laporan');
 
 
 

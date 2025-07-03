@@ -35,7 +35,7 @@
                     {{-- Kolom Kiri --}}
                     <div>
                         <div class="mb-2">
-                            <label for="nik" class="w-full">NIK</label>
+                            <label for="nik" class="w-full">Nomor Induk Kependudukan</label>
                             <input type="text" name="nik" id="nik" placeholder="Wajib diisi sesuai KTP / KIA"
                                 class="w-full rounded-md" maxlength="16" value="{{ old('nik') }}" required>
                             @error('nik') <div class="text-danger">{{ $message }}</div> @enderror
@@ -135,7 +135,7 @@
                             <div class="mb-2">
                                 <label for="email" class="w-full">Email</label>
                                 <input type="email" name="email" id="email"
-                                    class="w-full rounded-md" value="{{ old('email') }}">
+                                    class="w-full rounded-md" value="{{ old('email') }}" placeholder="harus valid sesui format email">
                                 @error('email') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
                             <div class="mb-2">
@@ -157,6 +157,39 @@
                             <input type="file" name="foto" id="foto"
                                 class="w-full " value="{{ old('foto') }}">
                             @error('foto') <div class="text-danger">{{ $message }}</div> @enderror
+                        </div>
+                        <!-- Dropdown Pekerjaan -->
+
+
+                        <!-- Dropdown Status Perkawinan -->
+                        <div class=" grid grid-cols-2 gap-2">
+                            <div class="mb-2">
+                                <label for="pekerjaan" class="w-full">Pekerjaan</label>
+                                <select name="pekerjaan" id="pekerjaan" class="w-full rounded-md" required>
+                                    <option value="">-- Pilih Pekerjaan --</option>
+                                    <option value="PNS" {{ old('pekerjaan') == 'PNS' ? 'selected' : '' }}>PNS</option>
+                                    <option value="TNI/Polri" {{ old('pekerjaan') == 'TNI/Polri' ? 'selected' : '' }}>TNI/Polri</option>
+                                    <option value="Karyawan Swasta" {{ old('pekerjaan') == 'Karyawan Swasta' ? 'selected' : '' }}>Karyawan Swasta</option>
+                                    <option value="Wiraswasta" {{ old('pekerjaan') == 'Wiraswasta' ? 'selected' : '' }}>Wiraswasta</option>
+                                    <option value="Petani" {{ old('pekerjaan') == 'Petani' ? 'selected' : '' }}>Petani</option>
+                                    <option value="Nelayan" {{ old('pekerjaan') == 'Nelayan' ? 'selected' : '' }}>Nelayan</option>
+                                    <option value="Pelajar/Mahasiswa" {{ old('pekerjaan') == 'Pelajar/Mahasiswa' ? 'selected' : '' }}>Pelajar/Mahasiswa</option>
+                                    <option value="Ibu Rumah Tangga" {{ old('pekerjaan') == 'Ibu Rumah Tangga' ? 'selected' : '' }}>Ibu Rumah Tangga</option>
+                                    <option value="Lainnya" {{ old('pekerjaan') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                </select>
+                                @error('pekerjaan') <div class="text-danger">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="mb-2">
+                                <label for="status_perkawinan" class="w-full">Status Perkawinan</label>
+                                <select name="status_perkawinan" id="status_perkawinan" class="w-full rounded-md" required>
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="Belum Kawin" {{ old('status_perkawinan') == 'Belum Kawin' ? 'selected' : '' }}>Belum Kawin</option>
+                                    <option value="Kawin" {{ old('status_perkawinan') == 'Kawin' ? 'selected' : '' }}>Kawin</option>
+                                    <option value="Cerai Hidup" {{ old('status_perkawinan') == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                                    <option value="Cerai Mati" {{ old('status_perkawinan') == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
+                                </select>
+                                @error('status_perkawinan') <div class="text-danger">{{ $message }}</div> @enderror
+                            </div>
                         </div>
                         <div class="mt-4 flex space-x-2">
                             <button type="submit"

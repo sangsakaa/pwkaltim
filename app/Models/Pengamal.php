@@ -31,9 +31,8 @@ class Pengamal extends Model
         'alamat',
         'foto',
         'email',
-
-        // 'status_perkawinan',
-        // 'pekerjaan',
+        'status_perkawinan',
+        'pekerjaan',
         // 'kewarganegaraan',
     ];
 

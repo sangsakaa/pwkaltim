@@ -171,12 +171,7 @@
                                         <input type="file" name="foto" id="foto" class="w-full">
                                         @error('foto') <div class="text-danger">{{ $message }}</div> @enderror
                                     </div>
-                                    <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
-                                        Update
-                                    </button>
-                                    <a href="/pengamal/show/{{$pengamal->id}}" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
-                                        Kembali
-                                    </a>
+
                                 </div>
                                 <div>
                                     <div class="w-full ">
@@ -188,6 +183,44 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <!-- Dropdown Pekerjaan -->
+                                <div class="mb-2">
+                                    <label for="pekerjaan" class="w-full">Pekerjaan</label>
+                                    <select name="pekerjaan" id="pekerjaan" class="w-full rounded-md" required>
+                                        <option value="">-- Pilih Pekerjaan --</option>
+                                        @php
+                                        $listPekerjaan = ['PNS', 'TNI/Polri', 'Karyawan Swasta', 'Wiraswasta', 'Petani', 'Nelayan', 'Pelajar/Mahasiswa', 'Ibu Rumah Tangga', 'Lainnya'];
+                                        @endphp
+                                        @foreach($listPekerjaan as $item)
+                                        <option value="{{ $item }}" {{ (old('pekerjaan', $pengamal->pekerjaan) == $item) ? 'selected' : '' }}>{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('pekerjaan') <div class="text-danger">{{ $message }}</div> @enderror
+                                </div>
+
+                                <!-- Dropdown Status Perkawinan -->
+                                <div class="mb-2">
+                                    <label for="status_perkawinan" class="w-full">Status Perkawinan</label>
+                                    <select name="status_perkawinan" id="status_perkawinan" class="w-full rounded-md" required>
+                                        <option value="">-- Pilih Status --</option>
+                                        @php
+                                        $listStatus = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
+                                        @endphp
+                                        @foreach($listStatus as $status)
+                                        <option value="{{ $status }}" {{ (old('status_perkawinan', $pengamal->status_perkawinan) == $status) ? 'selected' : '' }}>{{ $status }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('status_perkawinan') <div class="text-danger">{{ $message }}</div> @enderror
+                                </div>
+                            </div>
+                            <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+                                Update
+                            </button>
+                            <a href="/pengamal/show/{{$pengamal->id}}" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
+                                Kembali
+                            </a>
+
                         </div>
                     </div>
             </form>
