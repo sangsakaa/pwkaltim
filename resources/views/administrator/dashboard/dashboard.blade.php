@@ -22,11 +22,13 @@
                 <div class="bg-green-800 w-full sm:grid sm:grid-cols-1 flex flex-col items-center text-white fw-semibold p-4">
                     @php
                     if ($user->regency?->name) {
-                    // Hilangkan 4 karakter pertama dan tambahkan 'Kabupaten '
+                    if (Str::startsWith($user->regency->name, 'Kab.')) {
                     $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+                    } else {
+                    $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+                    }
                     } elseif ($user->district?->name) {
-                    // Tambahkan 'Kecamatan ' di depan nama
-                    $wilayah = 'Kec.' . $user->district->name;
+                    $wilayah = 'Kec. ' . $user->district->name;
                     } elseif ($user->village?->name) {
                     $wilayah = $user->village->name;
                     } elseif ($user->province?->name) {
@@ -35,7 +37,9 @@
                     $wilayah = 'Tidak diketahui';
                     }
                     @endphp
-                    <span class=" uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
+
+                    <span class="uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
+
                     <!-- <div class="kop-surat">
                         <div class="yayasan text-lg font-bold">YAYASAN PERJUANGAN WAHIDIYAH DAN PONDOK PESANTREN KEDUNGLO</div>
                         <div class="departemen text-base mt-1">DEPARTEMEN PEMBINA WAHIDIYAH<br><span class="uppercase semibold text-lg"></span></div>
