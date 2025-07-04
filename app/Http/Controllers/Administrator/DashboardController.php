@@ -11,10 +11,17 @@ class DashboardController extends Controller
     {
         $dataPengamal = \App\Models\Pengamal::count();
         $dataKab = \App\Models\Pengamal::get();
-        $jumlahPerProvinsi = $dataKab->groupBy('province.name')->map(function ($item) {
+        $jumlahPerProvinsi = $dataKab->groupBy('regency.name')->map(function ($item) {
             return count($item);
         });
-        return view('administrator/dashboard/dashboard', compact('dataPengamal', 'dataKab', 'jumlahPerProvinsi'));
+        return view(
+            'administrator/dashboard/dashboard',
+            [
+                'labels' => $jumlahPerProvinsi->keys(),   // Nama provinsi
+                'data' => $jumlahPerProvinsi->values(),
+                'dataPengamal' => $dataPengamal,  // Jumlah per provinsi
+            ]
+        );
     }
     
 }

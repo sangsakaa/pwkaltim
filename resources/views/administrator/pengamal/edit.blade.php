@@ -150,14 +150,14 @@
 
                             <div class="mb-3">
                                 <label for="rt" class="w-full">RT</label>
-                                <input type="text" name="rt" id="rt" class="w-full rounded-md"
-                                    value="{{ old('rt', $pengamal->rt) }}" required>
+                                <input type="number" name="rt" id="rt" class="w-full rounded-md"
+                                    value="{{ old('rt', $pengamal->rt) }}">
                                 @error('rt') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="mb-3">
                                 <label for="rw" class="w-full">RW</label>
-                                <input type="text" name="rw" id="rw" class="w-full rounded-md"
+                                <input type="number" name="rw" id="rw" class="w-full rounded-md"
                                     value="{{ old('rw', $pengamal->rw) }}">
                                 @error('rw') <div class="text-danger">{{ $message }}</div> @enderror
                             </div>

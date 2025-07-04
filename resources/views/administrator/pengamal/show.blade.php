@@ -41,31 +41,39 @@
             <div class="w-full ">
                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white ">Detail Data Pengamal </h2>
                 <div class=" grid grid-cols-1 sm:grid-cols-2 w-full">
-                    <div>
-                        <div class="grid grid-cols-2">
-                            <div><strong>NIK</strong></div>
+                    <div class=" text-xm sm:text-sm">
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4 ">NIK</div>
                             <div>: {{ $pengamal->nik }}</div>
                         </div>
-                        <div class="grid grid-cols-2">
-                            <div><strong>Nama Lengkap</strong></div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4 ">Nama</div>
                             <div>: {{ $pengamal->nama_lengkap }}</div>
                         </div>
-                        <div class="grid grid-cols-2">
-                            <div><strong>Agama</strong></div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4 ">Agama</div>
                             <div>: {{ $pengamal->agama }}</div>
                         </div>
-                        <div class="grid grid-cols-2">
-                            <div><strong>Tempat Lahir</strong></div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4 ">Tempat Lahir</div>
                             <div>: {{ $pengamal->tempat_lahir }}
                             </div>
                         </div>
-                        <div class="grid grid-cols-2">
-                            <div><strong>Tanggal Lahir</strong></div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4 ">Tanggal Lahir</div>
                             <div>: {{ $pengamal->tanggal_lahir }}</div>
                         </div>
-                        <div class="grid grid-cols-2">
-                            <div><strong>Jenis Kelamin</strong></div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4 ">Jenis Kelamin</div>
                             <div>: {{ $pengamal->jenis_kelamin }}</div>
+                        </div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4 ">Pekerjaan</div>
+                            <div>: {{ $pengamal->pekerjaan }}</div>
+                        </div>
+                        <div class="flex grid-cols-2">
+                            <div class=" w-1/4 ">Status</div>
+                            <div>: {{ $pengamal->status_perkawinan }}</div>
                         </div>
 
 
@@ -73,21 +81,21 @@
                     <div class=" ">
 
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4"><strong>Provinsi</strong></div>
+                            <div class=" w-1/4 ">Provinsi</div>
                             <div>: <span>
                                     {{$pengamal->province->name??''}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4"><strong>Kabupaten</strong></div>
+                            <div class=" w-1/4 ">Kabupaten</div>
                             <div>: <span>
                                     {{$pengamal->regency->name??''}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4"><strong>Kecamatan</strong></div>
+                            <div class=" w-1/4 ">Kecamatan</div>
                             <div>: <span>
                                     {{$pengamal->district->name??''}}
                                 </span>
@@ -95,21 +103,21 @@
                         </div>
 
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4"><strong>Desa</strong></div>
+                            <div class=" w-1/4 ">Desa</div>
                             <div>: <span>
                                     {{$pengamal->village->name??''}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4"><strong>Alamat</strong></div>
+                            <div class=" w-1/4 ">Alamat</div>
                             <div>: <span>
                                     {{$pengamal->alamat}}, RT {{$pengamal->rt??'-'}} , RW {{$pengamal->rw??'-'}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4"><strong>Usia</strong></div>
+                            <div class=" w-1/4 ">Usia</div>
                             <div>: {{ \Carbon\Carbon::parse($pengamal->tanggal_lahir)->age }} tahun
                             </div>
                         </div>

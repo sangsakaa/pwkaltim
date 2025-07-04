@@ -42,21 +42,52 @@
                 <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem: <span class="" style="font-size: large;">{{ $dataPengamal}}</span></p>
             </div>
             <div class="p-4 bg-green-100 rounded-md shadow">
-                @php
-                $grouped = $dataKab->groupBy('province.name');
-                @endphp
+                <!DOCTYPE html>
+                <html>
 
-                @foreach($grouped as $provinceName => $items)
-                <h3>{{ $provinceName }}</h3>
-                @php
-                $districts = $items->groupBy('district.name');
-                @endphp
-                <ul>
-                    @foreach($districts as $districtName => $kabList)
-                    <li>{{ $districtName }} ({{ $kabList->count() }})</li>
-                    @endforeach
-                </ul>
-                @endforeach
+                <head>
+                    <title>Grafik Jumlah per Provinsi</title>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                </head>
+
+                <body>
+                    <h2>Grafik Jumlah per Kecamatan</h2>
+                    <canvas id="barChart" width="600" height="400"></canvas>
+
+                    <script>
+                        const ctx = document.getElementById('barChart').getContext('2d');
+
+                        const barChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: @json($labels),
+                                datasets: [{
+                                    label: 'Jumlah per Provinsi',
+                                    data: @json($data),
+                                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                </body>
+
+                </html>
+
+
+
 
 
 
