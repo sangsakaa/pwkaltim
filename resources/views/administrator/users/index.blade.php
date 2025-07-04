@@ -28,13 +28,28 @@
     </div>
     <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
         <div class="  flex justify-between items-center ">
-            <a href="/users/create">tambah user</a>
+            <div>
+                <h2>Daftar User</h2>
+            </div>
+            <div>
+                @php
+                $isAdminProvinsi = auth()->user()->hasRole('admin-provinsi');
+                @endphp
+
+                <a href="{{ $isAdminProvinsi ? '/users/create' : '#' }}"
+                    class="inline-block px-2 py-1 rounded 
+        {{ $isAdminProvinsi ? 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer' : 'bg-gray-300 text-gray-600 cursor-not-allowed' }}"
+                    @if(!$isAdminProvinsi)
+                    title="Hanya bisa diakses oleh admin-provinsi"
+                    onclick="event.preventDefault();"
+                    @endif>
+                    Tambah User
+                </a>
+            </div>
         </div>
         <div>
-            <div class=" overflow-auto">
+            <div class=" overflow-auto mt-2">
                 <div class="container">
-                    <h2>Daftar User</h2>
-
                     <table class="table table-bordered table-striped w-full">
                         <thead>
                             <tr class=" border ">
@@ -42,7 +57,7 @@
                                 <th class=" text-left px-2">Nama</th>
                                 <th class=" text-left px-2">Email</th>
                                 <th class=" text-left px-2">Role</th>
-                                <th class=" text-left px-2">Domisil</th>
+                                <th class=" text-left px-2">Domisili</th>
                                 <th class=" text-left px-2">Aksi</th>
                             </tr>
                         </thead>
@@ -81,9 +96,21 @@
 
                                 </td>
                                 <td class=" px-2 text-left">
-                                    <a href="{{ route('users.assign-role', $user) }}" class="btn btn-sm btn-warning">
+                                    @php
+                                    $isAdminProvinsi = auth()->user()->hasRole('admin-provinsi');
+                                    @endphp
+
+                                    <a
+                                        href="{{ $isAdminProvinsi ? route('users.assign-role', $user) : '#' }}"
+                                        class="inline-block px-2 py-1 rounded 
+        {{ $isAdminProvinsi ? 'bg-yellow-500 hover:bg-yellow-600 text-white cursor-pointer' : 'bg-gray-300 text-gray-600 cursor-not-allowed' }}"
+                                        @if(!$isAdminProvinsi)
+                                        title="Hanya bisa diakses oleh admin-provinsi"
+                                        onclick="event.preventDefault();"
+                                        @endif>
                                         Atur Role
                                     </a>
+
                                 </td>
                             </tr>
                             @endforeach

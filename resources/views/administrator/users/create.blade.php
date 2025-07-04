@@ -64,7 +64,21 @@
                                 <input type="password" name="password_confirmation" class=" w-full rounded-md px-2 form-control" required>
                             </div>
 
-                            <button type="submit" class=" bg-blue-600 px-2 py-1">Simpan</button>
+                            <div class="flex gap-2">
+                                <a
+                                    href="/users/assign-role"
+                                    class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                                    Kembali
+                                </a>
+
+                                <button
+                                    type="submit"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                    Simpan
+                                </button>
+                            </div>
+
+
 
                         </form>
                     </div>

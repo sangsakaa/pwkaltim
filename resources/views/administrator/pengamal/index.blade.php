@@ -15,23 +15,65 @@
     <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
         <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
             <div class="  flex ">
-                <div>
-                    <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo">
-                </div>
-                <div class=" w-full py-2 px-2">
 
+                <div class="bg-green-800 flex flex-col items-center justify-center p-1">
+                    <img src="{{ asset('image/logo.png') }}" width="50" alt="Logo">
                 </div>
+
+                <div class="bg-green-800 w-full sm:grid sm:grid-cols-1 flex flex-col items-center text-white fw-semibold p-4">
+                    @php
+                    $user = auth()->user();
+
+                    if ($user->regency?->name) {
+                    if (Str::startsWith($user->regency->name, 'Kab.')) {
+                    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+                    } else {
+                    $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+                    }
+                    } elseif ($user->district?->name) {
+                    $wilayah = 'Kec. ' . $user->district->name;
+                    } elseif ($user->village?->name) {
+                    $wilayah = $user->village->name;
+                    } elseif ($user->province?->name) {
+                    $wilayah = $user->province->name;
+                    } else {
+                    $wilayah = 'Tidak diketahui';
+                    }
+                    @endphp
+                    <span class="uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
+                </div>
+
             </div>
         </div>
     </div>
     <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
         <div class="  sm:flex sm:justify-between grid grid-cols-1 gap-2">
             <div>
-                <a href="/pengamal/create">
+                <!-- <a href="/pengamal/create">
                     <button class=" text-white bg-blue-500 rounded hover:bg-blue-600 px-2 py-1">
                         Tambah Pengamal
                     </button>
+                </a> -->
+                @role('admin-provinsi')
+                <a href="/pengamal/create"
+                    class="inline-block text-white bg-blue-500 rounded hover:bg-blue-600 px-2 py-1">
+                    Tambah Pengamal
                 </a>
+                @endrole
+
+                @role('admin-kabupaten')
+                <a href="/pengamal/create"
+                    class="inline-block text-white bg-green-500 rounded hover:bg-green-600 px-2 py-1">
+                    Tambah Pengamal
+                </a>
+                @endrole
+
+                @role('admin-kecamatan')
+                <a href="/pengamal/create"
+                    class="inline-block text-white bg-purple-500 rounded hover:bg-purple-600 px-2 py-1">
+                    Tambah Pengamal
+                </a>
+                @endrole
                 <a href="/laporan" target="_blank">
                     <button class=" text-white bg-blue-500 rounded hover:bg-blue-600 px-2 py-1">
                         PDF

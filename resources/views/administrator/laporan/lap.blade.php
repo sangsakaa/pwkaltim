@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Data Pengamal</title>
+  <meta charset="UTF-8">
+  <title>View PDF</title>
 
   <style>
     @page {
@@ -274,10 +276,8 @@
     @endforeach
 
 
-    <!--  -->
+    <!-- logic umur -->
     @php
-
-
     $kategoriGlobal = [];
 
     foreach ($grouped as $kabupaten => $items) {
@@ -298,17 +298,24 @@
     $jk = strtolower($item->jenis_kelamin);
     $status = strtolower($item->status_perkawinan);
 
-    if ($jk === 'l') {
+
     if ($usia <= 12) {
       $kategoriGlobal[$kabupaten][$kecamatan]['Kanak-kanak']++;
       } elseif ($usia <=40 && $status !=='kawin' ) {
       $kategoriGlobal[$kabupaten][$kecamatan]['Remaja']++;
       } else {
+      if ($jk==='p' && $usia<=20 && $status==='kawin' ) {
+      $kategoriGlobal[$kabupaten][$kecamatan]['Ibu-ibu']++;
+      } elseif ($jk==='l' ) {
       $kategoriGlobal[$kabupaten][$kecamatan]['Bapak-bapak']++;
-      }
-      } elseif ($jk==='p' && $usia> 12) {
+      } elseif ($jk==='p' ) {
       $kategoriGlobal[$kabupaten][$kecamatan]['Ibu-ibu']++;
       }
+      }
+
+
+
+
       }
       }
       }
@@ -344,6 +351,7 @@
       </table>
       @endforeach
       <!--  -->
+
 
 
 

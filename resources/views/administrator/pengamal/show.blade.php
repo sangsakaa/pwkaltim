@@ -136,6 +136,7 @@
                                 Kembali
                             </button>
                         </a>
+
                         <form action="/pengamal/show/{{ $pengamal->id }}" method="post" class="form-delete">
                             @csrf
                             @method('DELETE')
@@ -143,6 +144,7 @@
                                 Hapus
                             </button>
                         </form>
+
                         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
