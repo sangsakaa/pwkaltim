@@ -12,7 +12,7 @@ class LaporanController extends Controller
     {
         $user = auth()->user();
 
-        $query = Pengamal::query();
+        $query = Pengamal::query()->orderby('kecamatan', 'asc');
 
         if ($user->hasRole('admin-kabupaten')) {
             $query->where('kabupaten', $user->code);

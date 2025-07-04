@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="shortcut icon" href="{{ asset('image/logo.png') }}" type="image/x-icon">
 
-    <title>{{ config('app.name', 'PWKALTIM') }}</title>
+    <title>PW KALTIM</title>
 
     <!-- Fonts -->
     <link

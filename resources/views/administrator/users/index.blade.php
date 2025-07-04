@@ -42,6 +42,7 @@
                                 <th class=" text-left px-2">Nama</th>
                                 <th class=" text-left px-2">Email</th>
                                 <th class=" text-left px-2">Role</th>
+                                <th class=" text-left px-2">Domisil</th>
                                 <th class=" text-left px-2">Aksi</th>
                             </tr>
                         </thead>
@@ -51,8 +52,6 @@
                                 <td class=" px-2 text-left">{{ $index + 1 }}</td>
                                 <td class=" px-2 text-left">{{ $user->name }}</td>
                                 <td class=" px-2 text-left">{{ $user->email }}</td>
-                                
-                                
                                 <td class=" px-2 text-left">
                                     @if($user->roles->isNotEmpty())
                                     @foreach($user->roles as $role)
@@ -61,6 +60,25 @@
                                     @else
                                     <span class="text-muted">Belum ada role</span>
                                     @endif
+                                </td>
+                                <td class=" px-2 text-left">
+                                    @php
+                                    if ($user->regency?->name) {
+                                    // Hilangkan 4 karakter pertama dan tambahkan 'Kabupaten '
+                                    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+                                    } elseif ($user->district?->name) {
+                                    // Tambahkan 'Kecamatan ' di depan nama
+                                    $wilayah = 'Kecamatan ' . $user->district->name;
+                                    } elseif ($user->village?->name) {
+                                    $wilayah = $user->village->name;
+                                    } elseif ($user->province?->name) {
+                                    $wilayah = $user->province->name;
+                                    } else {
+                                    $wilayah = 'Tidak diketahui';
+                                    }
+                                    @endphp
+                                    {{ $wilayah }}
+
                                 </td>
                                 <td class=" px-2 text-left">
                                     <a href="{{ route('users.assign-role', $user) }}" class="btn btn-sm btn-warning">

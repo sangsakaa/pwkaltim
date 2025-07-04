@@ -15,14 +15,34 @@
     <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
         <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
             <div class="  flex ">
-                <div>
-                    <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo">
+                <div class="bg-green-800 flex flex-col items-center justify-center p-1">
+                    <img src="{{ asset('image/logo.png') }}" width="50" alt="Logo">
                 </div>
-                <div class=" w-full flex items-center justify-center">
-                    <marquee behavior="scroll" direction="left">
-                        Selamat datang di website kami!
-                    </marquee>
+
+                <div class="bg-green-800 w-full sm:grid sm:grid-cols-1 flex flex-col items-center text-white fw-semibold p-4">
+                    @php
+                    if ($user->regency?->name) {
+                    // Hilangkan 4 karakter pertama dan tambahkan 'Kabupaten '
+                    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+                    } elseif ($user->district?->name) {
+                    // Tambahkan 'Kecamatan ' di depan nama
+                    $wilayah = 'Kec.' . $user->district->name;
+                    } elseif ($user->village?->name) {
+                    $wilayah = $user->village->name;
+                    } elseif ($user->province?->name) {
+                    $wilayah = $user->province->name;
+                    } else {
+                    $wilayah = 'Tidak diketahui';
+                    }
+                    @endphp
+                    <span class=" uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
+                    <!-- <div class="kop-surat">
+                        <div class="yayasan text-lg font-bold">YAYASAN PERJUANGAN WAHIDIYAH DAN PONDOK PESANTREN KEDUNGLO</div>
+                        <div class="departemen text-base mt-1">DEPARTEMEN PEMBINA WAHIDIYAH<br><span class="uppercase semibold text-lg"></span></div>
+                        <div class="akta text-sm mt-1">AKTA NOMOR 09 TAHUN 2011 KEMENKUMHAM RI NOMOR : AHU-9371.AH.01.04 TAHUN 2011</div>
+                    </div> -->
                 </div>
+
             </div>
         </div>
     </div>
@@ -30,9 +50,16 @@
         <div class="flex items-center justify-center">
             <h1 class="text-2xl font-bold">Selamat Datang di Dashboard Administrator</h1>
         </div>
-        <div class="mt-4">
+        <div class="">
             <p class="text-gray-700">Ini adalah halaman dashboard untuk administrator. Anda dapat mengelola data pengamal
                 dan melakukan berbagai tugas administratif lainnya.</p>
+            @php
+            $wilayah = $user->province->name
+            ?? $user->regency->name
+            ?? $user->district->name
+            ?? $user->village->name
+            ?? 'Tidak diketahui';
+            @endphp
         </div>
     </div>
     <div class=" mt-2  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
@@ -42,11 +69,10 @@
                 <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem: <span class="" style="font-size: large;">{{ $dataPengamal}}</span></p>
             </div>
             <div class="p-4 bg-green-100 rounded-md shadow">
-                <!DOCTYPE html>
-                <html>
+
 
                 <head>
-                    <title>Grafik Jumlah per Provinsi</title>
+                    <title>Grafik Jumlah Se Kabupaten</title>
                     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                 </head>
 
@@ -55,27 +81,47 @@
                     <canvas id="barChart" width="600" height="400"></canvas>
 
                     <script>
+                        const labels = @json($labels);
+                        const data = @json($data);
+
+                        // Fungsi untuk membuat warna acak
+                        function getRandomColor() {
+                            const r = Math.floor(Math.random() * 200);
+                            const g = Math.floor(Math.random() * 200);
+                            const b = Math.floor(Math.random() * 200);
+                            return `rgba(${r}, ${g}, ${b}, 0.7)`;
+                        }
+
+                        // Buat array warna acak untuk setiap bar
+                        const backgroundColors = labels.map(() => getRandomColor());
+
                         const ctx = document.getElementById('barChart').getContext('2d');
 
                         const barChart = new Chart(ctx, {
-                            type: 'bar',
+                            type: 'bar', // Jenis grafik bar
                             data: {
-                                labels: @json($labels),
+                                labels: labels,
                                 datasets: [{
-                                    label: 'Jumlah per Provinsi',
-                                    data: @json($data),
-                                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    label: 'Jumlah per Kecamatan',
+                                    data: data,
+                                    backgroundColor: backgroundColors,
+                                    borderColor: backgroundColors.map(color => color.replace('0.7', '1')), // Versi opak untuk border
                                     borderWidth: 1
                                 }]
                             },
                             options: {
+                                indexAxis: 'y', // Chart horizontal
                                 responsive: true,
                                 scales: {
-                                    y: {
+                                    x: {
                                         beginAtZero: true,
                                         ticks: {
                                             precision: 0
+                                        }
+                                    },
+                                    y: {
+                                        ticks: {
+                                            autoSkip: false
                                         }
                                     }
                                 }
@@ -83,22 +129,6 @@
                         });
                     </script>
                 </body>
-
-                </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             </div>
             <div class="p-4 bg-yellow-100 rounded-md shadow">

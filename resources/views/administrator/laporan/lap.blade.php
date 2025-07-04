@@ -167,67 +167,186 @@
     }
   </style>
 
-  <table class=" kop">
-    <tr class="h1 ">
-      <td class="logo">
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}" height="140px" width="145px" alt="Example Image">
-      </td>
-      <td>
-        <div class="kop-surat">
-          <div class="teks">
-            <div class="yayasan">YAYASAN PERJUANGAN WAHIDIYAH DAN PONDOK PESANTREN KEDUNGLO</div>
-            <div class="departemen">DEPARTEMEN PEMBINA WAHIDIYAH<br>PROVINSI KALIMANTAN TIMUR</div>
-            <div class="akta">AKTA NOMOR 09 TAHUN 2011 KEMENKUMHAM RI NOMOR : AHU-9371.AH.01.04 TAHUN 2011</div>
-          </div>
-          <div class="alamat">
-            Alamat Sekretariat : Jalan Talang Sari RT. 01 Kelurahan Tanah Merah Kecamatan Samarinda Utara Kota Samarinda Kalimantan Timur
-          </div>
-        </div>
-      </td>
-    </tr>
-  </table>
-  <h2>DATA PENGAMAL KALIMANTAN TIMUR</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>No</th>
-        <!-- <th>NIK</th> -->
-        <th>Nama Lengkap</th>
-        <th>Tempat, Tanggal Lahir</th>
-        <th>Jenis Kelamin</th>
-        <th>Agama</th>
-        <th>Alamat Lengkap</th>
-        <th>No HP</th>
-        <th>Status Perkawinan</th>
-        <th>Pekerjaan</th>
+  @php
+  use Carbon\Carbon;
 
-      </tr>
-    </thead>
-    <tbody>
-      @foreach ($pengamal as $i => $d)
-      <tr>
-        <td>{{ $i + 1 }}</td>
-        <!-- <td>{{ $d->nik }}</td> -->
-        <td>{{ $d->nama_lengkap }}</td>
-        <td>{{ $d->tempat_lahir }}, {{ \Carbon\Carbon::parse($d->tanggal_lahir)->format('d-m-Y') }}</td>
-        <td>{{ $d->jenis_kelamin }}</td>
-        <td>{{ $d->agama }}</td>
+  // Grup berdasarkan nama kabupaten
+  $grouped = $pengamal->groupBy(fn($item) => $item->regency->name ?? 'Tanpa Kabupaten');
 
+  // Fungsi untuk menentukan kategori
+  function kategori($item) {
+  $usia = Carbon::parse($item->tanggal_lahir)->age;
+
+  if (strtolower($item->jenis_kelamin) == 'l') {
+  if ($usia <= 12) {
+    return 'Kanak-kanak' ;
+    } elseif ($usia <=40 && strtolower($item->status_perkawinan) != 'menikah') {
+    return 'Remaja';
+    } else {
+    return 'Bapak-bapak';
+    }
+    } else {
+    return 'Ibu-ibu';
+    }
+    }
+    @endphp
+
+    <!-- HEADER -->
+    <table class="kop">
+      <tr class="h1">
+        <td class="logo">
+          <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}" height="140px" width="145px" alt="Example Image">
+        </td>
         <td>
-          RT {{ $d->rt }}/RW {{ $d->rw }},
-          Desa {{ $d->village->name ??'-' }},
-          Kec. {{ $d->district->name }},
-          Kab. {{ $d->regency->name }},
-          Prov. {{ $d->province->name }}
-        </td>
-        <td>{{ $d->no_hp }}</td>
-        <td>{{ $d->status_perkawinan }}</td>
-        <td>{{ $d->pekerjaan }}</td>
+          <div class="kop-surat">
+            <div class="teks">
+              <div class="yayasan">YAYASAN PERJUANGAN WAHIDIYAH DAN PONDOK PESANTREN KEDUNGLO</div>
+              <div class="departemen">DEPARTEMEN PEMBINA WAHIDIYAH<br>PROVINSI KALIMANTAN TIMUR</div>
+              <div class="akta">AKTA NOMOR 09 TAHUN 2011 KEMENKUMHAM RI NOMOR : AHU-9371.AH.01.04 TAHUN 2011</div>
+            </div>
+            <div class="alamat">
+              Alamat Sekretariat : Jalan Talang Sari RT. 01 Kelurahan Tanah Merah Kecamatan Samarinda Utara Kota Samarinda Kalimantan Timur
+            </div>
+          </div>
         </td>
       </tr>
+    </table>
+    <h2>DATA PENGAMAL KALIMANTAN TIMUR </h2>
+    @foreach ($grouped as $kabupaten => $items)
+    <h3>Data Pengamal - {{ $kabupaten }}</h3>
+
+
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama Lengkap</th>
+          <th>Tempat, Tanggal Lahir</th>
+          <th>Jenis Kelamin</th>
+          <th>Agama</th>
+          <th>Alamat Lengkap</th>
+          <th>No HP</th>
+          <th>Status Perkawinan</th>
+          <th>Pekerjaan</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach ($items as $i => $d)
+        <tr>
+          <td>{{ $i + 1 }}</td>
+          <td>{{ $d->nama_lengkap }}</td>
+          <td>{{ $d->tempat_lahir }}, {{ Carbon::parse($d->tanggal_lahir)->format('d-m-Y') }}</td>
+          <td>{{ $d->jenis_kelamin }}</td>
+          <td>{{ $d->agama }}</td>
+          <td>
+            RT {{ $d->rt }}/RW {{ $d->rw }},
+            Desa {{ $d->village->name ?? '-' }},
+            Kec. {{ $d->district->name ?? '-' }},
+            Kab. {{ $d->regency->name ?? '-' }},
+            Prov. {{ $d->province->name ?? '-' }}
+          </td>
+          <td>{{ $d->no_hp }}</td>
+          <td>{{ $d->status_perkawinan }}</td>
+          <td>{{ $d->pekerjaan }}</td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+
+    <!-- Rekapitulasi Kategori -->
+    @php
+    $rekap = [
+    'Kanak-kanak' => 0,
+    'Remaja' => 0,
+    'Bapak-bapak' => 0,
+    'Ibu-ibu' => 0,
+    ];
+
+    foreach ($items as $orang) {
+    $kategori = kategori($orang);
+    $rekap[$kategori]++;
+    }
+    @endphp
+
+
+
+    <br><br>
+    @endforeach
+
+
+    <!--  -->
+    @php
+
+
+    $kategoriGlobal = [];
+
+    foreach ($grouped as $kabupaten => $items) {
+    foreach ($items->groupBy('district.name') as $kecamatan => $kecamatanItems) {
+    if (!isset($kategoriGlobal[$kabupaten])) {
+    $kategoriGlobal[$kabupaten] = [];
+    }
+
+    $kategoriGlobal[$kabupaten][$kecamatan] = [
+    'Kanak-kanak' => 0,
+    'Remaja' => 0,
+    'Bapak-bapak' => 0,
+    'Ibu-ibu' => 0,
+    ];
+
+    foreach ($kecamatanItems as $item) {
+    $usia = Carbon::parse($item->tanggal_lahir)->age;
+    $jk = strtolower($item->jenis_kelamin);
+    $status = strtolower($item->status_perkawinan);
+
+    if ($jk === 'l') {
+    if ($usia <= 12) {
+      $kategoriGlobal[$kabupaten][$kecamatan]['Kanak-kanak']++;
+      } elseif ($usia <=40 && $status !=='kawin' ) {
+      $kategoriGlobal[$kabupaten][$kecamatan]['Remaja']++;
+      } else {
+      $kategoriGlobal[$kabupaten][$kecamatan]['Bapak-bapak']++;
+      }
+      } elseif ($jk==='p' && $usia> 12) {
+      $kategoriGlobal[$kabupaten][$kecamatan]['Ibu-ibu']++;
+      }
+      }
+      }
+      }
+      @endphp
+
+      <h2>Rekap Jumlah Pengamal Berdasarkan Kategori Usia per Kabupaten dan Kecamatan</h2>
+
+      @foreach ($kategoriGlobal as $kabupaten => $kecamatans)
+      <h3>{{ $kabupaten }}</h3>
+      <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Kecamatan</th>
+            <th>Kanak-kanak</th>
+            <th>Remaja</th>
+            <th>Bapak-bapak</th>
+            <th>Ibu-ibu</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach ($kecamatans as $kecamatan => $data)
+          <tr>
+            <td>{{ $kecamatan }}</td>
+            <td>{{ $data['Kanak-kanak'] }}</td>
+            <td>{{ $data['Remaja'] }}</td>
+            <td>{{ $data['Bapak-bapak'] }}</td>
+            <td>{{ $data['Ibu-ibu'] }}</td>
+            <td>{{ array_sum($data) }}</td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
       @endforeach
-    </tbody>
-  </table>
+      <!--  -->
+
+
+
 
 </body>
 

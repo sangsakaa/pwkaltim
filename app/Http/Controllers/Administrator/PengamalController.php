@@ -21,8 +21,9 @@ class PengamalController extends Controller
     {
         $user = auth()->user();
 
+
         // Gunakan query builder dari awal
-        $query = Pengamal::query();
+        $query = Pengamal::query()->orderby('kecamatan', 'asc');
 
         // Filter berdasarkan role
         if ($user->hasRole('admin-kabupaten')) {
