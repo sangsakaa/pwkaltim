@@ -33,7 +33,7 @@
             </div>
             <div>
                 @php
-                $isAdminProvinsi = auth()->user()->hasRole('admin-provinsi');
+                $isAdminProvinsi = auth()->user()->hasRole('admin-kabupaten');
                 @endphp
 
                 <a href="{{ $isAdminProvinsi ? '/users/create' : '#' }}"

@@ -6,10 +6,11 @@
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
-            <div class=" bg-green-800 py-2">
+            <div class=" bg-green-800 mb-4 ">
                 <center>
-                    <img src="{{ asset('image/logo.png') }}" width="120" alt="Logo">
-                    <p class=" text-white bold text-2xl">YPW KALIMANTAN TIMUR</p>
+                    <img src="{{ asset('image/logo.png') }}" width="120" alt="Logo" class="mt-4 py-2">
+                    <p class=" text-white bold text-lg font-semibold">SIPEDAL</p>
+                    <p class=" text-white bold text-m uppercase mb-4">Sistem Pendataan Pengamal</p>
                 </center>
             </div>
             <div class="grid gap-6">
