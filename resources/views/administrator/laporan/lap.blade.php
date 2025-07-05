@@ -7,6 +7,8 @@
   <meta charset="UTF-8">
   <title>View PDF</title>
 
+
+
   <style>
     @page {
       margin: 5mm 5mm 5mm 5mm;
@@ -194,16 +196,43 @@
     @endphp
 
     <!-- HEADER -->
+    <style>
+      .page-break {
+        page-break-after: always;
+      }
+    </style>
     <table class="kop">
       <tr class="h1">
         <td class="logo">
           <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}" height="140px" width="145px" alt="Example Image">
         </td>
         <td>
+          @php
+          $user = auth()->user();
+
+          if ($user->regency?->name) {
+          if (Str::startsWith($user->regency->name, 'Kab.')) {
+          $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+          } else {
+          $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+          }
+          } elseif ($user->district?->name) {
+          $wilayah = 'Kec. ' . $user->district->name;
+          } elseif ($user->village?->name) {
+          $wilayah = $user->village->name;
+          } elseif ($user->province?->name) {
+          $wilayah = $user->province->name;
+          } else {
+          $wilayah = 'Tidak diketahui';
+          }
+          @endphp
+
+
           <div class="kop-surat">
             <div class="teks">
               <div class="yayasan">YAYASAN PERJUANGAN WAHIDIYAH DAN PONDOK PESANTREN KEDUNGLO</div>
-              <div class="departemen">DEPARTEMEN PEMBINA WAHIDIYAH<br>PROVINSI KALIMANTAN TIMUR</div>
+              <div class="departemen">DEPARTEMEN PEMBINA WAHIDIYAH<br><span>{{ Str::upper($wilayah) }}</span>
+              </div>
               <div class="akta">AKTA NOMOR 09 TAHUN 2011 KEMENKUMHAM RI NOMOR : AHU-9371.AH.01.04 TAHUN 2011</div>
             </div>
             <div class="alamat">
@@ -213,11 +242,31 @@
         </td>
       </tr>
     </table>
-    <h2>DATA PENGAMAL KALIMANTAN TIMUR </h2>
+    @php
+    $user = auth()->user();
+
+    if ($user->regency?->name) {
+    if (Str::startsWith($user->regency->name, 'Kab.')) {
+    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+    } else {
+    $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+    }
+    } elseif ($user->district?->name) {
+    $wilayah = 'Kec. ' . $user->district->name;
+    } elseif ($user->village?->name) {
+    $wilayah = $user->village->name;
+    } elseif ($user->province?->name) {
+    $wilayah = $user->province->name;
+    } else {
+    $wilayah = 'Tidak diketahui';
+    }
+    @endphp
+
+
+
+    <h2>DATA PENGAMAL <span>{{ Str::upper($wilayah) }} <br></h2>
     @foreach ($grouped as $kabupaten => $items)
     <h3>Data Pengamal - {{ $kabupaten }}</h3>
-
-
     <table border="1" cellpadding="5" cellspacing="0">
       <thead>
         <tr>
@@ -254,7 +303,6 @@
         @endforeach
       </tbody>
     </table>
-
     <!-- Rekapitulasi Kategori -->
     @php
     $rekap = [
@@ -272,7 +320,6 @@
 
 
 
-    <br><br>
     @endforeach
 
 
@@ -312,43 +359,54 @@
       $kategoriGlobal[$kabupaten][$kecamatan]['Ibu-ibu']++;
       }
       }
-
-
-
-
       }
       }
       }
       @endphp
-
+      <div class="page-break">
+      </div>
       <h2>Rekap Jumlah Pengamal Berdasarkan Kategori Usia per Kabupaten dan Kecamatan</h2>
-
       @foreach ($kategoriGlobal as $kabupaten => $kecamatans)
-      <h3>{{ $kabupaten }}</h3>
-      <table border="1" cellpadding="5" cellspacing="0">
-        <thead>
-          <tr>
-            <th>Kecamatan</th>
-            <th>Kanak-kanak</th>
-            <th>Remaja</th>
-            <th>Bapak-bapak</th>
-            <th>Ibu-ibu</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach ($kecamatans as $kecamatan => $data)
-          <tr>
-            <td>{{ $kecamatan }}</td>
-            <td>{{ $data['Kanak-kanak'] }}</td>
-            <td>{{ $data['Remaja'] }}</td>
-            <td>{{ $data['Bapak-bapak'] }}</td>
-            <td>{{ $data['Ibu-ibu'] }}</td>
-            <td>{{ array_sum($data) }}</td>
-          </tr>
-          @endforeach
-        </tbody>
-      </table>
+      <style>
+        .splite {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          /* 3 kolom sama besar */
+          gap: 20px;
+          /* Jarak antar item */
+        }
+      </style>
+      <div class=" splite">
+        <h3>{{ $kabupaten }}</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th rowspan="2">Kecamatan</th>
+              <th colspan="4">Kelompok </th>
+              <th rowspan="2">Total</th>
+            </tr>
+            <tr>
+              <th>Kanak-kanak</th>
+              <th>Remaja</th>
+              <th>Bapak-bapak</th>
+              <th>Ibu-ibu</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($kecamatans as $kecamatan => $data)
+            <tr>
+              <td>{{ $kecamatan }}</td>
+              <td>{{ $data['Kanak-kanak'] }}</td>
+              <td>{{ $data['Remaja'] }}</td>
+              <td>{{ $data['Bapak-bapak'] }}</td>
+              <td>{{ $data['Ibu-ibu'] }}</td>
+              <td>{{ array_sum($data) }}</td>
+            </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
       @endforeach
       <!--  -->
 

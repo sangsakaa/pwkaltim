@@ -30,7 +30,8 @@ class LaporanController extends Controller
         ];
 
         $pdf = Pdf::loadView('administrator.laporan.lap', $data)
-            ->setPaper('F4', 'landscape');
+            ->setPaper([0, 0, 595.28, 935.43], 'landscape'); // F4 size in points
+        // ->setPaper([0, 0, 595.28, 841.89], 'landscape');
 
         // Ganti download dengan stream agar hanya tampil di browser
         return $pdf->stream('laporan-data-pengamal.pdf');

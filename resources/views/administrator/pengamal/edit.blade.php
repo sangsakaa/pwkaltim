@@ -91,7 +91,7 @@
 
                             <div class="mb-3">
                                 <label for="province" class="w-full">Provinsi</label>
-                                <select class="w-full rounded-md" id="province" name="province_code">
+                                <select class="w-full rounded-md" id="province" name="province_code" required>
                                     <option value="">Pilih Provinsi</option>
                                     @foreach ($provinces as $province)
                                     <option value="{{ $province->code }}" {{ old('province_code', $pengamal->provinsi) == $province->code ? 'selected' : '' }}>
@@ -103,24 +103,26 @@
 
                             <div class="mb-3">
                                 <label for="regency" class="w-full">Kabupaten / Kota</label>
-                                <select class="w-full rounded-md" id="regency" name="regency_code">
+                                <select class="w-full rounded-md" id="regency" name="regency_code" required>
                                     <option value="">Pilih Kabupaten / Kota</option>
                                 </select>
                             </div>
 
                             <div class="mb-3">
                                 <label for="district" class="w-full">Kecamatan</label>
-                                <select class="w-full rounded-md" id="district" name="district_code">
+                                <select class="w-full rounded-md" id="district" name="district_code" required>
                                     <option value="">Pilih Kecamatan</option>
                                 </select>
                             </div>
 
                             <div class="mb-3">
                                 <label for="village" class="w-full">Desa / Kelurahan</label>
-                                <select class="w-full rounded-md" id="village" name="village_code">
+                                <select class="w-full rounded-md" id="village" name="village_code" required>
                                     <option value="">Pilih Desa / Kelurahan</option>
                                 </select>
                             </div>
+
+
                         </div>
                     </div>
 

@@ -2,7 +2,27 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <h2 class="text-xl font-semibold leading-tight">
-                {{ __('Dashboard') }}
+
+                @php
+                if ($user->regency?->name) {
+                if (Str::startsWith($user->regency->name, 'Kab.')) {
+                $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+                } else {
+                $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+                }
+                } elseif ($user->district?->name) {
+                $wilayah = 'Kec. ' . $user->district->name;
+                } elseif ($user->village?->name) {
+                $wilayah = $user->village->name;
+                } elseif ($user->province?->name) {
+                $wilayah = $user->province->name;
+                } else {
+                $wilayah = 'Tidak diketahui';
+                }
+                @endphp
+
+                @section('title', 'PW ' . $wilayah)
+
             </h2>
             <x-button target="_blank" href="https://github.com/kamona-wd/kui-laravel-breeze" variant="black"
                 class="justify-center max-w-xs gap-2">
