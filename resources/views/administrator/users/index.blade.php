@@ -97,7 +97,7 @@
                                 </td>
                                 <td class=" px-2 text-left">
                                     @php
-                                    $isAdminProvinsi = auth()->user()->hasRole('admin-provinsi');
+                                    $isAdminProvinsi = auth()->user()->hasRole('admin-kabupaten');
                                     @endphp
 
                                     <a
