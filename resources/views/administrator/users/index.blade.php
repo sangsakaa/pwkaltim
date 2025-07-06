@@ -30,6 +30,7 @@
         <div class="  flex justify-between items-center ">
             <div>
                 <h2>Daftar User</h2>
+                <a href="/users/create">user</a>
             </div>
             <div>
                 @php
