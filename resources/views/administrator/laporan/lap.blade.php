@@ -38,9 +38,7 @@
       text-align: left;
     }
 
-    th {
-      background-color: #f2f2f2;
-    }
+
 
     h2 {
       text-align: center;
@@ -106,7 +104,7 @@
     }
 
     #logo {
-      margin-right: 20px;
+
       text-align: center;
       /* Adjust this value to control the space between logo and title */
     }
@@ -165,9 +163,25 @@
     }
 
     th {
-      background-color: #f2f2f2;
+
       font-weight: bold;
       border: solid 1px;
+    }
+
+    table tr:nth-child(even) {
+      background-color: #f2f2f2;
+      /* abu-abu muda */
+    }
+
+    table tr:hover {
+      background-color: #ddd;
+      /* efek hover */
+    }
+
+    table th,
+    table td {
+
+      padding: 8px;
     }
   </style>
 
@@ -204,7 +218,7 @@
     <table class="kop">
       <tr class="h1">
         <td class="logo">
-          <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}" height="140px" width="145px" alt="Example Image">
+          <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}" height="145px" width="145px" alt="Example Image" style="margin-left: 30px;">
         </td>
         <td>
           @php
@@ -261,34 +275,31 @@
     $wilayah = 'Tidak diketahui';
     }
     @endphp
-
-
-
     <h2>DATA PENGAMAL <span>{{ Str::upper($wilayah) }} <br></h2>
     @foreach ($grouped as $kabupaten => $items)
     <h3>Data Pengamal - {{ $kabupaten }}</h3>
     <table border="1" cellpadding="5" cellspacing="0">
       <thead>
-        <tr>
-          <th>No</th>
-          <th>Nama Lengkap</th>
-          <th>Tempat, Tanggal Lahir</th>
-          <th>Jenis Kelamin</th>
-          <th>Agama</th>
-          <th>Alamat Lengkap</th>
-          <th>No HP</th>
-          <th>Status Perkawinan</th>
-          <th>Pekerjaan</th>
+        <tr style="background-color: #076943; color: white;">
+          <th style="text-align: center;">No</th>
+          <th style="text-align: center;">Nama Lengkap</th>
+          <th style="text-align: center;">Tempat, Tanggal Lahir</th>
+          <th style="text-align: center;">Jenis Kelamin</th>
+          <th style="text-align: center;">Agama</th>
+          <th style="text-align: center;">Alamat Lengkap</th>
+          <th style="text-align: center;">No HP</th>
+          <th style="text-align: center;">Status Perkawinan</th>
+          <th style="text-align: center;">Pekerjaan</th>
         </tr>
       </thead>
       <tbody>
         @foreach ($items as $i => $d)
-        <tr>
+        <tr class="{{ $loop->even ? 'bg-gray-100' : '' }}">
           <td>{{ $i + 1 }}</td>
-          <td>{{ $d->nama_lengkap }}</td>
+          <td style=" width:200px">{{ $d->nama_lengkap }}</td>
           <td>{{ $d->tempat_lahir }}, {{ Carbon::parse($d->tanggal_lahir)->format('d-m-Y') }}</td>
-          <td>{{ $d->jenis_kelamin }}</td>
-          <td>{{ $d->agama }}</td>
+          <td style="text-align: center;">{{ $d->jenis_kelamin }}</td>
+          <td style="text-align: center;">{{ $d->agama }}</td>
           <td>
             RT {{ $d->rt }}/RW {{ $d->rw }},
             Desa {{ $d->village->name ?? '-' }},
@@ -296,13 +307,15 @@
             Kab. {{ $d->regency->name ?? '-' }},
             Prov. {{ $d->province->name ?? '-' }}
           </td>
-          <td>{{ $d->no_hp }}</td>
+          <td style=" width:100px">{{ $d->no_hp }}</td>
           <td>{{ $d->status_perkawinan }}</td>
           <td>{{ $d->pekerjaan }}</td>
         </tr>
         @endforeach
       </tbody>
     </table>
+
+
     <!-- Rekapitulasi Kategori -->
     @php
     $rekap = [
@@ -317,9 +330,6 @@
     $rekap[$kategori]++;
     }
     @endphp
-
-
-
     @endforeach
 
 
@@ -380,16 +390,17 @@
         <h3>{{ $kabupaten }}</h3>
         <table border="1" cellpadding="5" cellspacing="0">
           <thead>
-            <tr>
-              <th rowspan="2">Kecamatan</th>
-              <th colspan="4">Kelompok </th>
-              <th rowspan="2">Total</th>
+            <tr style="background-color: #076943; color: white; border: solid 1px; border:black">
+              <th rowspan="2" style="text-align: center; vertical-align: middle;">Kecamatan</th>
+              <th colspan="4" style="text-align: center;">Kelompok</th>
+              <th rowspan="2" style="text-align: center; vertical-align: middle;">Total</th>
+
             </tr>
-            <tr>
-              <th>Kanak-kanak</th>
-              <th>Remaja</th>
-              <th>Bapak-bapak</th>
-              <th>Ibu-ibu</th>
+            <tr style="background-color: #076943;   color: white;">
+              <th style="text-align: center; vertical-align: middle;">Kanak-kanak</th>
+              <th style="text-align: center; vertical-align: middle;">Remaja</th>
+              <th style="text-align: center; vertical-align: middle;">Bapak-bapak</th>
+              <th style="text-align: center; vertical-align: middle;">Ibu-ibu</th>
 
             </tr>
           </thead>
@@ -397,11 +408,11 @@
             @foreach ($kecamatans as $kecamatan => $data)
             <tr>
               <td>{{ $kecamatan }}</td>
-              <td>{{ $data['Kanak-kanak'] }}</td>
-              <td>{{ $data['Remaja'] }}</td>
-              <td>{{ $data['Bapak-bapak'] }}</td>
-              <td>{{ $data['Ibu-ibu'] }}</td>
-              <td>{{ array_sum($data) }}</td>
+              <td style="text-align: center; vertical-align: middle;">{{ $data['Kanak-kanak'] }}</td>
+              <td style="text-align: center; vertical-align: middle;">{{ $data['Remaja'] }}</td>
+              <td style="text-align: center; vertical-align: middle;">{{ $data['Bapak-bapak'] }}</td>
+              <td style="text-align: center; vertical-align: middle;">{{ $data['Ibu-ibu'] }}</td>
+              <td style="text-align: center; vertical-align: middle;">{{ array_sum($data) }}</td>
             </tr>
             @endforeach
           </tbody>
@@ -409,10 +420,6 @@
       </div>
       @endforeach
       <!--  -->
-
-
-
-
 
 </body>
 
