@@ -24,10 +24,10 @@ class DatabaseSeeder extends Seeder
     // provinsi
     public function run(): void
     {
-        // $this->call(ProvincesTableSeeder::class);
-        // $this->call(RegenciesTableSeeder::class);
-        // $this->call(DistrictsTableSeeder::class);
-        // $this->call(VillagesTableSeeder::class);
+        $this->call(ProvincesTableSeeder::class);
+        $this->call(RegenciesTableSeeder::class);
+        $this->call(DistrictsTableSeeder::class);
+        $this->call(VillagesTableSeeder::class);
         // $this->call(PengamalSeeder::class);
         $this->call(PermissionSeeder::class);
     }
