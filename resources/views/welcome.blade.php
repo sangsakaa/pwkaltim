@@ -52,16 +52,11 @@
                     @if (Route::has('login'))
                     <a href="/" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Home</a>
                     <a href="#home" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">About</a>
-                    <a href="#brosur" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Brosur</a>
-                    <a href="#persyaratan" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Persyaratan</a>
+                    <a href="#profil" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Profil</a>
+                    <a href="#persyaratan" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Informasi</a>
                     @auth
                     <a href="{{ url('/dashboard') }}" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                    @else
-                    <a href="{{ route('login') }}" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Masuk</a>
-                    @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium">Daftar</a>
 
-                    @endif
                     @endauth
 
                     @endif
@@ -74,17 +69,14 @@
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 @if (Route::has('login'))
                 <a href="#home" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Home</a>
-                <a href="#persyaratan" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Persyaratan</a>
+                <a href="#persyaratan" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Informasi</a>
                 @auth
                 <a href="{{ url('/dashboard') }}" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Dashboard</a>
 
                 @else
                 <a href="{{ route('login') }}" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Masuk</a>
 
-                @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700">Daftar</a>
 
-                @endif
                 @endauth
 
 
@@ -125,65 +117,53 @@
             <div class=" grid grid-cols-1 md:grid-cols-1 gap-6 mb-4 mt-4">
                 <div class="p-6 bg-white shadow rounded-lg">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4">Selamat Datang di YPW KALIMANTAN TIMUR</h2>
-                    <p class="text-gray-600 mb-4">Sistem Pendaftaran Online untuk Calon Peserta Didik Baru.</p>
-                    <p class="text-gray-600 mb-4">Kami menyediakan berbagai jenjang paket pendidikan untuk memenuhi kebutuhan belajar Anda.</p>
-                    <a href="#persyaratan" class="text-blue-600 hover:underline">Lihat Persyaratan Pendaftaran</a>
+                    <p class="text-gray-600 mb-4">Sistem Pengelolaan Data Pengamal Sekalimantan Timur</p>
+                    <!-- <a href="#persyaratan" class="text-blue-600 hover:underline">Lihat Persyaratan Pendaftaran</a> -->
                 </div>
-                <!-- <div class="p-6 bg-white shadow rounded-lg">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Paket Pendidikan</h2>
-                    <p class="text-gray-600 mb-4">Pilih paket pendidikan yang sesuai dengan kebutuhan Anda.</p>
-                    <a href="#persyaratan" class="text-blue-600 hover:underline">Lihat Paket Pendidikan</a>
-                    <div class="mt-4 grid grid-cols-2 md:grid-cols-2 gap-4">
-                        <div>
-                            <a href="{{ route('login') }}" class=" text-center text-white block px-3 py-2 rounded-md text-base font-medium bg-blue-700">Masuk</a>
-                        </div>
-                        <div>
-                            <a href="{{ route('register') }}" class=" text-center text-white block px-3 py-2 rounded-md text-base font-medium bg-blue-700">Daftar</a>
-                        </div>
-                    </div>
-                </div> -->
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="p-6 bg-white shadow rounded-lg">
                     <h3 class=" font-bold text-gray-800 mb-2">
-                        <span class="text-xl">DEPARTEMEN PEMBINAAN DAN PENYIARAN WAHIDIYAH</span> <br>
+                        <span class="text-xl">DEPARTEMEN PENYIARAN DAN PEMBINA WAHIDIYAH (DPPW)</span> <br>
                         <span></span>
                     </h3>
                     <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
                 </div>
                 <div class="p-6 bg-white shadow rounded-lg">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA WANITA WAHIDIYAH (DPWW)</h3>
+                    <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
+                </div>
+                <div class="p-6 bg-white shadow rounded-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA REMAJA WAHIDIYAH (DPRW)</h3>
+                    <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
+                </div>
+                <div class="p-6 bg-white shadow rounded-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA KANAK-KANAK WAHIDIYAH (DPKW)</h3>
+                    <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
+                </div>
+                <!-- <div class="p-6 bg-white shadow rounded-lg">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA KANAK KANAK WAHIDIYAH</h3>
                     <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
                 </div>
                 <div class="p-6 bg-white shadow rounded-lg">
                     <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA</h3>
                     <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
-                </div>
-                <div class="p-6 bg-white shadow rounded-lg">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA</h3>
-                    <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
-                </div>
-                <div class="p-6 bg-white shadow rounded-lg">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA</h3>
-                    <p class="text-gray-600">Description of Paket B Setara SMP.</p>
-                </div>
-                <div class="p-6 bg-white shadow rounded-lg">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA</h3>
-                    <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
-                </div>
+                </div> -->
             </div>
         </div>
     </section>
-    <section id="brosur" class="py-2 bg-gray-100">
+    <section id="profil" class="py-2 bg-gray-100">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-20 ">Brosur Pendaftaran</h2>
-            <p class="text-gray-600 mb-6">Persyaratan Pendaftaran yang wajib di penuhi.</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-20 ">Profil</h2>
+            <p class="text-gray-600 mb-6">Profil Yayasan</p>
             <div class=" grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div>
-                    <img src="images/front.jpg" alt="">
+                <div style="text-align: justify;">
+
+
+
                 </div>
-                <div>
-                    <img src="images/back.jpg" alt="">
+                <div style="text-align: justify;">
+
                 </div>
 
             </div>
@@ -191,116 +171,11 @@
     </section>
     <section class="py-2 bg-gray-100" id="persyaratan">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-20 ">Persyaratan Pendaftaran</h2>
-            <p class="text-gray-600 mb-6">Persyaratan Pendaftaran yang wajib di penuhi.</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-20 ">Informasi Seputar Pejuangan</h2>
+            <p class="text-gray-600 mb-6">Informasi Seputar Pejuangan</p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 bg-white shadow rounded-lg">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">SD</h3>
-                    Persyaratan Pendaftaran Wajib dipernuhi !!! <br>
-                    <span class=" font-semibold">1. Formulir Pendaftaran <br></span>
-                    <div class=" px-4">
-                        <span class="  ">
-                            <p class=" ">
-                                Mengisi formulir pendaftaran yang disediakan oleh institusi secara lengkap dan benar,sesuai dokumen administrasi
-                            </p>
-                        </span>
-                    </div>
-                    <span class="font-semibold"> 2. Fotokopi Kartu Tanda Penduduk (KTP) <br></span>
-                    <span class="font-semibold">3. Kartu Keluarga (KK) 2 lembar. <br></span>
-                    <span class="font-semibold">4. Fotokopi Akta Kelahiran 2 lembar. <br></span>
-                    <span class="font-semibold">5. Pas foto ukuran 3x4 4 lembar <br></span>
-                    <div class=" px-4">
-                        <span class=""> background merah. </span> <br>
-                    </div>
-                    <span class="font-semibold">6. Biaya Pendaftaran <br></span>
-                    <div class=" px-4">
-                        Membayar biaya pendaftaran sesuai ketentuan yang berlaku. Bukti pembayaran dilampirkan. <br>
-                    </div>
-                    <span class="font-semibold">7. Surat Pernyataan <br></span>
-                    <div class=" px-4">
-                        Menandatangani surat pernyataan yang berisi:
-                        Kesediaan mematuhi peraturan dan tata tertib.
-                        Persetujuan orang tua/wali (jika diperlukan).
-                    </div>
-                </div>
-                <div class="p-6 bg-white shadow rounded-lg">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">SMP</h3>
-                    Persyaratan Pendaftaran Wajib dipernuhi !!! <br>
-                    <span class=" font-semibold">1. Formulir Pendaftaran <br></span>
-                    <div class=" px-4">
-                        <span class="  ">
-                            <p class=" ">
-                                Mengisi formulir pendaftaran yang disediakan oleh institusi secara lengkap dan benar,sesuai dokumen administrasi
-                            </p>
-                        </span>
-                    </div>
-                    <span class="font-semibold"> 2. Fotokopi Kartu Tanda Penduduk (KTP) <br></span>
-                    <span class="font-semibold">3. Kartu Keluarga (KK) 2 lembar. <br></span>
-                    <span class="font-semibold">4. Fotokopi Akta Kelahiran 2 lembar. <br></span>
-                    <span class="font-semibold">6. Pas foto ukuran 3x4 4 lembar <br></span>
-                    <div class=" px-4">
-                        <span class=""> background merah. </span> <br>
-                    </div>
-                    <span class="font-semibold"> 7. Fotokopi Ijazah terakhir <br></span>
-                    <div class=" px-4">
-                        <span class=" font-semibold text-sm"> Wajib dilegalisir 2 lembar.</span>
-                    </div>
-                    <span class="font-semibold">8. Fotokopi rapor (untuk mutasi). <br></span>
-                    <span class="font-semibold">9. Biaya Pendaftaran <br></span>
-                    <div class=" px-4">
-                        Membayar biaya pendaftaran sesuai ketentuan yang berlaku. Bukti pembayaran dilampirkan. <br>
-                    </div>
-                    <span class="font-semibold">10. Surat Pernyataan <br></span>
-                    <div class=" px-4">
-                        Menandatangani surat pernyataan yang berisi:
-                        Kesediaan mematuhi peraturan dan tata tertib.
-                        Persetujuan orang tua/wali (jika diperlukan).
-                    </div>
-                    <span class="font-semibold">11. Surat Mutasi <br></span>
-                    <div class=" px-4">
-                        Wajib melampirkan surat mutasi bagi calon peserta didik yang melakukan pendaftaran bukan sebagai peserta didik baru melaikan pindahan / pindah sekolah
-                    </div>
-
-                </div>
-                <div class="p-6 bg-white shadow rounded-lg">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">SMA</h3>
-                    Persyaratan Pendaftaran Wajib dipernuhi !!! <br>
-                    <span class=" font-semibold">1. Formulir Pendaftaran <br></span>
-                    <div class=" px-4">
-                        <span class="  ">
-                            <p class=" ">
-                                Mengisi formulir pendaftaran yang disediakan oleh institusi secara lengkap dan benar,sesuai dokumen administrasi
-                            </p>
-                        </span>
-                    </div>
-                    <span class="font-semibold"> 2. Fotokopi Kartu Tanda Penduduk (KTP) <br></span>
-                    <span class="font-semibold">3. Kartu Keluarga (KK) 2 lembar. <br></span>
-                    <span class="font-semibold">4. Fotokopi Akta Kelahiran 2 lembar. <br></span>
-                    <span class="font-semibold">6. Pas foto ukuran 3x4 4 lembar <br></span>
-                    <div class=" px-4">
-                        <span class=""> background merah. </span> <br>
-                    </div>
-                    <span class="font-semibold"> 7. Fotokopi Ijazah terakhir <br></span>
-                    <div class=" px-4">
-                        <span class=" font-semibold text-sm"> Wajib dilegalisir 2 lembar.</span>
-                    </div>
-                    <span class="font-semibold">8. Fotokopi rapor (untuk mutasi). <br></span>
-                    <span class="font-semibold">9. Biaya Pendaftaran <br></span>
-                    <div class=" px-4">
-                        Membayar biaya pendaftaran sesuai ketentuan yang berlaku. Bukti pembayaran dilampirkan. <br>
-                    </div>
-                    <span class="font-semibold">10. Surat Pernyataan <br></span>
-                    <div class=" px-4">
-                        Menandatangani surat pernyataan yang berisi:
-                        Kesediaan mematuhi peraturan dan tata tertib.
-                        Persetujuan orang tua/wali (jika diperlukan).
-                    </div>
-                    <span class="font-semibold">11. Surat Mutasi <br></span>
-                    <div class=" px-4">
-                        Wajib melampirkan surat mutasi bagi calon peserta didik yang melakukan pendaftaran bukan sebagai peserta didik baru melaikan pindahan / pindah sekolah
-                    </div>
-                </div>
             </div>
+        </div>
         </div>
     </section>
     <!-- Footer Section -->
