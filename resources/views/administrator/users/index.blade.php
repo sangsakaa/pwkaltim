@@ -111,6 +111,7 @@
                                         @endif>
                                         Atur Role
                                     </a>
+                                    <a href="/users/assign-role">user</a>
 
                                 </td>
                             </tr>
