@@ -77,82 +77,70 @@
         <div class="">
             <p class="text-gray-700">Ini adalah halaman dashboard untuk administrator. Anda dapat mengelola data pengamal
                 dan melakukan berbagai tugas administratif lainnya.</p>
-            @php
-            $wilayah = $user->province->name
-            ?? $user->regency->name
-            ?? $user->district->name
-            ?? $user->village->name
-            ?? 'Tidak diketahui';
-            @endphp
+
         </div>
     </div>
     <div class=" mt-2  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
         <div class=" grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="p-4 bg-blue-100 rounded-md shadow">
                 <h2 class="text-lg font-semibold">Pengamal Terdaftar</h2>
-                <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem: <span class="" style="font-size: large;">{{ $dataPengamal}}</span></p>
+                <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem: <span class="" style="font-size: large;"></span></p>
             </div>
-            <div class="p-4 bg-green-100 rounded-md shadow">
+            <div class=" bg-green-100 rounded-md shadow">
+                <div class="w-full p-4 bg-white rounded shadow">
+                    <canvas id="chartBar"></canvas>
+                </div>
 
-
-                <head>
-                    <title>Grafik Jumlah Se Kabupaten</title>
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                </head>
-
-                <body>
-                    <h2>Grafik Jumlah per Kecamatan</h2>
-                    <canvas id="barChart" width="600" height="400"></canvas>
-
-                    <script>
-                        const labels = @json($labels);
-                        const data = @json($data);
-
-                        // Fungsi untuk membuat warna acak
-                        function getRandomColor() {
-                            const r = Math.floor(Math.random() * 200);
-                            const g = Math.floor(Math.random() * 200);
-                            const b = Math.floor(Math.random() * 200);
-                            return `rgba(${r}, ${g}, ${b}, 0.7)`;
-                        }
-
-                        // Buat array warna acak untuk setiap bar
-                        const backgroundColors = labels.map(() => getRandomColor());
-
-                        const ctx = document.getElementById('barChart').getContext('2d');
-
-                        const barChart = new Chart(ctx, {
-                            type: 'bar', // Jenis grafik bar
-                            data: {
-                                labels: labels,
-                                datasets: [{
-                                    label: 'Jumlah per Kecamatan',
-                                    data: data,
-                                    backgroundColor: backgroundColors,
-                                    borderColor: backgroundColors.map(color => color.replace('0.7', '1')), // Versi opak untuk border
-                                    borderWidth: 1
-                                }]
-                            },
-                            options: {
-                                indexAxis: 'y', // Chart horizontal
-                                responsive: true,
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        ticks: {
-                                            precision: 0
-                                        }
-                                    },
-                                    y: {
-                                        ticks: {
-                                            autoSkip: false
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    const ctx = document.getElementById('chartBar').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: @json($labels), // Label akan tampil di sumbu Y
+                            datasets: [{
+                                label: 'Jumlah',
+                                data: @json($values),
+                                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y', // Ini yang bikin bar jadi horizontal
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.raw + ' data';
                                         }
                                     }
                                 }
+                            },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
                             }
-                        });
-                    </script>
-                </body>
+                        }
+                    });
+                </script>
+
+
+
+
+
+
+
+
 
             </div>
             <div class="p-4 bg-yellow-100 rounded-md shadow">
