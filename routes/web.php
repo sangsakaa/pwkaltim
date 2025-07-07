@@ -48,29 +48,34 @@ Route::middleware('auth')->group(function () {
 
 
 // WILAYAH
-Route::get('/get-regencies/{provinceId}', [PengamalController::class, 'getRegencies']);
-Route::get('/get-districts/{regencyId}', [PengamalController::class, 'getDistricts']);
-Route::get('/get-villages/{districtId}', [PengamalController::class, 'getVillages']);
+Route::get('/get-regencies/{provinceId}', [PengamalController::class, 'getRegencies'])->middleware(['auth', 'verified']);
+Route::get('/get-districts/{regencyId}', [PengamalController::class, 'getDistricts'])->middleware(['auth', 'verified']);
+Route::get('/get-villages/{districtId}', [PengamalController::class, 'getVillages'])->middleware(['auth', 'verified']);
 
 // roles and permissions
-Route::resource('roles', RoleController::class);
+Route::resource('roles', RoleController::class)->middleware(['auth', 'verified']);
 
 
 
 // usermanagement
-Route::get('/users/create', [UserRoleController::class, 'create'])->name('users.create');
+Route::get('/users/create', [UserRoleController::class, 'create'])->name('users.create')->middleware(['auth', 'verified']);
 Route::post('/users/create', [UserRoleController::class, 'storeUser']);
-Route::get('/users/assign-role', [UserRoleController::class, 'index'])->name('users.assign-role-index');
-Route::get('/users/{user}/assign-role', [UserRoleController::class, 'edit'])->name('users.assign-role');
-Route::post('/users/{user}/assign-role', [UserRoleController::class, 'update'])->name('users.assign-role.update');
+Route::get('/users/assign-role', [UserRoleController::class, 'index'])->name('users.assign-role-index')->middleware(['auth', 'verified']);
+Route::get('/users/{user}/assign-role', [UserRoleController::class, 'edit'])->name('users.assign-role')->middleware(['auth', 'verified']);
+Route::post('/users/{user}/assign-role', [UserRoleController::class, 'update'])->name('users.assign-role.update')->middleware(['auth', 'verified']);
 
 // wilayah
-Route::get('/wilayah', [\App\Http\Controllers\WilayahController::class, 'index'])->name('wilayah.index');
-Route::get('/wilayah/{regency}', [\App\Http\Controllers\WilayahController::class, 'show'])->name('wilayah.show');
+Route::get('/wilayah', [\App\Http\Controllers\WilayahController::class, 'index'])->name('wilayah.index')->middleware(['auth', 'verified']);
+Route::get('/wilayah/{regency}', [\App\Http\Controllers\WilayahController::class, 'show'])->name('wilayah.show')->middleware(['auth', 'verified']);
 
 
 // laporan
-Route::get('/laporan', [LaporanController::class,  'laporan'])->name('laporan.laporan');
+Route::get('/laporan', [LaporanController::class,  'laporan'])->name('laporan.laporan')->middleware(['auth', 'verified']);
+
+
+
+// RESET PASWORD
+Route::post('/users/reset-password', [UserRoleController::class, 'resetPassword'])->middleware(['auth', 'verified']);
 
 
 

@@ -1,101 +1,134 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        @php
+        $user = auth()->user();
+
+        if ($user->regency?->name) {
+        if (Str::startsWith($user->regency->name, 'Kab.')) {
+        $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+        } else {
+        $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+        }
+        } elseif ($user->district?->name) {
+        $wilayah = 'Kec. ' . $user->district->name;
+        } elseif ($user->village?->name) {
+        $wilayah = $user->village->name;
+        } elseif ($user->province?->name) {
+        $wilayah = $user->province->name;
+        } else {
+        $wilayah = 'Tidak diketahui';
+        }
+        @endphp
+        @section('title', 'PW '. $wilayah )
+        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between ">
             <h2 class="text-xl font-semibold leading-tight">
-                {{ __('Dashboard') }}
+                {{ __('Detail Pengamal') }}
             </h2>
-            <x-button target="_blank" href="https://github.com/kamona-wd/kui-laravel-breeze" variant="black"
-                class="justify-center max-w-xs gap-2">
-                <x-icons.github class="w-6 h-6" aria-hidden="true" />
-                <span>Detail Pengamal</span>
-            </x-button>
         </div>
     </x-slot>
 
     <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
         <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
             <div class="  flex ">
-                <div>
-                    <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo">
+
+                <div class="bg-green-800 flex flex-col items-center justify-center p-1">
+                    <img src="{{ asset('image/logo.png') }}" width="50" alt="Logo">
                 </div>
-                <div class=" w-full flex items-center justify-center">
-                    <marquee behavior="scroll" direction="left">
-                        Selamat datang di website kami!
-                    </marquee>
+
+                <div class="bg-green-800 w-full sm:grid sm:grid-cols-1 flex flex-col items-center text-white fw-semibold p-4">
+                    @php
+                    $user = auth()->user();
+
+                    if ($user->regency?->name) {
+                    if (Str::startsWith($user->regency->name, 'Kab.')) {
+                    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+                    } else {
+                    $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+                    }
+                    } elseif ($user->district?->name) {
+                    $wilayah = 'Kec. ' . $user->district->name;
+                    } elseif ($user->village?->name) {
+                    $wilayah = $user->village->name;
+                    } elseif ($user->province?->name) {
+                    $wilayah = $user->province->name;
+                    } else {
+                    $wilayah = 'Tidak diketahui';
+                    }
+                    @endphp
+                    <span class="uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
                 </div>
+
             </div>
         </div>
     </div>
     <div class="p-4 bg-white rounded-md shadow-md dark:bg-dark-eval-1">
-        <div class="flex flex-col md:flex-row gap-6">
+        <div class="flex flex-col md:flex-row gap-2">
             <!-- Foto Pengamal -->
-            <div class=" w-1/4 flex items-center justify-center">
+            <div class=" sm:w-1/4 w-full flex items-center justify-center">
                 @if ($pengamal->foto)
-                <img src="{{ asset('storage/' . $pengamal->foto) }}" alt="Foto Pengamal" class=" object-cover rounded">
+                <img src="{{ asset('storage/' . $pengamal->foto) }}" width="200" alt="Foto Pengamal" class=" object-cover rounded">
                 @else
                 <p>Tidak ada foto.</p>
                 @endif
             </div>
-
             <!-- Detail Informasi -->
             <div class="w-full ">
                 <h2 class="text-xl font-semibold text-gray-800 dark:text-white ">Detail Data Pengamal </h2>
                 <div class=" grid grid-cols-1 sm:grid-cols-2 w-full">
                     <div class=" text-xm sm:text-sm">
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">NIK</div>
+                            <div class="  w-1/3 ">NIK</div>
                             <div>: {{ $pengamal->nik }}</div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Nama</div>
+                            <div class="  w-1/3 ">Nama</div>
                             <div>: {{ $pengamal->nama_lengkap }}</div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Agama</div>
+                            <div class="  w-1/3 ">Agama</div>
                             <div>: {{ $pengamal->agama }}</div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Tempat Lahir</div>
+                            <div class="  w-1/3 ">Tempat Lahir</div>
                             <div>: {{ $pengamal->tempat_lahir }}
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Tanggal Lahir</div>
+                            <div class="  w-1/3 ">Tanggal Lahir</div>
                             <div>: {{ $pengamal->tanggal_lahir }}</div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Jenis Kelamin</div>
+                            <div class="  w-1/3 ">Jenis Kelamin</div>
                             <div>: {{ $pengamal->jenis_kelamin }}</div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Pekerjaan</div>
+                            <div class="  w-1/3 ">Pekerjaan</div>
                             <div>: {{ $pengamal->pekerjaan }}</div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Status</div>
+                            <div class="  w-1/3 ">Status</div>
                             <div>: {{ $pengamal->status_perkawinan }}</div>
                         </div>
 
 
                     </div>
                     <div class=" ">
-
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Provinsi</div>
+                            <div class="  w-1/3 ">Provinsi</div>
                             <div>: <span>
                                     {{$pengamal->province->name??''}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Kabupaten</div>
+                            <div class="  w-1/3 ">Kabupaten</div>
                             <div>: <span>
                                     {{$pengamal->regency->name??''}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Kecamatan</div>
+                            <div class="  w-1/3 ">Kecamatan</div>
                             <div>: <span>
                                     {{$pengamal->district->name??''}}
                                 </span>
@@ -103,21 +136,28 @@
                         </div>
 
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Desa</div>
+                            <div class="  w-1/3 ">Desa</div>
                             <div>: <span>
                                     {{$pengamal->village->name??''}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Alamat</div>
+                            <div class="  w-1/3 ">Alamat</div>
                             <div>: <span>
-                                    {{$pengamal->alamat}}, RT {{$pengamal->rt??'-'}} , RW {{$pengamal->rw??'-'}}
+                                    {{$pengamal->alamat}}
                                 </span>
                             </div>
                         </div>
                         <div class="flex grid-cols-2">
-                            <div class=" w-1/4 ">Usia</div>
+                            <div class="  w-1/3 ">RT / RW</div>
+                            <div>: <span>
+                                    RT {{$pengamal->rt??'-'}} , RW {{$pengamal->rw??'-'}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex grid-cols-2">
+                            <div class="  w-1/3 ">Usia</div>
                             <div>: {{ \Carbon\Carbon::parse($pengamal->tanggal_lahir)->age }} tahun
                             </div>
                         </div>
@@ -140,10 +180,19 @@
                         <form action="/pengamal/show/{{ $pengamal->id }}" method="post" class="form-delete">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="px-4 py-1 text-white bg-red-500 rounded hover:bg-red-600">
+                            @php
+                            $canDelete = auth()->user()->hasAnyRole(['superAdmin', 'admin-provinsi', 'admin-kabupaten']);
+                            @endphp
+                            <button
+                                type="submit"
+                                class="px-4 py-1 text-white rounded 
+               {{ $canDelete ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-400 cursor-not-allowed' }}"
+                                {{ $canDelete ? '' : 'disabled' }}>
                                 Hapus
                             </button>
                         </form>
+
+
 
                         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
                         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -177,14 +226,10 @@
                                 });
                             });
                         </script>
-
-
-
-
                         <a href="https://wa.me/{{$pengamal->no_hp}}?text=Halo%20saya%20tertarik%20dengan%20layanan%20Anda"
                             target="_blank"
                             style="display:inline-block; background-color:#25D366; color:white; padding:5px 20px; border-radius:5px; text-decoration:none; font-weight:bold;">
-                            WhatsApp
+                            WA
                         </a>
 
 

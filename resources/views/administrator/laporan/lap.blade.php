@@ -275,7 +275,7 @@
     $wilayah = 'Tidak diketahui';
     }
     @endphp
-    <h2>DATA PENGAMAL <span>{{ Str::upper($wilayah) }} <br></h2>
+    <h2>DATA PENGAMAL <span>{{ Str::upper($wilayah) }}</h2>
     @foreach ($grouped as $kabupaten => $items)
     <h3>Data Pengamal - {{ $kabupaten }}</h3>
     <table border="1" cellpadding="5" cellspacing="0">
@@ -283,7 +283,7 @@
         <tr style="background-color: #076943; color: white;">
           <th style="text-align: center;">No</th>
           <th style="text-align: center;">Nama Lengkap</th>
-          <th style="text-align: center;">Tempat, Tanggal Lahir</th>
+          <th style="text-align: center;">Tempat, <br> Tanggal Lahir</th>
           <th style="text-align: center;">Jenis Kelamin</th>
           <th style="text-align: center;">Agama</th>
           <th style="text-align: center;">Alamat Lengkap</th>
@@ -297,7 +297,7 @@
         <tr class="{{ $loop->even ? 'bg-gray-100' : '' }}">
           <td>{{ $i + 1 }}</td>
           <td style=" width:200px">{{ $d->nama_lengkap }}</td>
-          <td>{{ $d->tempat_lahir }}, {{ Carbon::parse($d->tanggal_lahir)->format('d-m-Y') }}</td>
+          <td style=" width:150px">{{ $d->tempat_lahir }}, {{ Carbon::parse($d->tanggal_lahir)->format('d-m-Y') }}</td>
           <td style="text-align: center;">{{ $d->jenis_kelamin }}</td>
           <td style="text-align: center;">{{ $d->agama }}</td>
           <td>
@@ -307,7 +307,7 @@
             Kab. {{ $d->regency->name ?? '-' }},
             Prov. {{ $d->province->name ?? '-' }}
           </td>
-          <td style=" width:100px">{{ $d->no_hp }}</td>
+          <td style=" width:100px; text-align:center">{{ $d->no_hp }}</td>
           <td>{{ $d->status_perkawinan }}</td>
           <td>{{ $d->pekerjaan }}</td>
         </tr>
@@ -387,7 +387,9 @@
         }
       </style>
       <div class=" splite">
-        <h3>{{ $kabupaten }}</h3>
+        <h3>
+          {{ $kabupaten }}
+        </h3>
         <table border="1" cellpadding="5" cellspacing="0">
           <thead>
             <tr style="background-color: #076943; color: white; border: solid 1px; border:black">

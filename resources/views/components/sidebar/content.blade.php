@@ -16,18 +16,19 @@
         title="Data Pengamal"
         :active="Str::startsWith(request()->route()->uri(), 'buttons')">
         <x-slot name="icon">
-            <x-heroicon-o-view-grid class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+            <x-heroicon-o-users class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
         </x-slot>
         <x-sidebar.sublink
             title="Data Pengamal"
             href="{{ route('pengamal.index') }}"
             :active="request()->routeIs('pengamal.index')" />
     </x-sidebar.dropdown>
+    @role(['admin-provinsi', 'superAdmin'])
     <x-sidebar.dropdown
         title="Pengaturan"
         :active="Str::startsWith(request()->route()->uri(), 'buttons')">
         <x-slot name="icon">
-            <x-heroicon-o-view-grid class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+            <x-heroicon-o-users class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
         </x-slot>
         <x-sidebar.sublink
             title="Role Management"
@@ -42,6 +43,8 @@
             href="{{ route('wilayah.index') }}"
             :active="request()->routeIs('wilayah.index')" />
     </x-sidebar.dropdown>
+    @endrole
+
 
 
 
@@ -103,12 +106,12 @@
             :active="request()->routeIs('buttons.text-icon')" />
     </x-sidebar.dropdown> -->
 
-    <div
+    <!-- <div
         x-transition
         x-show="isSidebarOpen || isSidebarHovered"
         class="text-sm text-gray-500">
         Dummy Links
-    </div>
+    </div> -->
 
     <!-- @php
         $links = array_fill(0, 20, '');

@@ -2,7 +2,31 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <h2 class="text-xl font-semibold leading-tight">
-                {{ __('Dashboard') }}
+                @php
+                $user = auth()->user();
+
+                if ($user->regency?->name) {
+                if (Str::startsWith($user->regency->name, 'Kab.')) {
+                $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+                } else {
+                $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+                }
+                } elseif ($user->district?->name) {
+                $wilayah = 'Kec. ' . $user->district->name;
+                } elseif ($user->village?->name) {
+                $wilayah = $user->village->name;
+                } elseif ($user->province?->name) {
+                $wilayah = $user->province->name;
+                } else {
+                $wilayah = 'Tidak diketahui';
+                }
+                @endphp
+                @section('title', 'PW '. $wilayah )
+                <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between ">
+                    <h2 class="text-xl font-semibold leading-tight">
+                        {{ __('User Management') }}
+                    </h2>
+                </div>
             </h2>
             <x-button target="_blank" href="https://github.com/kamona-wd/kui-laravel-breeze" variant="black"
                 class="justify-center max-w-xs gap-2">
@@ -15,14 +39,34 @@
     <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
         <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
             <div class="  flex ">
-                <div>
-                    <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo">
+
+                <div class="bg-green-800 flex flex-col items-center justify-center p-1">
+                    <img src="{{ asset('image/logo.png') }}" width="50" alt="Logo">
                 </div>
-                <div class=" w-full flex items-center justify-center">
-                    <marquee behavior="scroll" direction="left">
-                        Selamat datang di website kami!
-                    </marquee>
+
+                <div class="bg-green-800 w-full sm:grid sm:grid-cols-1 flex flex-col items-center text-white fw-semibold p-4">
+                    @php
+                    $user = auth()->user();
+
+                    if ($user->regency?->name) {
+                    if (Str::startsWith($user->regency->name, 'Kab.')) {
+                    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+                    } else {
+                    $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
+                    }
+                    } elseif ($user->district?->name) {
+                    $wilayah = 'Kec. ' . $user->district->name;
+                    } elseif ($user->village?->name) {
+                    $wilayah = $user->village->name;
+                    } elseif ($user->province?->name) {
+                    $wilayah = $user->province->name;
+                    } else {
+                    $wilayah = 'Tidak diketahui';
+                    }
+                    @endphp
+                    <span class="uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
                 </div>
+
             </div>
         </div>
     </div>
@@ -95,11 +139,11 @@
                                     {{ $wilayah }}
 
                                 </td>
-                                <td class=" px-2 text-left">
-                                    @php
-                                    $isAdminProvinsi = auth()->user()->hasRole(['admin-provinsi','superAdmin']);;
-                                    @endphp
+                                @php
+                                $isAdminProvinsi = auth()->user()->hasRole(['admin-provinsi', 'superAdmin']);
+                                @endphp
 
+                                <td class="px-2 text-left">
                                     <a
                                         href="{{ $isAdminProvinsi ? route('users.assign-role', $user) : '#' }}"
                                         class="inline-block px-2 py-1 rounded 
@@ -110,9 +154,29 @@
                                         @endif>
                                         Atur Role
                                     </a>
-
-
                                 </td>
+
+                                <td class="px-2 text-left">
+                                    @if($isAdminProvinsi)
+                                    <form action="/users/reset-password" method="post">
+                                        @csrf
+                                        <input type="hidden" name="email" value="{{ $user->email }}">
+                                        <input type="hidden" name="password" value="{{ $user->password }}">
+                                        <button class="bg-slate-500 hover:bg-slate-300 px-2 py-1  rounded-md text-white" type="submit">
+                                            Reset Password
+                                        </button>
+                                    </form>
+                                    @else
+                                    <button
+                                        class="bg-gray-300 text-gray-600 cursor-not-allowed px-2 py-1  rounded-md"
+                                        title="Hanya bisa diakses oleh admin-provinsi"
+                                        onclick="event.preventDefault();"
+                                        disabled>
+                                        Reset Password
+                                    </button>
+                                    @endif
+                                </td>
+
                             </tr>
                             @endforeach
                         </tbody>

@@ -59,4 +59,31 @@ class UserRoleController extends Controller
         $user->syncRoles([$request->role]); // Ganti role lama dengan yang baru
         return redirect()->back()->with('success', 'Role berhasil diperbarui.');
     }
+    // RESET PASSWORD
+    public function resetPassword(Request $request)
+    {
+        // dd($request->all());
+        // Validasi input
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6', // Tetap divalidasi meskipun tidak digunakan
+
+        ]);
+
+        // Cari pengguna berdasarkan email
+        $user = User::where('email', $validated['email'])->first();
+
+        // Jika pengguna ditemukan, reset password dan update code
+        if ($user) {
+            $user->password = Hash::make('12345678'); // Set password default
+            $user->save();
+
+            // Flash message dan redirect
+            session()->flash('success', 'Password berhasil direset!');
+            return redirect()->back();
+        }
+
+        // Jika pengguna tidak ditemukan, redirect dengan error
+        return redirect()->back()->withErrors(['email' => 'Pengguna tidak ditemukan!']);
+    }
 }

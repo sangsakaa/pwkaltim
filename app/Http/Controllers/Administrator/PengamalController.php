@@ -155,7 +155,8 @@ class PengamalController extends Controller
      */
     public function edit(Pengamal $pengamal)
     {
-        $provinces = Province::all();
+        // $provinces = Province::all();
+        $provinces = Province::where('code', 64)->get(); // Ambil semua provinsi kecuali yang kode 00
         return view('administrator/pengamal/edit', compact('pengamal', 'provinces'))->with('success', 'Pengamal berhasil diperbarui.');
     }
 
