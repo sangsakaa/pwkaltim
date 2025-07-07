@@ -22,6 +22,11 @@
                 @endphp
 
                 @section('title', 'PW ' . $wilayah)
+                <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between ">
+                    <h2 class="text-xl font-semibold leading-tight">
+                        {{ __('Dashboard Pengamal') }}
+                    </h2>
+                </div>
 
             </h2>
             <x-button target="_blank" href="https://github.com/kamona-wd/kui-laravel-breeze" variant="black"
@@ -81,12 +86,16 @@
         </div>
     </div>
     <div class=" mt-2  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
-        <div class=" grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="p-4 bg-blue-100 rounded-md shadow">
+        <div class=" flex grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 w-1/3 bg-blue-100 rounded-md shadow">
                 <h2 class="text-lg font-semibold">Pengamal Terdaftar</h2>
-                <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem: <span class="" style="font-size: large;"></span></p>
+                <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem: <br>
+                    <span class="" style="font-size: large;">{{$values->sum()}}
+
+                    </span>
+                </p>
             </div>
-            <div class=" bg-green-100 rounded-md shadow">
+            <div class=" w-3/4 bg-green-100 rounded-md shadow">
                 <div class="w-full p-4 bg-white rounded shadow">
                     <canvas id="chartBar"></canvas>
                 </div>
@@ -143,9 +152,14 @@
 
 
             </div>
-            <div class="p-4 bg-yellow-100 rounded-md shadow">
-                <h2 class="text-lg font-semibold">Statistik Pengguna</h2>
-                <p class="text-gray-600">Statistik pengguna dan aktivitas mereka di sistem.</p>
+
+        </div>
+        <div class="py-2">
+            <div>
+                <div class="p-4 bg-yellow-100 rounded-md shadow">
+                    <h2 class="text-lg font-semibold">Statistik Pengguna</h2>
+                    <p class="text-gray-600">Statistik pengguna dan aktivitas mereka di sistem.</p>
+                </div>
             </div>
         </div>
 </x-app-layout>
