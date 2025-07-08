@@ -417,6 +417,22 @@
               <td style="text-align: center; vertical-align: middle;">{{ array_sum($data) }}</td>
             </tr>
             @endforeach
+            <tr>
+              <td>Jumlah</td>
+              <td style=" text-align:center">{{ collect($kecamatans)->sum('Kanak-kanak') }}</td>
+              <td style=" text-align:center">{{ collect($kecamatans)->sum('Remaja') }} </td>
+              <td style=" text-align:center">{{ collect($kecamatans)->sum('Bapak-bapak') }} </td>
+              <td style=" text-align:center">{{ collect($kecamatans)->sum('Ibu-ibu') }} </td>
+              <td style=" text-align:center">
+                {{
+            collect($kecamatans)->sum('Kanak-kanak')
+            + collect($kecamatans)->sum('Remaja')
+            + collect($kecamatans)->sum('Bapak-bapak')
+            + collect($kecamatans)->sum('Ibu-ibu')
+        }}
+              </td>
+
+            </tr>
           </tbody>
         </table>
       </div>

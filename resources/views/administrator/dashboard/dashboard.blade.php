@@ -29,11 +29,7 @@
                 </div>
 
             </h2>
-            <x-button target="_blank" href="https://github.com/kamona-wd/kui-laravel-breeze" variant="black"
-                class="justify-center max-w-xs gap-2">
-                <x-icons.github class="w-6 h-6" aria-hidden="true" />
-                <span>Star on Github</span>
-            </x-button>
+
         </div>
     </x-slot>
 
@@ -62,14 +58,7 @@
                     $wilayah = 'Tidak diketahui';
                     }
                     @endphp
-
                     <span class="uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
-
-                    <!-- <div class="kop-surat">
-                        <div class="yayasan text-lg font-bold">YAYASAN PERJUANGAN WAHIDIYAH DAN PONDOK PESANTREN KEDUNGLO</div>
-                        <div class="departemen text-base mt-1">DEPARTEMEN PEMBINA WAHIDIYAH<br><span class="uppercase semibold text-lg"></span></div>
-                        <div class="akta text-sm mt-1">AKTA NOMOR 09 TAHUN 2011 KEMENKUMHAM RI NOMOR : AHU-9371.AH.01.04 TAHUN 2011</div>
-                    </div> -->
                 </div>
 
             </div>
@@ -77,89 +66,151 @@
     </div>
     <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
         <div class="flex items-center justify-center">
-            <h1 class="text-2xl font-bold">Selamat Datang di Dashboard Administrator</h1>
+            <h1 class="sm:text-2xl font-bold text-xs">Selamat Datang di Dashboard Administrator</h1>
         </div>
         <div class="">
-            <p class="text-gray-700">Ini adalah halaman dashboard untuk administrator. Anda dapat mengelola data pengamal
+            <p class="text-gray-700 sm:text-sm  text-justify text-xs">Anda dapat mengelola data pengamal
                 dan melakukan berbagai tugas administratif lainnya.</p>
 
         </div>
     </div>
     <div class=" mt-2  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
-        <div class=" flex grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="p-4 w-1/3 bg-blue-100 rounded-md shadow">
-                <h2 class="text-lg font-semibold">Pengamal Terdaftar</h2>
-                <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem: <br>
-                    <span class="" style="font-size: large;">{{$values->sum()}}
+        <div class=" grid  grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="w-full  rounded-md shadow">
 
-                    </span>
-                </p>
-            </div>
-            <div class=" w-3/4 bg-green-100 rounded-md shadow">
-                <div class="w-full p-4 bg-white rounded shadow">
-                    <canvas id="chartBar"></canvas>
+                <div class="grid grid-cols-1 gap-6 p-6 bg-white rounded-xl shadow-md">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">Pengamal Terdaftar</h2>
+                        <p class="text-gray-600">Jumlah pengamal yang terdaftar di sistem:</p>
+                        <p class="text-3xl font-bold text-blue-600 mt-2">
+                            <span class=" flex">
+                                <x-heroicon-o-users class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                                {{ $values->sum() }}
+                            </span>
+
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-blue-50 p-4 rounded-lg">
+                        <div class="text-xl font-semibold text-gray-700">
+                            <span class=" flex">
+                                <x-heroicon-o-user class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
+                                Laki-Laki
+                            </span>
+                        </div>
+                        <div class="text-2xl font-bold text-blue-800">
+
+                            {{ $jumlahByGender['L'] ?? 0 }}
+
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between bg-pink-50 p-4 rounded-lg">
+                        <div class="text-xl font-semibold text-gray-700">Perempuan</div>
+                        <div class="text-2xl font-bold text-pink-700">
+                            {{ $jumlahByGender['P'] ?? 0 }}
+                        </div>
+                    </div>
                 </div>
 
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                <script>
-                    const ctx = document.getElementById('chartBar').getContext('2d');
-                    new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: @json($labels), // Label akan tampil di sumbu Y
-                            datasets: [{
-                                label: 'Jumlah',
-                                data: @json($values),
-                                backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                                borderColor: 'rgba(59, 130, 246, 1)',
-                                borderWidth: 1,
-                                borderRadius: 4
-                            }]
-                        },
-                        options: {
-                            indexAxis: 'y', // Ini yang bikin bar jadi horizontal
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            return context.raw + ' data';
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        stepSize: 1
-                                    }
-                                }
-                            }
-                        }
-                    });
-                </script>
-
-
-
-
-
-
-
-
 
             </div>
-
-        </div>
-        <div class="py-2">
-            <div>
-                <div class="p-4 bg-yellow-100 rounded-md shadow">
-                    <h2 class="text-lg font-semibold">Statistik Pengguna</h2>
-                    <p class="text-gray-600">Statistik pengguna dan aktivitas mereka di sistem.</p>
+            <div class="w-full  rounded-md shadow">
+                <div class="p-2 w-full  bg-white ">
+                    {{ $wilayah }}
+                    <canvas id="chartBar"></canvas>
+                </div>
+            </div>
+            <div class="w-full  rounded-md shadow">
+                <div class=" p-2 w-full">
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+                    <canvas id="pieChart"></canvas>
                 </div>
             </div>
         </div>
 </x-app-layout>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('chartBar').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: @json($labels), // Label akan tampil di sumbu Y
+            datasets: [{
+                label: 'Jumlah',
+                data: @json($values),
+                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1,
+                borderRadius: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y', // Ini yang bikin bar jadi horizontal
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.raw + ' data';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+</script>
+<!-- pie cart -->
+<script>
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+
+    const data = {
+        labels: @json(array_keys($persentaseKategori)),
+        datasets: [{
+            label: 'Persentase Kategori Usia',
+            data: @json(array_values($persentaseKategori)),
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)', // Anak-anak
+                'rgba(54, 162, 235, 0.6)', // Remaja–Dewasa Muda
+                'rgba(255, 206, 86, 0.6)', // Dewasa
+                'rgba(75, 192, 192, 0.6)', // Lanjut Usia
+            ],
+            borderColor: [
+                'rgba(255, 255, 255, 1)',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const pieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: data,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
