@@ -28,6 +28,8 @@ class DashboardController extends Controller
         } elseif ($user->hasRole('admin-provinsi')) {
             $query->where('provinsi', $user->code);
         }
+
+
         // usia
         $usiaGroups = [
             '0-10' => 0,
@@ -39,6 +41,9 @@ class DashboardController extends Controller
         ];
 
         $tanggalLahirList = $query->pluck('tanggal_lahir');
+        // $jumlahByGender = $query->select('jenis_kelamin', DB::raw('count(*) as total'))
+        //     ->groupBy('jenis_kelamin')
+        //     ->pluck('total', 'jenis_kelamin');
 
         foreach ($tanggalLahirList as $tanggalLahir) {
             $usia = Carbon::parse($tanggalLahir)->age;
@@ -73,11 +78,7 @@ class DashboardController extends Controller
             $persentaseKategori[$kategori] = $total > 0 ? round(($jumlah / $total) * 100, 2) : 0;
         }
 
-        // Contoh hasil output
-        // dd([
-        //     'jumlah_per_kategori' => $kategoriUsia,
-        //     'persentase_per_kategori' => $persentaseKategori,
-        // ]);
+
 
 
 
@@ -113,9 +114,7 @@ class DashboardController extends Controller
 
 
         $values = $data->pluck('total');
-        $jumlahByGender = $query->select('jenis_kelamin', DB::raw('count(*) as total'))
-            ->groupBy('jenis_kelamin')
-            ->pluck('total', 'jenis_kelamin');
+
 
 
 
@@ -128,7 +127,7 @@ class DashboardController extends Controller
                 'data' => $query,
                 'labels' => $labels,
                 'values' => $values,
-                'jumlahByGender' => $jumlahByGender,
+                // 'jumlahByGender' => $jumlahByGender,
                 'kategoriUsia' => $kategoriUsia,
                 'persentaseKategori' => $persentaseKategori
             ]
