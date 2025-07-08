@@ -111,15 +111,24 @@ class DashboardController extends Controller
             $data = collect();
             $labels = collect();
         }
-
-
         $values = $data->pluck('total');
 
 
+        // Query awal berdasarkan role user
+        $totalJenis = Pengamal::query();
 
+        if ($user->hasRole('admin-provinsi')) {
+            $totalJenis->where('provinsi', $user->code);
+        } elseif ($user->hasRole('admin-kabupaten')) {
+            $totalJenis->where('kabupaten', $user->code);
+        } elseif ($user->hasRole('admin-kecamatan')) {
+            $totalJenis->where('kecamatan', $user->code);
+        }
 
-
-
+        // Mengelompokkan dan mengambil jumlah berdasarkan jenis_kelamin
+        $jumlahByGender = $totalJenis->select('jenis_kelamin', DB::raw('COUNT(*) as total'))
+            ->groupBy('jenis_kelamin')
+            ->pluck('total', 'jenis_kelamin');
         return view(
             'administrator/dashboard/dashboard',
             [
@@ -127,7 +136,7 @@ class DashboardController extends Controller
                 'data' => $query,
                 'labels' => $labels,
                 'values' => $values,
-                // 'jumlahByGender' => $jumlahByGender,
+                'jumlahByGender' => $jumlahByGender,
                 'kategoriUsia' => $kategoriUsia,
                 'persentaseKategori' => $persentaseKategori
             ]
