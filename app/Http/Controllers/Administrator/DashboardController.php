@@ -91,7 +91,7 @@ class DashboardController extends Controller
 
 
         // Ambil data sesuai role
-        if ($user->hasRole('admin-provinsi')) {
+        if ($user->hasRole(['admin-provinsi', 'superAdmin'])) {
             $data = $query->selectRaw('kabupaten, COUNT(*) as total')
                 ->with('regency') // pastikan relasi ke tabel kabupaten
                 ->groupBy('kabupaten')
@@ -129,7 +129,7 @@ class DashboardController extends Controller
         // Query awal berdasarkan role user
         $totalJenis = Pengamal::query();
 
-        if ($user->hasRole('admin-provinsi')) {
+        if ($user->hasRole(['admin-provinsi', 'superAdmin'])) {
             $totalJenis->where('provinsi', $user->code);
         } elseif ($user->hasRole('admin-kabupaten')) {
             $totalJenis->where('kabupaten', $user->code);
