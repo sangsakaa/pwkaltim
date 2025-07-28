@@ -13,7 +13,7 @@ class UserRoleController extends Controller
 {
     public function index()
     {
-        if (!auth()->user()->hasRole('admin-provinsi')) {
+        if (!auth()->user()->hasRole(['admin-provinsi', 'superAdmin'])) {
             abort(403, 'Unauthorized access.');
         }
 
