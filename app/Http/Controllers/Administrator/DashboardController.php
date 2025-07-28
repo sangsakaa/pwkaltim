@@ -29,7 +29,7 @@ class DashboardController extends Controller
         // Filter berdasarkan role
         $query = Pengamal::query();
 
-        if ($user->hasRole('admin-kabupaten')) {
+        if ($user->hasRole(['admin-provinsi', 'superAdmin'])) {
             $query->where('kabupaten', $user->code);
         } elseif ($user->hasRole('admin-kecamatan')) {
             $query->where('kecamatan', $user->code);
