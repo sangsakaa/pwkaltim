@@ -22,7 +22,7 @@ class LogSuccessfulLogin
      */
     public function handle(Login $event): void
     {
-        dd($event->user);
+        // dd($event->user);
         activity('auth')
             ->causedBy($event->user)
             ->withProperties([
