@@ -55,7 +55,8 @@
                 <h2 class="text-lg font-semibold text-gray-800">Total Pengamal</h2>
                 <p class="text-3xl font-bold text-blue-600 mt-2 flex items-center">
                     <x-heroicon-o-users class="w-6 h-6 mr-2" />
-                    {{ $values->sum() }}
+                    {{ ($jumlahByGender['L'] ?? 0) + ($jumlahByGender['P'] ?? 0) }}
+
                 </p>
             </div>
 
