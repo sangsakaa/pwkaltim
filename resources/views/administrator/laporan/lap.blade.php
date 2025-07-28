@@ -250,7 +250,7 @@
               <div class="akta">AKTA NOMOR 09 TAHUN 2011 KEMENKUMHAM RI NOMOR : AHU-9371.AH.01.04 TAHUN 2011</div>
             </div>
             <div class="alamat">
-              Alamat Sekretariat : Jalan Talang Sari RT. 01 Kelurahan Tanah Merah Kecamatan Samarinda Utara Kota Samarinda Kalimantan Timur
+              <!-- Alamat Sekretariat : Jalan Talang Sari RT. 01 Kelurahan Tanah Merah Kecamatan Samarinda Utara Kota Samarinda Kalimantan Timur -->
             </div>
           </div>
         </td>
@@ -296,7 +296,9 @@
         @foreach ($items as $i => $d)
         <tr class="{{ $loop->even ? 'bg-gray-100' : '' }}">
           <td>{{ $i + 1 }}</td>
-          <td style=" width:200px">{{ $d->nama_lengkap }}</td>
+          <td style=" width:200px; text-transform: uppercase;">{{ $d->nama_lengkap }}</td>
+
+
           <td style=" width:150px">{{ $d->tempat_lahir }}, {{ Carbon::parse($d->tanggal_lahir)->format('d-m-Y') }}</td>
           <td style="text-align: center;">{{ $d->jenis_kelamin }}</td>
           <td style="text-align: center;">{{ $d->agama }}</td>
@@ -409,7 +411,7 @@
           <tbody>
             @foreach ($kecamatans as $kecamatan => $data)
             <tr>
-              <td>{{ $kecamatan }}</td>
+              <td style=" text-transform: uppercase;">{{ $kecamatan }}</td>
               <td style="text-align: center; vertical-align: middle;">{{ $data['Kanak-kanak'] }}</td>
               <td style="text-align: center; vertical-align: middle;">{{ $data['Remaja'] }}</td>
               <td style="text-align: center; vertical-align: middle;">{{ $data['Bapak-bapak'] }}</td>

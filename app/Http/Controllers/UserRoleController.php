@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -12,8 +13,12 @@ class UserRoleController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles','province', 'regency')
-            ->get();
+        if (!auth()->user()->hasRole('admin-provinsi')) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $users = User::with('roles', 'province', 'regency')->get();
+
 
         return view('administrator.users.index', compact('users'));
     }
@@ -62,28 +67,52 @@ class UserRoleController extends Controller
     // RESET PASSWORD
     public function resetPassword(Request $request)
     {
-        // dd($request->all());
-        // Validasi input
-        $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6', // Tetap divalidasi meskipun tidak digunakan
 
+        $user = User::where('email', $request->email)->firstOrFail();
+
+        // Generate password baru
+        $newPassword = Str::random(8);
+
+        // Simpan hash ke database
+        $user->password = Hash::make($newPassword);
+        $user->save();
+
+        // Kirim password baru kembali ke view (sekali tampil)
+        return redirect()->back()->with('reset_password_success', [
+            'email' => $user->email,
+            'password' => $newPassword,
         ]);
+    }
 
-        // Cari pengguna berdasarkan email
-        $user = User::where('email', $validated['email'])->first();
 
-        // Jika pengguna ditemukan, reset password dan update code
-        if ($user) {
-            $user->password = Hash::make('12345678'); // Set password default
-            $user->save();
-
-            // Flash message dan redirect
-            session()->flash('success', 'Password berhasil direset!');
-            return redirect()->back();
+    public function destroy(User $user)
+    {
+        // Optional: Cegah user menghapus diri sendiri
+        if (auth()->id() == $user->id) {
+            return back()->with('error', 'Kamu tidak bisa menghapus akunmu sendiri.');
         }
 
-        // Jika pengguna tidak ditemukan, redirect dengan error
-        return redirect()->back()->withErrors(['email' => 'Pengguna tidak ditemukan!']);
+        // Hapus semua role dan permission
+        $user->syncRoles([]);
+        $user->syncPermissions([]);
+
+        // Hapus user
+        $user->delete();
+
+        return redirect()->back()->with('success', 'User, role, dan permission berhasil dihapus.');
+    }
+    public function removeRolePermission($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Hapus semua role
+        $user->syncRoles([]); // atau $user->roles()->detach();
+
+        // Hapus semua permission langsung (jika ada permission langsung ke user, bukan melalui role)
+        $user->syncPermissions([]); // atau $user->permissions()->detach();
+
+        // Jangan hapus user-nya, cukup role dan permission saja
+
+        return redirect()->back()->with('success', 'Role dan permission user berhasil dihapus.');
     }
 }

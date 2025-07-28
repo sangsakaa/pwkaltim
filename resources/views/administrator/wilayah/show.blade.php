@@ -13,7 +13,7 @@
     </x-slot>
 
     <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
-        <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
+        <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md">
             <div class="  flex ">
                 <div>
                     <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo">
@@ -27,7 +27,7 @@
             </div>
         </div>
     </div>
-    <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
+    <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md">
         <div class="  flex justify-between items-center ">
 
         </div>
@@ -50,7 +50,11 @@
                         @foreach($kec as $index => $user)
                         <tr class=" border ">
                             <td class=" px-2 text-left">{{ $index + 1 }}</td>
-                            <td class=" px-2 text-left">{{ $user->name }}</td>
+                            <td>
+                                <a href="/wilayah-desa/{{$user->code}}">
+                                    {{ $user->name }}
+                                </a>
+                            </td>
                             <td class=" px-2 text-left">{{ $user->code }}</td>
                             <td class=" px-2 text-left">{{ $user->province_code }}</td>
                         </tr>

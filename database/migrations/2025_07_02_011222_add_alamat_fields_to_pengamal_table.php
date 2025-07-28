@@ -28,10 +28,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+
         Schema::table('pengamal', function (Blueprint $table) {
-            Schema::table('pengamal', function (Blueprint $table) {
-                $table->dropColumn(['rt', 'rw', 'alamat', 'np_hp', 'email', 'status_perkawinan', 'foto']);
-            });
+            $table->dropColumn(['rt', 'rw', 'alamat', 'np_hp', 'email', 'status_perkawinan', 'foto']);
         });
     }
 };

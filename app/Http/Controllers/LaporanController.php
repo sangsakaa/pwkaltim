@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Pengamal;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 
 class LaporanController extends Controller
 {
     public function laporan()
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
-        $query = Pengamal::query()->orderby('kecamatan', 'asc');
+        $query = Pengamal::query()->orderby('kecamatan', 'asc')->orderby('nama_lengkap', 'asc');
 
         if ($user->hasRole('admin-kabupaten')) {
             $query->where('kabupaten', $user->code);
@@ -21,6 +22,7 @@ class LaporanController extends Controller
         } elseif ($user->hasRole('admin-desa')) {
             $query->where('desa', $user->code);
         }
+
 
         $pengamal = $query->get();
 

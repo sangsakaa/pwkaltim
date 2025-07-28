@@ -9,15 +9,23 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
 {
+
     public function index()
     {
         $user = Auth::user();
         // Ambil semua data terlebih dahulu (gunakan query builder, bukan collection)
 
+        $activeUsers = DB::table('sessions')
+            ->where('last_activity', '>=', Carbon::now()->subMinutes(10)->timestamp)
+            ->get();
 
+
+        // Contoh filter log berdasarkan user
+        $userLogs = Activity::causedBy(auth()->user())->get();
         // Filter berdasarkan role
         $query = Pengamal::query();
 
@@ -106,12 +114,16 @@ class DashboardController extends Controller
                 ->groupBy('desa')
                 ->get();
 
-            $labels = $data->map(fn($item) => optional($item->village)->name);
+            $labels = $data->map(function ($item) {
+                $name = optional($item->village)->name;
+                return Str::startsWith($name, 'Desa') ? $name : 'Desa ' . $name;
+            });
         } else {
             $data = collect();
             $labels = collect();
         }
         $values = $data->pluck('total');
+
 
 
         // Query awal berdasarkan role user
@@ -138,7 +150,9 @@ class DashboardController extends Controller
                 'values' => $values,
                 'jumlahByGender' => $jumlahByGender,
                 'kategoriUsia' => $kategoriUsia,
-                'persentaseKategori' => $persentaseKategori
+                'persentaseKategori' => $persentaseKategori,
+                'userLogs' => $userLogs,
+                'activeUsers' => $activeUsers,
             ]
         );
     }

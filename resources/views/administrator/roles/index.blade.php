@@ -28,7 +28,7 @@
     </x-slot>
 
     <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
-        <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
+        <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md">
             <div class="  flex ">
 
                 <div class="bg-green-800 flex flex-col items-center justify-center p-1">
@@ -61,7 +61,7 @@
             </div>
         </div>
     </div>
-    <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md dark:bg-dark-eval-1">
+    <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md">
         <div class="  flex justify-between items-center ">
 
         </div>

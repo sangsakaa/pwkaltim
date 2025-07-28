@@ -2,14 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Pengamal extends Model
 {
  protected $table = 'pengamal';
-
-
+    use LogsActivity;
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll() // log semua atribut
+            ->useLogName('pengamal') // nama log
+            ->logOnlyDirty() // hanya yang berubah
+            ->dontSubmitEmptyLogs(); // kalau gak ada perubahan, gak dicatat
+    }
     // Pastikan kolom deleted_at tersedia di database
     protected $dates = ['deleted_at'];
 

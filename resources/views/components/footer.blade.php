@@ -13,7 +13,7 @@
             target="_blank"
             class="text-blue-600 hover:underline"
         >
-            PWKALTIM &copy2025
+            Ahmed Kamel
         </a>
     </p>
 </footer>

@@ -10,6 +10,7 @@ use App\Models\Province;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PengamalController extends Controller
@@ -19,20 +20,31 @@ class PengamalController extends Controller
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
+        // $user = auth()->user();
 
+        // // Mulai query builder
+        // $query = Pengamal::query()->orderBy('kecamatan', 'asc');
 
-        // Gunakan query builder dari awal
-        $query = Pengamal::query()->orderby('kecamatan', 'asc');
-
-        // Filter berdasarkan role
-        if ($user->hasRole('admin-kabupaten')) {
-            $query->where('kabupaten', $user->code);
-        } elseif ($user->hasRole('admin-kecamatan')) {
-            $query->where('kecamatan', $user->code);
-        } elseif ($user->hasRole('admin-desa')) {
-            $query->where('desa', $user->code);
+        // // Filter berdasarkan role dan code
+        // if ($user->hasRole('admin-provinsi')) {
+        //     $query->where('provinsi', $user->code);
+        // } elseif ($user->hasRole('admin-kabupaten')) {
+        //     $query->where('kabupaten', $user->code);
+        // } elseif ($user->hasRole('admin-kecamatan')) {
+        //     $query->where('kecamatan', $user->code);
+        // } elseif ($user->hasRole('admin-desa')) {
+        //     $query->where('desa', $user->code);
+        // } else {
+        //     abort(403, 'Anda tidak memiliki izin untuk mengakses data ini.');
+        // }
+        if (Auth::user()->hasRole('admin-provinsi')) {
+            $query = Pengamal::with(['regency', 'district', 'village'])->paginate(10);
+        } else {
+            abort(403, 'Unauthorized');
         }
+
+        // Ambil data dengan paginasi
+        $dataPengamal = $query;
 
         // Filter pencarian jika ada
         if ($request->filled('search')) {
@@ -44,7 +56,7 @@ class PengamalController extends Controller
         }
 
         // Ambil data dengan pagination dan simpan query search di URL
-        $dataPengamal = $query->paginate(10)->withQueryString();
+
 
         return view('administrator.pengamal.index', compact('dataPengamal'));
     }
@@ -142,7 +154,12 @@ class PengamalController extends Controller
      */
     public function show(Pengamal $pengamal)
     {
-        $pengamal = Pengamal::with(['province', 'regency', 'district', 'village'])->find($pengamal->id);
+        if (Auth::user()->hasRole('admin-provinsi')) {
+            // Ambil daftar pengamal dengan relasi
+            $pengamals = Pengamal::with(['province', 'regency', 'district', 'village'])->paginate(10);
+        } else {
+            abort(403, 'Unauthorized');
+        }
 
         // akses nama wilayah:
 

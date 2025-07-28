@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\District;
 use App\Models\Province;
 use App\Models\Regency;
+use App\Models\Village;
 use Illuminate\Http\Request;
 
 class WilayahController extends Controller
@@ -15,9 +16,13 @@ class WilayahController extends Controller
     public function index()
     {
         $prov = Province::where('code', 64)->get();
-        $kab = Regency::where('province_code', 64)->get();
-        $kec = District::where('regency_code', 64)->get();
-        return view('administrator.wilayah.index', compact('prov', 'kab','kec'));
+        $kab = Regency::where('province_code', 64)->orderby('code')->get();
+        $kec = District::all();
+
+
+
+
+        return view('administrator.wilayah.index', compact('prov', 'kab', 'kec'));
     }
 
     /**
@@ -41,31 +46,15 @@ class WilayahController extends Controller
      */
     public function show($regency)
     {
-        $kec = District::where('regency_code', $regency)->get();
+        $kec = District::where('regency_code', $regency)->orderby('code')->get();
         return view('administrator.wilayah.show', compact('regency','kec'));
     }
-
+    public function detailshow($regency)
+    {
+        $desa = Village::where('district_code', $regency)->orderby('code')->get();
+        return view('administrator.wilayah.detailshow', compact('regency', 'desa'));
+    }
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

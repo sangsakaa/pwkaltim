@@ -8,14 +8,19 @@
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
-            <div class=" bg-green-800 mb-4 ">
-                <center>
-                    <img src="{{ asset('image/logo.png') }}" width="120" alt="Logo" class="mt-4 py-2">
-                    <p class=" text-white bold text-lg font-semibold">SIPEDAL</p>
-                    <p class=" text-white bold text-m uppercase mb-4">Sistem Pendataan Pengamal</p>
-                </center>
-            </div>
+
             <div class="grid gap-6">
+                <div class=" text-center bg-green-800 text-white py-4">
+                    <center>
+                        <img src="{{ asset('image/logo.png') }}" width="100px">
+                    </center>
+                    <p class=" font-semibold text-3xl">
+                        SINTAK
+                    </p>
+                    <p class=" uppercase">
+                        Sistem Informasi Terpadu Pengamal <br>Kalimantan Timur
+                    </p>
+                </div>
                 <!-- Email Address -->
                 <div class="space-y-2">
                     <x-form.label
@@ -92,14 +97,14 @@
                     </x-button>
                 </div>
 
-                <!-- @if (Route::has('register'))
+                @if (Route::has('register'))
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ __('Don’t have an account?') }}
                     <a href="{{ route('register') }}" class="text-blue-500 hover:underline">
                         {{ __('Register') }}
                     </a>
                 </p>
-                @endif -->
+                @endif
             </div>
         </form>
     </x-auth-card>

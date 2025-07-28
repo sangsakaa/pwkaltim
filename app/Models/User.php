@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -18,6 +20,8 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    protected static $logAttributes = ['name', 'email', 'role'];
+
     protected $fillable = [
         'name',
         'email',
@@ -67,5 +71,25 @@ class User extends Authenticatable
     public function village()
     {
         return $this->belongsTo(Village::class);
+    }
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'created_by');
+    }
+
+    public function approvedPosts()
+    {
+        return $this->hasMany(Post::class, 'approved_by');
+    }
+
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('user')
+            ->logOnly(['name', 'email']) // kolom yang ingin dicatat
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
     }
 }

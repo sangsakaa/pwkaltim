@@ -1,24 +1,18 @@
 <x-guest-layout>
     <x-auth-card>
         <!-- Validation Errors -->
-
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
-            <div class=" bg-green-800 mb-4 ">
-                <center>
-                    <img src="{{ asset('image/logo.png') }}" width="120" alt="Logo" class="mt-4 py-2">
-                    <p class=" text-white bold text-lg font-semibold">SIPEDAL</p>
-                    <p class=" text-white bold text-m uppercase mb-4">Sistem Pendataan Pengamal</p>
-                </center>
-            </div>
+
             <div class="grid gap-6">
                 <!-- Name -->
                 <div class="space-y-2">
                     <x-form.label
                         for="name"
-                        :value="__('Name')" />
+                        :value="__('Name')"
+                    />
 
                     <x-form.input-with-icon-wrapper>
                         <x-slot name="icon">
@@ -34,7 +28,8 @@
                             :value="old('name')"
                             required
                             autofocus
-                            placeholder="{{ __('Name') }}" />
+                            placeholder="{{ __('Name') }}"
+                        />
                     </x-form.input-with-icon-wrapper>
                 </div>
 
@@ -42,7 +37,8 @@
                 <div class="space-y-2">
                     <x-form.label
                         for="email"
-                        :value="__('Email')" />
+                        :value="__('Email')"
+                    />
 
                     <x-form.input-with-icon-wrapper>
                         <x-slot name="icon">
@@ -57,7 +53,8 @@
                             name="email"
                             :value="old('email')"
                             required
-                            placeholder="{{ __('Email') }}" />
+                            placeholder="{{ __('Email') }}"
+                        />
                     </x-form.input-with-icon-wrapper>
                 </div>
 
@@ -65,7 +62,8 @@
                 <div class="space-y-2">
                     <x-form.label
                         for="password"
-                        :value="__('Password')" />
+                        :value="__('Password')"
+                    />
 
                     <x-form.input-with-icon-wrapper>
                         <x-slot name="icon">
@@ -80,7 +78,8 @@
                             name="password"
                             required
                             autocomplete="new-password"
-                            placeholder="{{ __('Password') }}" />
+                            placeholder="{{ __('Password') }}"
+                        />
                     </x-form.input-with-icon-wrapper>
                 </div>
 
@@ -88,7 +87,8 @@
                 <div class="space-y-2">
                     <x-form.label
                         for="password_confirmation"
-                        :value="__('Confirm Password')" />
+                        :value="__('Confirm Password')"
+                    />
 
                     <x-form.input-with-icon-wrapper>
                         <x-slot name="icon">
@@ -102,7 +102,8 @@
                             type="password"
                             name="password_confirmation"
                             required
-                            placeholder="{{ __('Confirm Password') }}" />
+                            placeholder="{{ __('Confirm Password') }}"
+                        />
                     </x-form.input-with-icon-wrapper>
                 </div>
 
