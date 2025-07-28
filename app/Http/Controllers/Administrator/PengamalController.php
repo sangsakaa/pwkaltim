@@ -37,7 +37,7 @@ class PengamalController extends Controller
         // } else {
         //     abort(403, 'Anda tidak memiliki izin untuk mengakses data ini.');
         // }
-        if (Auth::user()->hasRole('admin-provinsi')) {
+        if (Auth::user()->hasRole(['admin-provinsi', 'superAdmin'])) {
             $query = Pengamal::with(['regency', 'district', 'village'])->paginate(10);
         } else {
             abort(403, 'Unauthorized');
