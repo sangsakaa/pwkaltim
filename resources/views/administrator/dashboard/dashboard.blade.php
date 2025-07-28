@@ -40,7 +40,7 @@
                 Anda dapat mengelola data pengamal dan melakukan berbagai tugas administratif lainnya.
             </p>
 
-            @role('admin-provinsi')
+            @role(['admin-provinsi', 'superAdmin'])
             <div class="mt-3 bg-blue-100 text-blue-800 p-3 rounded">🔐 Anda memiliki akses penuh ke data seluruh wilayah.</div>
             @elserole('admin-kabupaten')
             <div class="mt-3 bg-green-100 text-green-800 p-3 rounded">📌 Anda dapat mengelola data pada tingkat kabupaten.</div>
