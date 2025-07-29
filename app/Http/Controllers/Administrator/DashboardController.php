@@ -17,100 +17,55 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        // Ambil semua data terlebih dahulu (gunakan query builder, bukan collection)
 
+        // 1. Pengguna aktif (online dalam 10 menit terakhir)
         $activeUsers = DB::table('sessions')
             ->where('last_activity', '>=', Carbon::now()->subMinutes(10)->timestamp)
             ->get();
 
+        // 2. Log aktivitas pengguna saat ini
+        $userLogs = Activity::causedBy($user)->get();
 
-        // Contoh filter log berdasarkan user
-        $userLogs = Activity::causedBy(auth()->user())->get();
-        // Filter berdasarkan role
-        $query = Pengamal::query();
+        // 3. Query utama data Pengamal berdasarkan role
+        // 6. Statistik jenis kelamin
+        $jumlahByGender = Pengamal::query()
+            ->when($user->hasRole('admin-provinsi'), fn($q) => $q->where('provinsi', $user->code))
+            ->when($user->hasRole('admin-kabupaten'), fn($q) => $q->where('kabupaten', $user->code))
+            ->when($user->hasRole('admin-kecamatan'), fn($q) => $q->where('kecamatan', $user->code))
+            ->select('jenis_kelamin', DB::raw('COUNT(*) as total'))
+            ->groupBy('jenis_kelamin')
+            ->pluck('total', 'jenis_kelamin');
+        $data = collect();
+        $labels = collect();
+        $values = collect();
 
-        if ($user->hasRole(['admin-provinsi', 'superAdmin'])) {
-            $query->where('kabupaten', $user->code);
-        } elseif ($user->hasRole('admin-kecamatan')) {
-            $query->where('kecamatan', $user->code);
-        } elseif ($user->hasRole('admin-provinsi')) {
-            $query->where('provinsi', $user->code);
-        }
+        $query = Pengamal::query()
+            ->when($user->hasRole(['admin-provinsi', 'superAdmin']), fn($q) => $q)
+            ->when($user->hasRole('admin-kabupaten'), fn($q) => $q->where('kabupaten', $user->code))
+            ->when($user->hasRole('admin-kecamatan'), fn($q) => $q->where('kecamatan', $user->code));
 
-
-        // usia
-        $usiaGroups = [
-            '0-10' => 0,
-            '11-20' => 0,
-            '21-30' => 0,
-            '31-40' => 0,
-            '41-50' => 0,
-            '51+' => 0,
-        ];
-
-        $tanggalLahirList = $query->pluck('tanggal_lahir');
-        // $jumlahByGender = $query->select('jenis_kelamin', DB::raw('count(*) as total'))
-        //     ->groupBy('jenis_kelamin')
-        //     ->pluck('total', 'jenis_kelamin');
-
-        foreach ($tanggalLahirList as $tanggalLahir) {
-            $usia = Carbon::parse($tanggalLahir)->age;
-
-            if ($usia <= 10) {
-                $usiaGroups['0-10']++;
-            } elseif ($usia <= 20) {
-                $usiaGroups['11-20']++;
-            } elseif ($usia <= 30) {
-                $usiaGroups['21-30']++;
-            } elseif ($usia <= 40) {
-                $usiaGroups['31-40']++;
-            } elseif ($usia <= 50) {
-                $usiaGroups['41-50']++;
-            } else {
-                $usiaGroups['51+']++;
-            }
-        }
-
-        // Gabungkan ke kategori besar
-        $total = array_sum($usiaGroups);
-
-        $kategoriUsia = [
-            'Anak-anak' => $usiaGroups['0-10'],
-            'Remaja' => $usiaGroups['11-20'] + $usiaGroups['21-30'],
-            'Dewasa' => $usiaGroups['31-40'] + $usiaGroups['41-50'],
-            'Lanjut Usia' => $usiaGroups['51+'],
-        ];
-
-        $persentaseKategori = [];
-        foreach ($kategoriUsia as $kategori => $jumlah) {
-            $persentaseKategori[$kategori] = $total > 0 ? round(($jumlah / $total) * 100, 2) : 0;
-        }
-
-
-
-
-
-        // Ambil data sesuai role
         if ($user->hasRole(['admin-provinsi', 'superAdmin'])) {
             $data = $query->selectRaw('kabupaten, COUNT(*) as total')
-                ->with('regency') // pastikan relasi ke tabel kabupaten
+                ->with('regency')
                 ->groupBy('kabupaten')
                 ->get();
 
-            $labels = $data->map(function ($item) {
-                $name = optional($item->regency)->name;
-                return Str::startsWith($name, 'Kab.') ? 'Kabupaten ' . ltrim(substr($name, 4)) : $name;
-            });
+            $labels = $data->map(
+                fn($item) =>
+                Str::startsWith(optional($item->regency)->name, 'Kab.')
+                    ? 'Kabupaten ' . ltrim(substr(optional($item->regency)->name, 4))
+                    : optional($item->regency)->name
+            );
         } elseif ($user->hasRole('admin-kabupaten')) {
             $data = $query->selectRaw('kecamatan, COUNT(*) as total')
-                ->with('district') // relasi ke kecamatan
+                ->with('district')
                 ->groupBy('kecamatan')
                 ->get();
 
             $labels = $data->map(fn($item) => 'Kec. ' . optional($item->district)->name);
         } elseif ($user->hasRole('admin-kecamatan')) {
             $data = $query->selectRaw('desa, COUNT(*) as total')
-                ->with('village') // relasi ke desa
+                ->with('village')
                 ->groupBy('desa')
                 ->get();
 
@@ -118,43 +73,20 @@ class DashboardController extends Controller
                 $name = optional($item->village)->name;
                 return Str::startsWith($name, 'Desa') ? $name : 'Desa ' . $name;
             });
-        } else {
-            $data = collect();
-            $labels = collect();
         }
+
         $values = $data->pluck('total');
 
+        // 7. Return view dengan semua data
+        return view('administrator/dashboard/dashboard', [
+            'user' => $user,
 
 
-        // Query awal berdasarkan role user
-        $totalJenis = Pengamal::query();
-
-        if ($user->hasRole(['admin-provinsi', 'superAdmin'])) {
-            $totalJenis->where('provinsi', $user->code);
-        } elseif ($user->hasRole('admin-kabupaten')) {
-            $totalJenis->where('kabupaten', $user->code);
-        } elseif ($user->hasRole('admin-kecamatan')) {
-            $totalJenis->where('kecamatan', $user->code);
-        }
-
-        // Mengelompokkan dan mengambil jumlah berdasarkan jenis_kelamin
-        $jumlahByGender = $totalJenis->select('jenis_kelamin', DB::raw('COUNT(*) as total'))
-            ->groupBy('jenis_kelamin')
-            ->pluck('total', 'jenis_kelamin');
-        return view(
-            'administrator/dashboard/dashboard',
-            [
-                'user' => $user,
-                'data' => $query,
-                'labels' => $labels,
-                'values' => $values,
-                'jumlahByGender' => $jumlahByGender,
-                'kategoriUsia' => $kategoriUsia,
-                'persentaseKategori' => $persentaseKategori,
-                'userLogs' => $userLogs,
-                'activeUsers' => $activeUsers,
-            ]
-        );
+            'jumlahByGender' => $jumlahByGender,
+            'userLogs' => $userLogs,
+            'activeUsers' => $activeUsers,
+            'labels' => $labels,
+            'values' => $values,
+        ]);
     }
-    
 }

@@ -73,9 +73,64 @@
 
         <!-- CHARTS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white rounded-md shadow-md p-4 h-[300px]">
-                <canvas id="chartBar" class="w-full h-full"></canvas>
+            <div class="bg-white rounded-md shadow-md p-4">
+                <h2 class="text-xl font-semibold mb-4">Statistik Pengamal</h2>
+                <div class="w-[480px] h-[260px]">
+                    <canvas id="barChart"></canvas>
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    const ctx = document.getElementById('barChart').getContext('2d');
+
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: @json($labels), // jadi sumbu Y (kategori)
+                            datasets: [{
+                                label: 'Jumlah Pengamal',
+                                data: @json($values), // jadi sumbu X (nilai)
+                                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                borderColor: 'rgba(37, 99, 235, 1)',
+                                borderWidth: 1,
+                                borderRadius: 6
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y', // menjadikan chart horizontal
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        precision: 0
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Jumlah'
+                                    }
+                                },
+                                y: {
+                                    ticks: {
+                                        autoSkip: false
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Wilayah'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                </script>
             </div>
+
 
             <div class=" rounded-md shadow-md p-4 bg-white">
                 <table class="min-w-full border border-gray-300">
@@ -116,79 +171,5 @@
     </div>
 
     <!-- CHART.JS -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 
-    <script>
-        const ctxBar = document.getElementById('chartBar').getContext('2d');
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: @json($labels),
-                datasets: [{
-                    label: 'Jumlah',
-                    data: @json($values),
-                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => `${ctx.raw} orang`
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                }
-            }
-        });
-
-        const pieCtx = document.getElementById('pieChart').getContext('2d');
-        new Chart(pieCtx, {
-            type: 'pie',
-            data: {
-                labels: @json(array_keys($persentaseKategori)),
-                datasets: [{
-                    label: 'Kategori Usia',
-                    data: @json(array_values($persentaseKategori)),
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                    ],
-                    borderColor: 'rgba(255, 255, 255, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: ctx => `${ctx.label}: ${ctx.parsed}%`
-                        }
-                    }
-                }
-            }
-        });
-    </script>
 </x-app-layout>
