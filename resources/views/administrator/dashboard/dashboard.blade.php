@@ -133,7 +133,7 @@
 
 
             <div class=" rounded-md shadow-md p-4 bg-white">
-                <table class="min-w-full border border-gray-300">
+                <!-- <table class="min-w-full border border-gray-300">
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="px-4 py-2 border">User ID</th>
@@ -146,16 +146,16 @@
                         @forelse ($activeUsers as $session)
                         <tr>
                             <td class="px-4 py-2 border text-center">
-                                {{ $session->user_id ?? '-' }}
+                                {{ $session->name ?? '-' }} {{-- tampilkan nama user --}}
                             </td>
-                            <td class="px-4 py-2 border">
-                                {{ $session->ip_address }}
+                            <td class="px-4 py-2 border text-center">
+                                {{ $session->ip_address ?? '-' }}
                             </td>
                             <td class="px-4 py-2 border text-sm">
                                 {{ Str::limit($session->user_agent, 50) }}
                             </td>
                             <td class="px-4 py-2 border text-center">
-                                {{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() }}
+                                {{ $session->last_activity ? \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() : '-' }}
                             </td>
                         </tr>
                         @empty
@@ -164,7 +164,8 @@
                         </tr>
                         @endforelse
                     </tbody>
-                </table>
+
+                </table> -->
 
             </div>
         </div>

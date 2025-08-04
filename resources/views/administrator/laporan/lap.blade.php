@@ -317,130 +317,135 @@
       </tbody>
     </table>
 
+    <div class="page-break">
+      <!-- Rekapitulasi Kategori -->
+      @php
+      $rekap = [
+      'Kanak-kanak' => 0,
+      'Remaja' => 0,
+      'Bapak-bapak' => 0,
+      'Ibu-ibu' => 0,
+      ];
 
-    <!-- Rekapitulasi Kategori -->
-    @php
-    $rekap = [
-    'Kanak-kanak' => 0,
-    'Remaja' => 0,
-    'Bapak-bapak' => 0,
-    'Ibu-ibu' => 0,
-    ];
-
-    foreach ($items as $orang) {
-    $kategori = kategori($orang);
-    $rekap[$kategori]++;
-    }
-    @endphp
-    @endforeach
-
-
-    <!-- logic umur -->
-    @php
-    $kategoriGlobal = [];
-
-    foreach ($grouped as $kabupaten => $items) {
-    foreach ($items->groupBy('district.name') as $kecamatan => $kecamatanItems) {
-    if (!isset($kategoriGlobal[$kabupaten])) {
-    $kategoriGlobal[$kabupaten] = [];
-    }
-
-    $kategoriGlobal[$kabupaten][$kecamatan] = [
-    'Kanak-kanak' => 0,
-    'Remaja' => 0,
-    'Bapak-bapak' => 0,
-    'Ibu-ibu' => 0,
-    ];
-
-    foreach ($kecamatanItems as $item) {
-    $usia = Carbon::parse($item->tanggal_lahir)->age;
-    $jk = strtolower($item->jenis_kelamin);
-    $status = strtolower($item->status_perkawinan);
-
-
-    if ($usia <= 12) {
-      $kategoriGlobal[$kabupaten][$kecamatan]['Kanak-kanak']++;
-      } elseif ($usia <=40 && $status !=='kawin' ) {
-      $kategoriGlobal[$kabupaten][$kecamatan]['Remaja']++;
-      } else {
-      if ($jk==='p' && $usia<=20 && $status==='kawin' ) {
-      $kategoriGlobal[$kabupaten][$kecamatan]['Ibu-ibu']++;
-      } elseif ($jk==='l' ) {
-      $kategoriGlobal[$kabupaten][$kecamatan]['Bapak-bapak']++;
-      } elseif ($jk==='p' ) {
-      $kategoriGlobal[$kabupaten][$kecamatan]['Ibu-ibu']++;
-      }
-      }
-      }
-      }
+      foreach ($items as $orang) {
+      $kategori = kategori($orang);
+      $rekap[$kategori]++;
       }
       @endphp
-      <div class="page-break">
-      </div>
-      <h2>Rekap Jumlah Pengamal Berdasarkan Kategori Usia per Kabupaten dan Kecamatan</h2>
-      @foreach ($kategoriGlobal as $kabupaten => $kecamatans)
-      <style>
-        .splite {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          /* 3 kolom sama besar */
-          gap: 20px;
-          /* Jarak antar item */
+      @endforeach
+
+
+      <!-- logic umur -->
+      @php
+      $kategoriGlobal = [];
+
+      foreach ($grouped as $kabupaten => $items) {
+      foreach ($items->groupBy('district.name') as $kecamatan => $kecamatanItems) {
+      if (!isset($kategoriGlobal[$kabupaten])) {
+      $kategoriGlobal[$kabupaten] = [];
+      }
+
+      $kategoriGlobal[$kabupaten][$kecamatan] = [
+      'Kanak-kanak' => 0,
+      'Remaja' => 0,
+      'Bapak-bapak' => 0,
+      'Ibu-ibu' => 0,
+      ];
+
+      foreach ($kecamatanItems as $item) {
+      $usia = Carbon::parse($item->tanggal_lahir)->age;
+      $jk = strtolower($item->jenis_kelamin);
+      $status = strtolower($item->status_perkawinan);
+
+
+      if ($usia <= 12) {
+        $kategoriGlobal[$kabupaten][$kecamatan]['Kanak-kanak']++;
+        } elseif ($usia <=40 && $status !=='kawin' ) {
+        $kategoriGlobal[$kabupaten][$kecamatan]['Remaja']++;
+        } else {
+        if ($jk==='p' && $usia<=20 && $status==='kawin' ) {
+        $kategoriGlobal[$kabupaten][$kecamatan]['Ibu-ibu']++;
+        } elseif ($jk==='l' ) {
+        $kategoriGlobal[$kabupaten][$kecamatan]['Bapak-bapak']++;
+        } elseif ($jk==='p' ) {
+        $kategoriGlobal[$kabupaten][$kecamatan]['Ibu-ibu']++;
         }
-      </style>
-      <div class=" splite">
-        <h3>
-          {{ $kabupaten }}
-        </h3>
-        <table border="1" cellpadding="5" cellspacing="0">
-          <thead>
-            <tr style="background-color: #076943; color: white; border: solid 1px; border:black">
-              <th rowspan="2" style="text-align: center; vertical-align: middle;">Kecamatan</th>
-              <th colspan="4" style="text-align: center;">Kelompok</th>
-              <th rowspan="2" style="text-align: center; vertical-align: middle;">Total</th>
+        }
+        }
+        }
+        }
+        @endphp
 
-            </tr>
-            <tr style="background-color: #076943;   color: white;">
-              <th style="text-align: center; vertical-align: middle;">Kanak-kanak</th>
-              <th style="text-align: center; vertical-align: middle;">Remaja</th>
-              <th style="text-align: center; vertical-align: middle;">Bapak-bapak</th>
-              <th style="text-align: center; vertical-align: middle;">Ibu-ibu</th>
+        </div>
+        <h2>Rekap Jumlah Pengamal Berdasarkan Kategori Usia per Kabupaten dan Kecamatan</h2>
+        @foreach ($kategoriGlobal as $kabupaten => $kecamatans)
+        <style>
+          .splite {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 3 kolom sama besar */
+            gap: 20px;
+            /* Jarak antar item */
+          }
+        </style>
+        <div class=" splite">
+          <style>
+            .page-break {
+              page-break-after: always;
+            }
+          </style>
+          <h3>
+            {{ $kabupaten }}
+          </h3>
+          <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+              <tr style="background-color: #076943; color: white; border: solid 1px; border:black">
+                <th rowspan="2" style="text-align: center; vertical-align: middle;">Kecamatan</th>
+                <th colspan="4" style="text-align: center;">Kelompok</th>
+                <th rowspan="2" style="text-align: center; vertical-align: middle;">Total</th>
 
-            </tr>
-          </thead>
-          <tbody>
-            @foreach ($kecamatans as $kecamatan => $data)
-            <tr>
-              <td style=" text-transform: uppercase;">{{ $kecamatan }}</td>
-              <td style="text-align: center; vertical-align: middle;">{{ $data['Kanak-kanak'] }}</td>
-              <td style="text-align: center; vertical-align: middle;">{{ $data['Remaja'] }}</td>
-              <td style="text-align: center; vertical-align: middle;">{{ $data['Bapak-bapak'] }}</td>
-              <td style="text-align: center; vertical-align: middle;">{{ $data['Ibu-ibu'] }}</td>
-              <td style="text-align: center; vertical-align: middle;">{{ array_sum($data) }}</td>
-            </tr>
-            @endforeach
-            <tr>
-              <td>Jumlah</td>
-              <td style=" text-align:center">{{ collect($kecamatans)->sum('Kanak-kanak') }}</td>
-              <td style=" text-align:center">{{ collect($kecamatans)->sum('Remaja') }} </td>
-              <td style=" text-align:center">{{ collect($kecamatans)->sum('Bapak-bapak') }} </td>
-              <td style=" text-align:center">{{ collect($kecamatans)->sum('Ibu-ibu') }} </td>
-              <td style=" text-align:center">
-                {{
+              </tr>
+              <tr style="background-color: #076943;   color: white;">
+                <th style="text-align: center; vertical-align: middle;">Kanak-kanak</th>
+                <th style="text-align: center; vertical-align: middle;">Remaja</th>
+                <th style="text-align: center; vertical-align: middle;">Bapak-bapak</th>
+                <th style="text-align: center; vertical-align: middle;">Ibu-ibu</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              @foreach ($kecamatans as $kecamatan => $data)
+              <tr>
+                <td style=" text-transform: uppercase;">{{ $kecamatan }}</td>
+                <td style="text-align: center; vertical-align: middle;">{{ $data['Kanak-kanak'] }}</td>
+                <td style="text-align: center; vertical-align: middle;">{{ $data['Remaja'] }}</td>
+                <td style="text-align: center; vertical-align: middle;">{{ $data['Bapak-bapak'] }}</td>
+                <td style="text-align: center; vertical-align: middle;">{{ $data['Ibu-ibu'] }}</td>
+                <td style="text-align: center; vertical-align: middle;">{{ array_sum($data) }}</td>
+              </tr>
+              @endforeach
+              <tr>
+                <td>Jumlah</td>
+                <td style=" text-align:center">{{ collect($kecamatans)->sum('Kanak-kanak') }}</td>
+                <td style=" text-align:center">{{ collect($kecamatans)->sum('Remaja') }} </td>
+                <td style=" text-align:center">{{ collect($kecamatans)->sum('Bapak-bapak') }} </td>
+                <td style=" text-align:center">{{ collect($kecamatans)->sum('Ibu-ibu') }} </td>
+                <td style=" text-align:center">
+                  {{
             collect($kecamatans)->sum('Kanak-kanak')
             + collect($kecamatans)->sum('Remaja')
             + collect($kecamatans)->sum('Bapak-bapak')
             + collect($kecamatans)->sum('Ibu-ibu')
         }}
-              </td>
+                </td>
 
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      @endforeach
-      <!--  -->
-
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        @endforeach
+        <div class="page-break">
+          <!--  -->
 </body>
 
 </html>

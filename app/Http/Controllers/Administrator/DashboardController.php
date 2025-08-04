@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Administrator;
 
 use Carbon\Carbon;
+use App\Models\Session;
 use App\Models\Pengamal;
-use Illuminate\Support\Str;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -19,9 +20,11 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         // 1. Pengguna aktif (online dalam 10 menit terakhir)
-        $activeUsers = DB::table('sessions')
+        $activeUsers = Session::with('user')
             ->where('last_activity', '>=', Carbon::now()->subMinutes(10)->timestamp)
-            ->get();
+            ->whereNotNull('user_id')
+            ->get()
+            ->pluck('user'); // hasil akhirnya kumpulan user aktif
 
         // 2. Log aktivitas pengguna saat ini
         $userLogs = Activity::causedBy($user)->get();
