@@ -63,12 +63,26 @@
                     </a>
                 </div>
 
-                <form action="{{ route('pengamal.index') }}" method="GET" class="flex gap-2">
-                    <input type="text" name="search" placeholder="Cari nama atau NIK" value="{{ request('search') }}"
-                        class="w-full sm:w-64 px-3 py-1 border rounded-md focus:outline-none focus:ring focus:ring-blue-300">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
+                <form action="{{ route('pengamal.index') }}" method="GET" class="mb-4 flex items-center gap-2">
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Cari nama atau NIK..."
+                        class="border border-gray-300 rounded px-3 py-2 w-64">
+                    <button
+                        type="submit"
+                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                         Cari
                     </button>
+
+                    @if(request('search'))
+                    <a
+                        href="{{ route('pengamal.index') }}"
+                        class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+                        Reset
+                    </a>
+                    @endif
                 </form>
             </div>
         </div>

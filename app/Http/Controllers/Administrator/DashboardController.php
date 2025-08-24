@@ -19,17 +19,7 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Pengguna aktif (online dalam 10 menit terakhir)
-        $activeUsers = Session::with('user')
-            ->where('last_activity', '>=', Carbon::now()->subMinutes(10)->timestamp)
-            ->whereNotNull('user_id')
-            ->get()
-            ->pluck('user'); // hasil akhirnya kumpulan user aktif
 
-        // 2. Log aktivitas pengguna saat ini
-        $userLogs = Activity::causedBy($user)->get();
-
-        // 3. Query utama data Pengamal berdasarkan role
         // 6. Statistik jenis kelamin
         $jumlahByGender = Pengamal::query()
             ->when($user->hasRole('admin-provinsi'), fn($q) => $q->where('provinsi', $user->code))
@@ -86,8 +76,6 @@ class DashboardController extends Controller
 
 
             'jumlahByGender' => $jumlahByGender,
-            'userLogs' => $userLogs,
-            'activeUsers' => $activeUsers,
             'labels' => $labels,
             'values' => $values,
         ]);

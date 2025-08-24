@@ -74,9 +74,11 @@
         <!-- CHARTS -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-white rounded-md shadow-md p-4">
-                <h2 class="text-xl font-semibold mb-4">Statistik Pengamal</h2>
-                <div class="w-[480px] h-[260px]">
-                    <canvas id="barChart"></canvas>
+                <h2 class="text-xl font-semibold mb-2">Statistik Pengamal</h2>
+                <div class="w-full max-w-md mx-auto">
+                    <div class="aspect-[16/9]">
+                        <canvas id="barChart" class="w-full h-full"></canvas>
+                    </div>
                 </div>
 
                 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -130,42 +132,7 @@
                     });
                 </script>
             </div>
-
-
             <div class=" rounded-md shadow-md p-4 bg-white">
-                <!-- <table class="min-w-full border border-gray-300">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-4 py-2 border">User ID</th>
-                            <th class="px-4 py-2 border">IP Address</th>
-                            <th class="px-4 py-2 border">User Agent</th>
-                            <th class="px-4 py-2 border">Terakhir Aktif</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($activeUsers as $session)
-                        <tr>
-                            <td class="px-4 py-2 border text-center">
-                                {{ $session->name ?? '-' }} {{-- tampilkan nama user --}}
-                            </td>
-                            <td class="px-4 py-2 border text-center">
-                                {{ $session->ip_address ?? '-' }}
-                            </td>
-                            <td class="px-4 py-2 border text-sm">
-                                {{ Str::limit($session->user_agent, 50) }}
-                            </td>
-                            <td class="px-4 py-2 border text-center">
-                                {{ $session->last_activity ? \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans() : '-' }}
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="px-4 py-4 border text-center">Tidak ada user aktif saat ini.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-
-                </table> -->
 
             </div>
         </div>
