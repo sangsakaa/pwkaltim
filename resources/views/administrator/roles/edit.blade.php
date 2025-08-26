@@ -12,56 +12,59 @@
         </div>
     </x-slot>
 
-    <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
-        <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md">
-            <div class="  flex ">
-                <div>
+    <div class="p-4 sm:p-6 lg:p-8 space-y-6"> {{-- Added padding and spacing --}}
+        <div class="bg-white rounded-md shadow-md overflow-hidden">
+            <div class="flex flex-col md:flex-row items-center p-4"> {{-- Adjusted for better responsiveness --}}
+                <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-4">
                     <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo">
                 </div>
-                <div class=" w-full flex items-center justify-center">
+                <div class="w-full text-center">
                     <marquee behavior="scroll" direction="left">
                         Selamat datang di website kami!
                     </marquee>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md">
-        <div class="  flex justify-between items-center ">
 
-        </div>
-        <div>
-            <div class=" overflow-auto">
-                <h1>Edit Role: {{ $role->name }}</h1>
-
+        <div class="bg-white rounded-md shadow-md overflow-hidden p-4"> {{-- Consolidated styling --}}
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-semibold">Edit Role: {{ $role->name }}</h1>
+            </div>
+            <div class="overflow-auto">
                 <form action="{{ route('roles.update', $role) }}" method="POST">
                     @csrf
                     @method('PUT')
-                    <div class=" w-full grid grid-cols-1 gap-">
-                        <label>Nama Role</label>
-                        <input type="text" name="name" value="{{ $role->name }}" required class=" w-1/2 rounded-md"
+                    <div class="mb-4"> {{-- Added margin-bottom for spacing --}}
+                        <label for="roleName" class="block text-sm font-medium text-gray-700 mb-1">Nama Role</label>
+                        <input type="text" name="name" id="roleName" value="{{ $role->name }}" required
+                            class="w-full md:w-1/2 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             placeholder="Masukkan nama role">
                     </div>
 
-                    <div>
-                        <label>Permission</label><br>
-                        @foreach($permissions as $permission)
-                        <label>
-                            <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
-                                {{ $role->permissions->contains('name', $permission->name) ? 'checked' : '' }}>
-                            {{ $permission->name }}
-                        </label><br>
-                        @endforeach
+                    <div class="mb-6"> {{-- Added margin-bottom for spacing --}}
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Permission</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"> {{-- Grid for permissions --}}
+                            @foreach($permissions as $permission)
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="permissions[]" value="{{ $permission->name }}"
+                                    {{ $role->permissions->contains('name', $permission->name) ? 'checked' : '' }}
+                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <span class="ml-2 text-sm text-gray-600">{{ $permission->name }}</span>
+                            </label>
+                            @endforeach
+                        </div>
                     </div>
 
-                    <button type="submit"
-                        class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
-                        Simpan
-                    </button>
-                    <a href="/roles"
-                        class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
-                        Kembali
-                    </a>
+                    <div class="flex items-center space-x-4"> {{-- Flexbox for buttons --}}
+                        <button type="submit"
+                            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
+                            Simpan
+                        </button>
+                        <a href="/roles"
+                            class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
+                            Kembali
+                        </a>
+                    </div>
                 </form>
             </div>
         </div>

@@ -10,6 +10,7 @@ use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Administrator\PengamalController;
 use App\Http\Controllers\Administrator\DashboardController;
+use App\Http\Controllers\SuratKeluarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -85,7 +86,9 @@ Route::get('/wilayah-desa/{regency}', [\App\Http\Controllers\WilayahController::
 Route::get('/laporan', [LaporanController::class,  'laporan'])->name('laporan.laporan')->middleware(['auth', 'verified']);
 
 
+// SURAT
 
+Route::resource('surat', SuratKeluarController::class);
 
 
 
