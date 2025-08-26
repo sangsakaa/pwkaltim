@@ -43,7 +43,7 @@
   <!-- Bagian Tambah Surat -->
   <div class="mt-4 bg-white p-4 rounded-md shadow-md">
     <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Tambah Surat</h2>
+      <h2 class="text-xl font-bold mb-4">Tambah Surat Keluar</h2>
       <form action="{{ route('surat.store') }}" method="POST">
         @csrf
         <div class=" grid grid-cols-2 gap-2">
@@ -68,7 +68,7 @@
             <input type="text" name="tempat" class="w-full border rounded p-2">
           </div>
           <div
-          <div class=" grid grid-cols-2 gap-2">
+            <div class=" grid grid-cols-2 gap-2">
             <div class="mb-3">
               <label class="block">Tanggal Hijriah</label>
               <input type="date" name="tanggal_hijriah" class="w-full border rounded p-2">
