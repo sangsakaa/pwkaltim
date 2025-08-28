@@ -54,8 +54,8 @@
             <th class="text-left p-3 text-xs font-medium text-gray-600">Nomor</th>
             <th class="text-left p-3 text-xs font-medium text-gray-600">Uraian</th>
             <th class="text-left p-3 text-xs font-medium text-gray-600">Waktu</th>
-            <th class="text-left p-3 text-xs font-medium text-gray-600">Sasaran</th>
             <th class="text-left p-3 text-xs font-medium text-gray-600">Tujuan</th>
+            <th class="text-left p-3 text-xs font-medium text-gray-600">Sasaran</th>
             <th class="text-left p-3 text-xs font-medium text-gray-600">Biaya</th>
             <th class="text-left p-3 text-xs font-medium text-gray-600">Penanggung Jawab</th>
             <th class="text-left p-3 text-xs font-medium text-gray-600 w-36">Aksi</th>
@@ -73,8 +73,8 @@
             </td>
 
             <td class="p-3 align-top text-sm text-gray-700 capitalize">{{ $row->waktu_pelaksanaan }}</td>
-            <td class="p-3 align-top text-sm text-gray-700">{{ $row->sasaran }}</td>
             <td class="p-3 align-top text-sm text-gray-700">{{ $row->target }}</td>
+            <td class="p-3 align-top text-sm text-gray-700">{{ $row->sasaran }}</td>
             <td class="p-3 align-top text-sm text-gray-700">{{ $row->biaya_rupiah }}</td>
             <td class="p-3 align-top text-sm text-gray-700">{{ $row->penanggung_jawab }}</td>
 
