@@ -33,7 +33,7 @@ $opsi = $opsiWaktu ?? ['bulanan', 'triwulan', 'semester', 'tahunan'];
   </div>
 
   <div>
-    <label class="block mb-1">Target <span class="text-red-600">*</span></label>
+    <label class="block mb-1">Tujuan <span class="text-red-600">*</span></label>
     <input type="text" name="target" value="{{ old('target', $program_kerja->target ?? '') }}"
       class="border rounded w-full px-3 py-2">
   </div>
