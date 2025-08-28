@@ -83,46 +83,10 @@
 </head>
 
 <body>
-  <table class="kop">
-    <tr class="h1">
-      <td class="logo" style="width: 150px;">
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}"
-          height="120px" width="120px" alt="Example Image" style="margin-left: 20px;">
-      </td>
-      <td>
-        @php
-        $user = auth()->user();
-
-        if ($user->regency?->name) {
-        if (Str::startsWith($user->regency->name, 'Kab.')) {
-        $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
-        } else {
-        $wilayah = $user->regency->name;
-        }
-        } elseif ($user->district?->name) {
-        $wilayah = 'Kec. ' . $user->district->name;
-        } elseif ($user->village?->name) {
-        $wilayah = $user->village->name;
-        } elseif ($user->province?->name) {
-        $wilayah = $user->province->name;
-        } else {
-        $wilayah = 'Tidak diketahui';
-        }
-        @endphp
-
-        <div class="kop-surat">
-          <div class="yayasan">YAYASAN PERJUANGAN WAHIDIYAH DAN PONDOK PESANTREN KEDUNGLO</div>
-          <div class="departemen">
-            DEPARTEMEN PEMBINA REMAJA WAHIDIYAH
-            <span>{{ Str::upper($wilayah) }}</span>
-          </div>
-          <div class="akta">
-            AKTA NOMOR 09 TAHUN 2011 KEMENKUMHAM RI NOMOR : AHU-9371.AH.01.04 TAHUN 2011
-          </div>
-        </div>
-      </td>
-    </tr>
-  </table>
+  <div>
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/kopdprw.png'))) }}"
+      height="" width="" alt="Example Image" style="margin-left: 20px;">
+  </div>
 
   <h2>Program Kerja - {{ ucfirst($waktu) }}</h2>
 
