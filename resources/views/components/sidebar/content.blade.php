@@ -121,6 +121,27 @@
             </svg>
         </x-slot>
     </x-sidebar.link>
+    <x-sidebar.link
+        title="Program Kerja"
+        href="{{ route('program-kerja.index') }}"
+        :isActive="request()->routeIs('program-kerja.index')">
+        <x-slot name="icon">
+            <!-- Ikon contoh (Clipboard List) -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2">
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 
+                         2 0 012-2h2l1-2h4l1 2h2a2 2 0 012 
+                         2v12a2 2 0 01-2 2z" />
+            </svg>
+        </x-slot>
+    </x-sidebar.link>
+
     @endrole
 
 
