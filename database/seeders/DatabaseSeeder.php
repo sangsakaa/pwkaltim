@@ -30,5 +30,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(VillagesTableSeeder::class);
         // $this->call(PengamalSeeder::class);
         // $this->call(PermissionSeeder::class);
+        $this->call([
+            ProgramKerjaSeeder::class,
+        ]);
     }
 }

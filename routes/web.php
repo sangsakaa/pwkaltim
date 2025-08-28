@@ -97,6 +97,8 @@ Route::get('/surat/file/{id}/view', [SuratKeluarController::class, 'viewFile'])-
 
 #PROGRAM KERJA
 Route::resource('program-kerja', ProgramKerjaController::class);
+Route::get('program-kerja/export/pdf/{waktu}', [ProgramKerjaController::class, 'exportPdf'])
+    ->name('program-kerja.export.pdf');
 
 
 

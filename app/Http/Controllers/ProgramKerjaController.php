@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProgramKerja;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Requests\StoreProgramKerjaRequest;
 use App\Http\Requests\UpdateProgramKerjaRequest;
-use Illuminate\Http\Request;
 
 class ProgramKerjaController extends Controller
 {
@@ -26,11 +27,7 @@ class ProgramKerjaController extends Controller
         return view('program-kerja.create', compact('opsiWaktu'));
     }
 
-    public function store(StoreProgramKerjaRequest $request)
-    {
-        ProgramKerja::create($request->validated());
-        return redirect()->route('program-kerja.index')->with('success', 'Program Kerja berhasil ditambahkan.');
-    }
+
 
     public function show(ProgramKerja $program_kerja)
     {
@@ -42,16 +39,49 @@ class ProgramKerjaController extends Controller
         $opsiWaktu = ['bulanan', 'triwulan', 'semester', 'tahunan'];
         return view('program-kerja.edit', compact('program_kerja', 'opsiWaktu'));
     }
+    public function store(StoreProgramKerjaRequest $request)
+    {
+        ProgramKerja::create($request->validated());
+        return redirect()->route('program-kerja.index')->with('success', 'Program Kerja berhasil ditambahkan.');
+    }
 
     public function update(UpdateProgramKerjaRequest $request, ProgramKerja $program_kerja)
     {
+        // Update data lama, bukan create baru
         $program_kerja->update($request->validated());
-        return redirect()->route('program-kerja.index')->with('success', 'Program Kerja berhasil diperbarui.');
+
+        return redirect()->route('program-kerja.index')
+            ->with('success', 'Program Kerja berhasil diperbarui.');
     }
+
 
     public function destroy(ProgramKerja $program_kerja)
     {
         $program_kerja->delete();
         return redirect()->route('program-kerja.index')->with('success', 'Program Kerja berhasil dihapus.');
+    }
+    public function exportPdf($waktu)
+    {
+        // Validasi input
+        $opsi = ['bulanan', 'triwulan', 'semester', 'tahunan'];
+        if (! in_array($waktu, $opsi)) {
+            abort(404, 'Jenis waktu tidak valid');
+        }
+
+        // Ambil data sesuai waktu
+        $data = ProgramKerja::where('waktu_pelaksanaan', $waktu)->get();
+
+        // Load view PDF
+        // $pdf = Pdf::loadView('program-kerja.pdf', [
+        //     'data' => $data,
+        //     'waktu' => ucfirst($waktu),
+        // ])->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('program-kerja.pdf', [
+            'data' => $data,
+            'waktu' => ucfirst($waktu),
+        ])
+            ->setPaper([0, 0, 595.28, 935.43], 'landscape'); // F4 landscape
+
+        return $pdf->download("program-kerja-{$waktu}.pdf");
     }
 }
