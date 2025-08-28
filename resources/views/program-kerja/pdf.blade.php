@@ -132,8 +132,8 @@
         <th>Nomor</th>
         <th>Uraian Kegiatan</th>
         <th>Waktu</th>
-        <th>Sasaran</th>
         <th>Tujuan</th>
+        <th>Sasaran</th>
         <th>Biaya</th>
         <th>Penanggung Jawab</th>
       </tr>
@@ -146,8 +146,8 @@
         <td>{{ $row->nomor }}</td>
         <td>{{ $row->uraian_kegiatan }}</td>
         <td>{{ ucfirst($row->waktu_pelaksanaan) }}</td>
-        <td>{{ $row->sasaran }}</td>
         <td>{{ $row->target }}</td>
+        <td>{{ $row->sasaran }}</td>
         <td>Rp {{ number_format($row->biaya, 0, ',', '.') }}</td>
         <td>{{ $row->penanggung_jawab }}</td>
       </tr>
