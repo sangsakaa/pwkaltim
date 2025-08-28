@@ -10,6 +10,8 @@ use App\Models\SuratKeluar;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ProgramKerja;
+use App\Models\SuratMasuk;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
 
@@ -71,6 +73,14 @@ class DashboardController extends Controller
 
         $values = $data->pluck('total');
         $totalSuratKeluar = SuratKeluar::count();
+        $totalSuratMasuk = SuratMasuk::count();
+
+        $biaya = ProgramKerja::select('waktu_pelaksanaan', DB::raw('SUM(biaya) as total_biaya'))
+            ->groupBy('waktu_pelaksanaan')
+            ->pluck('total_biaya', 'waktu_pelaksanaan');
+
+        // Hitung jumlah program kerja
+        $programKerja = ProgramKerja::count();
 
         // 7. Return view dengan semua data
         return view('administrator/dashboard/dashboard', [
@@ -81,6 +91,9 @@ class DashboardController extends Controller
             'labels' => $labels,
             'values' => $values,
             'totalSuratKeluar' => $totalSuratKeluar,
+            'totalSuratMasuk' => $totalSuratMasuk,
+            'programKerja' => $programKerja,
+            'biaya' => $biaya,
         ]);
     }
 }
