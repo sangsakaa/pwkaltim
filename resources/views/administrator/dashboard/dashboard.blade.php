@@ -81,7 +81,7 @@
         @elserole('Sekretaris-DPRW')
         <!-- SEKRETARIS DASHBOARD -->
         <div class="bg-white dark:bg-gray-800 dark:text-white rounded-md shadow-md p-4">
-            <h1 class="text-xl font-bold text-center">Dashboard Sekretaris DPRW</h1>
+            <h1 class="text-xl font-bold text-center">Dashboard DPRW PROVINSI KALIMANTAN TIMUR</h1>
             <p class="mt-2 text-gray-700 dark:text-gray-200 text-sm text-justify">
                 Anda memiliki akses terbatas untuk mengelola surat-menyurat dan dokumen wilayah.
             </p>
