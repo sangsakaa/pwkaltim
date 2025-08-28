@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\Session;
 use App\Models\Pengamal;
 
+use App\Models\SuratKeluar;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -69,6 +70,7 @@ class DashboardController extends Controller
         }
 
         $values = $data->pluck('total');
+        $totalSuratKeluar = SuratKeluar::count();
 
         // 7. Return view dengan semua data
         return view('administrator/dashboard/dashboard', [
@@ -78,6 +80,7 @@ class DashboardController extends Controller
             'jumlahByGender' => $jumlahByGender,
             'labels' => $labels,
             'values' => $values,
+            'totalSuratKeluar' => $totalSuratKeluar,
         ]);
     }
 }

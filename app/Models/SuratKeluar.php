@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\SuratFile;
 use Illuminate\Database\Eloquent\Model;
 
 class SuratKeluar extends Model
@@ -19,4 +20,8 @@ class SuratKeluar extends Model
         'isi_surat',
         'penandatangan',
     ];
+    public function files()
+    {
+        return $this->hasMany(SuratFile::class, 'surat_keluar_id');
+    }
 }

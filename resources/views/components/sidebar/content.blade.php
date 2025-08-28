@@ -84,8 +84,8 @@
             href="{{ route('wilayah.index') }}"
             :active="request()->routeIs('wilayah.index')" />
     </x-sidebar.dropdown>
-
-    @else
+    @endrole
+    @role (['admin-kabupaten', 'admin-kecamatan', 'admin-desa'])
     <x-sidebar.dropdown
         title="Posting"
         :active="Str::startsWith(request()->route()->uri(), 'post') || Str::startsWith(request()->route()->uri(), 'pengamal')">
@@ -108,7 +108,19 @@
             :active="request()->routeIs('post.create')" />
 
     </x-sidebar.dropdown>
-
+    @endrole
+    @role(['Sekretaris-DPRW'])
+    <x-sidebar.link
+        title="Surat Keluar"
+        href="{{ route('surat.index') }}"
+        :isActive="request()->routeIs('surat.index')">
+        <x-slot name="icon">
+            <!-- <x-icons.dashboard class="flex-shrink-0 w-6 h-6" aria-hidden="true" /> -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+        </x-slot>
+    </x-sidebar.link>
     @endrole
 
 

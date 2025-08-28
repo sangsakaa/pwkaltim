@@ -89,6 +89,10 @@ Route::get('/laporan', [LaporanController::class,  'laporan'])->name('laporan.la
 // SURAT
 
 Route::resource('surat', SuratKeluarController::class);
+Route::post('/surat/{id}/upload', [SuratKeluarController::class, 'upload'])->name('surat.upload');
+Route::get('/surat/file/{fileId}/download', [SuratKeluarController::class, 'downloadFile'])->name('surat.file.download');
+Route::delete('/surat/file/{fileId}', [SuratKeluarController::class, 'deleteFile'])->name('surat.file.delete');
+Route::get('/surat/file/{id}/view', [SuratKeluarController::class, 'viewFile'])->name('surat.file.view');
 
 
 
