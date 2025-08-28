@@ -8,9 +8,10 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\SuratKeluarController;
+use App\Http\Controllers\ProgramKerjaController;
 use App\Http\Controllers\Administrator\PengamalController;
 use App\Http\Controllers\Administrator\DashboardController;
-use App\Http\Controllers\SuratKeluarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -93,6 +94,9 @@ Route::post('/surat/{id}/upload', [SuratKeluarController::class, 'upload'])->nam
 Route::get('/surat/file/{fileId}/download', [SuratKeluarController::class, 'downloadFile'])->name('surat.file.download');
 Route::delete('/surat/file/{fileId}', [SuratKeluarController::class, 'deleteFile'])->name('surat.file.delete');
 Route::get('/surat/file/{id}/view', [SuratKeluarController::class, 'viewFile'])->name('surat.file.view');
+
+#PROGRAM KERJA
+Route::resource('program-kerja', ProgramKerjaController::class);
 
 
 
