@@ -133,7 +133,7 @@
         <th>Uraian Kegiatan</th>
         <th>Waktu</th>
         <th>Sasaran</th>
-        <th>Target</th>
+        <th>Tujuan</th>
         <th>Biaya</th>
         <th>Penanggung Jawab</th>
       </tr>
