@@ -9,10 +9,15 @@ use Illuminate\Support\Facades\Storage;
 
 class SuratKeluarController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $surat = SuratKeluar::latest()->paginate(10);
-        return view('administrator.surat.keluar.index', compact('surat'));
+        $keyword = $request->input('search');
+
+        $surat = SuratKeluar::latest()
+            ->search($keyword)
+            ->paginate(10);
+
+        return view('administrator.surat.keluar.index', compact('surat', 'keyword'));
     }
 
     public function show(SuratKeluar $surat)
@@ -131,5 +136,20 @@ class SuratKeluarController extends Controller
         $file->delete();
 
         return redirect()->back()->with('success', 'File berhasil dihapus!');
+    }
+    public function destroy(SuratKeluar $surat)
+    {
+        // Hapus file terkait
+        foreach ($surat->files as $file) {
+            if (Storage::disk('public')->exists($file->path_file)) {
+                Storage::disk('public')->delete($file->path_file);
+            }
+            $file->delete();
+        }
+
+        // Hapus surat
+        $surat->delete();
+
+        return redirect()->route('surat.index')->with('success', 'Data surat berhasil dihapus.');
     }
 }

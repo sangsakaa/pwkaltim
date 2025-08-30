@@ -24,4 +24,18 @@ class SuratKeluar extends Model
     {
         return $this->hasMany(SuratFile::class, 'surat_keluar_id');
     }
+    public function scopeSearch($query, $keyword)
+    {
+        if ($keyword) {
+            return $query->where(function ($q) use ($keyword) {
+                $q->where('nomor_surat', 'like', "%{$keyword}%")
+                    ->orWhere('perihal', 'like', "%{$keyword}%")
+                    ->orWhere('kepada', 'like', "%{$keyword}%")
+                    ->orWhere('penandatangan', 'like', "%{$keyword}%")
+                    ->orWhere('tempat', 'like', "%{$keyword}%");
+            });
+        }
+
+        return $query;
+    }
 }

@@ -44,7 +44,7 @@
       <!-- Data Tables Section -->
       <div class="mt-6 bg-white p-6 rounded-md shadow-md">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">Detail Daftar Surat</h2>
+          <h2 class="text-xl font-bold">Detail Daftar Surat Keluar</h2>
         </div>
 
         {{-- Detail Surat --}}

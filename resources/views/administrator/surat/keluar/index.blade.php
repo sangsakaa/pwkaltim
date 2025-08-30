@@ -3,6 +3,7 @@
     @php
     $user = auth()->user();
     $wilayah = 'Tidak diketahui';
+
     if ($user->regency?->name) {
     $wilayah = Str::startsWith($user->regency->name, 'Kab.')
     ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
@@ -18,114 +19,150 @@
 
     @section('title', 'PW ' . $wilayah)
 
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       <div class="flex items-center gap-3">
-        <img src="{{ asset('image/logo.png') }}" alt="Logo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain">
+        <img src="{{ asset('image/logo.png') }}" alt="Logo" class="w-12 h-12 object-contain">
         <div>
-          <h2 class="text-lg sm:text-xl font-semibold text-gray-800 leading-tight">
-            Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
+          <h2 class="text-xl font-bold text-gray-800">
+            Dashboard PW <span class="text-green-700">{{ $wilayah }}</span>
           </h2>
-          <p class="text-xs text-green-600 hidden sm:block">Selamat datang di dashboard PW {{ $wilayah }}</p>
+          <p class="text-sm text-gray-500">Selamat datang di dashboard PW {{ $wilayah }}</p>
         </div>
-      </div>
-
-      <div class="flex gap-2 items-center">
-        <!-- <a href="{{ route('surat-masuk.create') }}"
-          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded shadow text-sm">
-          + Tambah Surat Masuk
-        </a> -->
       </div>
     </div>
   </x-slot>
 
-  <div class="space-y-4 p-4 sm:p-6">
-    <!-- Header ringkasan -->
-    <div class="bg-gradient-to-r from-green-800 to-green-700 text-white rounded-md shadow-md p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <img src="{{ asset('image/logo.png') }}" alt="Logo" class="w-12 h-12 sm:w-14 sm:h-14 object-contain">
+  <div class="space-y-6 p-4 sm:p-6">
+    <!-- Ringkasan -->
+    <div class="bg-gradient-to-r from-green-700 to-green-600 text-white rounded-xl shadow-lg p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+      <div class="flex items-center gap-4">
+        <img src="{{ asset('image/logo.png') }}" alt="Logo" class="w-14 h-14 object-contain">
         <div>
-          <h3 class="uppercase text-base sm:text-lg font-semibold">PW {{ $wilayah }}</h3>
-          <p class="text-sm text-green-100 hidden sm:block">Selamat datang di dashboard PW {{ $wilayah }}</p>
+          <h3 class="uppercase text-lg font-semibold">PW {{ $wilayah }}</h3>
+          <p class="text-sm text-green-100">Ringkasan aktivitas surat dan anggota</p>
         </div>
       </div>
 
-      <div class="text-sm text-green-100">
-        <div class="flex gap-6">
-          <div class="flex flex-col">
-            <span class="font-semibold">Surat</span>
-            <span class="text-xs">Terbaru & Terkelola</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="font-semibold">Anggota</span>
-            <span class="text-xs">--</span>
-          </div>
+      <div class="flex gap-8 text-sm">
+        <div class="flex flex-col text-center">
+          <span class="font-bold text-lg">Surat</span>
+          <span class="text-green-100">Terbaru & Terkelola</span>
+        </div>
+        <div class="flex flex-col text-center">
+          <span class="font-bold text-lg">Anggota</span>
+          <span class="text-green-100">--</span>
         </div>
       </div>
     </div>
 
-    <!-- Content card -->
-    <div class="bg-white p-4 rounded-md shadow-md">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">Daftar Surat</h2>
-        <a href="{{ route('surat.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+    <!-- Content -->
+    <div class="bg-white p-5 rounded-xl shadow-md">
+      <!-- Pencarian & Tambah -->
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-5">
+        <form method="GET" action="{{ route('surat.index') }}" class="flex w-full sm:w-auto gap-2">
+          <input
+            type="text"
+            name="search"
+            value="{{ request('search') }}"
+            placeholder="Cari surat..."
+            class="border border-gray-300 rounded-lg p-2 w-full sm:w-64 focus:ring-2 focus:ring-green-500 focus:outline-none">
+          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
+            Cari
+          </button>
+        </form>
+        <a href="{{ route('surat.create') }}"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
           + Tambah Surat
         </a>
       </div>
 
+      <!-- Notifikasi -->
       @if (session('success'))
-      <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+      <div class="mb-4 p-4 bg-green-100 border border-green-300 text-green-800 rounded-lg shadow-sm">
         {{ session('success') }}
       </div>
       @endif
 
-      <div class="overflow-x-auto">
-        <table class="min-w-full table-auto border-collapse border border-gray-300">
-          <thead class="bg-gray-100 text-left">
+      <!-- Tabel -->
+      <div class="overflow-x-auto rounded-lg border border-gray-200">
+        <table class="min-w-full table-auto">
+          <thead class="bg-gray-100 text-gray-700">
             <tr>
-              <th class="border border-gray-300 px-3 py-2">No</th>
-              <th class="border border-gray-300 px-3 py-2">Nomor Surat</th>
-              <th class="border border-gray-300 px-3 py-2">Perihal</th>
-              <th class="border border-gray-300 px-3 py-2">Kepada</th>
-              <th class="border border-gray-300 px-3 py-2">Tanggal</th>
-              <th class="border border-gray-300 px-3 py-2 text-center">Aksi</th>
+              <th class="px-4 py-2 text-left">No</th>
+              <th class="px-4 py-2 text-left">Nomor Surat</th>
+              <th class="px-4 py-2 text-left">Perihal</th>
+              <th class="px-4 py-2 text-left">Kepada</th>
+              <th class="px-4 py-2 text-left">Tanggal</th>
+              <th class="px-4 py-2 text-center">Aksi</th>
             </tr>
           </thead>
-
-          <tbody>
+          <tbody class="divide-y divide-gray-200">
             @forelse ($surat as $i => $item)
-            <tr class="hover:bg-gray-50">
-              <td class="border border-gray-300 px-3 py-2">{{ $surat->firstItem() + $i }}</td>
-              <td class="border border-gray-300 px-3 py-2">{{ $item->nomor_surat }}</td>
-              <td class="border border-gray-300 px-3 py-2">{{ $item->perihal }}</td>
-              <td class="border border-gray-300 px-3 py-2">{{ $item->kepada }}</td>
-              <td class="border border-gray-300 px-3 py-2">
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-4 py-2">{{ $surat->firstItem() + $i }}</td>
+              <td class="px-4 py-2">{{ $item->nomor_surat }}</td>
+              <td class="px-4 py-2">{{ $item->perihal }}</td>
+              <td class="px-4 py-2">{{ $item->kepada }}</td>
+              <td class="px-4 py-2">
                 {{ $item->tanggal_masehi ? \Carbon\Carbon::parse($item->tanggal_masehi)->format('d-m-Y') : '-' }}
               </td>
-              <td class="border border-gray-300 px-3 py-2 text-center space-x-2">
-                <a href="{{ route('surat.show', $item->id) }}" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Lihat</a>
-                <a href="{{ route('surat.edit', $item->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">Edit</a>
-
-                <form action="{{ route('surat.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus surat ini?')">
+              <td class="px-4 py-2 text-center flex justify-center gap-2">
+                <a href="{{ route('surat.show', $item->id) }}"
+                  class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-xs shadow">
+                  Lihat
+                </a>
+                <a href="{{ route('surat.edit', $item->id) }}"
+                  class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg text-xs shadow">
+                  Edit
+                </a>
+                <!-- Delete Form -->
+                <form action="{{ route('surat.destroy', $item->id) }}" method="POST" class="inline delete-form">
                   @csrf
                   @method('DELETE')
-                  <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+                  <button type="submit"
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-xs shadow btn-delete">
                     Hapus
                   </button>
                 </form>
+
               </td>
             </tr>
             @empty
             <tr>
-              <td colspan="6" class="text-center py-3">Belum ada data surat</td>
+              <td colspan="6" class="text-center py-4 text-gray-500">Belum ada data surat</td>
             </tr>
             @endforelse
           </tbody>
         </table>
       </div>
 
-      <div class="mt-4">
+      <!-- Pagination -->
+      <div class="mt-5">
         {{ $surat->links() }}
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        let form = this.closest('form');
+        Swal.fire({
+          title: 'Yakin hapus data ini?',
+          text: "Tindakan ini tidak dapat dibatalkan!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Ya, hapus!',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        })
+      });
+    });
+  </script>
 </x-app-layout>
