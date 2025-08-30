@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserRoleController;
+use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SuratKeluarController;
@@ -101,11 +102,18 @@ Route::resource('surat-masuk', SuratMasukController::class);
 
 #PROGRAM KERJA
 Route::resource('program-kerja', ProgramKerjaController::class);
+// Route::put('/program-kerja/{program_kerja}', [ProgramKerjaController::class, 'update'])
+//     ->name('program-kerja.update');
+
 Route::get('program-kerja/export/pdf/{waktu}', [ProgramKerjaController::class, 'exportPdf'])
     ->name('program-kerja.export.pdf');
 
 
-
+// departemen
+Route::middleware(['auth'])->group(function () {
+    Route::resource('departemen', DepartemenController::class)
+        ->parameters(['departemen' => 'departemen']);
+});
 
 // post
 

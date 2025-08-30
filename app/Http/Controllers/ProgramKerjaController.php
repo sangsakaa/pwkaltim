@@ -41,6 +41,7 @@ class ProgramKerjaController extends Controller
     }
     public function store(StoreProgramKerjaRequest $request)
     {
+
         ProgramKerja::create($request->validated());
         return redirect()->route('program-kerja.index')->with('success', 'Program Kerja berhasil ditambahkan.');
     }
@@ -48,9 +49,10 @@ class ProgramKerjaController extends Controller
     public function update(UpdateProgramKerjaRequest $request, ProgramKerja $program_kerja)
     {
         // Update data lama, bukan create baru
+
         $program_kerja->update($request->validated());
 
-        return redirect()->route('program-kerja.index')
+        return redirect()->back()
             ->with('success', 'Program Kerja berhasil diperbarui.');
     }
 

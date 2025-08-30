@@ -96,7 +96,7 @@
         </div>
 
         {{-- Table container: allow horizontal scroll on small screens --}}
-        <div class="bg-white shadow rounded overflow-x-auto">
+        <div class="bg-white shadow rounded overflow-x-auto mt-2">
           <table class="min-w-full divide-y">
             <thead class="bg-gray-100">
               <tr>
@@ -129,15 +129,27 @@
 
                 <td class="p-3 align-top text-sm text-gray-700">
                   <div class="flex items-center gap-2">
-                    <a href="{{ route('program-kerja.show', $row) }}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm">Detail</a>
+                    <!-- Detail -->
+                    <a href="{{ route('program-kerja.show', $row) }}"
+                      class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm">Detail</a>
 
-                    {{-- Hapus: gunakan form dengan konfirmasi --}}
-                    <form method="POST" action="{{ route('program-kerja.destroy', $row) }}" onsubmit="return confirm('Hapus data ini?')" class="inline">
-                      @csrf @method('DELETE')
-                      <button type="submit" class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm">Hapus</button>
+                    <!-- Edit -->
+                    <a href="{{ route('program-kerja.edit', $row) }}"
+                      class="px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm">Edit</a>
+
+                    <!-- Hapus -->
+                    <form method="POST" action="{{ route('program-kerja.destroy', $row) }}"
+                      onsubmit="return confirm('Hapus data ini?')" class="inline">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit"
+                        class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm">
+                        Hapus
+                      </button>
                     </form>
                   </div>
                 </td>
+
               </tr>
               @empty
               <tr>
