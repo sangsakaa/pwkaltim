@@ -62,28 +62,59 @@ class ProgramKerjaController extends Controller
         $program_kerja->delete();
         return redirect()->route('program-kerja.index')->with('success', 'Program Kerja berhasil dihapus.');
     }
+    // public function exportPdf($waktu)
+    // {
+    //     // Validasi input
+    //     $opsi = ['bulanan', 'triwulan', 'semester', 'tahunan'];
+    //     if (! in_array($waktu, $opsi)) {
+    //         abort(404, 'Jenis waktu tidak valid');
+    //     }
+
+    //     // Ambil data sesuai waktu
+    //     $data = ProgramKerja::where('waktu_pelaksanaan', $waktu)->get();
+
+    //     // Load view PDF
+    //     // $pdf = Pdf::loadView('program-kerja.pdf', [
+    //     //     'data' => $data,
+    //     //     'waktu' => ucfirst($waktu),
+    //     // ])->setPaper('A4', 'portrait');
+    //     $pdf = Pdf::loadView('program-kerja.pdf', [
+    //         'data' => $data,
+    //         'waktu' => ucfirst($waktu),
+    //     ])
+    //         ->setPaper([0, 0, 595.28, 935.43], 'landscape'); // F4 landscape
+
+    //     return $pdf->download("program-kerja-{$waktu}.pdf");
+    // }
     public function exportPdf($waktu)
     {
-        // Validasi input
         $opsi = ['bulanan', 'triwulan', 'semester', 'tahunan'];
-        if (! in_array($waktu, $opsi)) {
+
+        if ($waktu !== 'semua' && ! in_array($waktu, $opsi)) {
             abort(404, 'Jenis waktu tidak valid');
         }
 
-        // Ambil data sesuai waktu
-        $data = ProgramKerja::where('waktu_pelaksanaan', $waktu)->get();
+        $tahun = now()->year;
 
-        // Load view PDF
-        // $pdf = Pdf::loadView('program-kerja.pdf', [
-        //     'data' => $data,
-        //     'waktu' => ucfirst($waktu),
-        // ])->setPaper('A4', 'portrait');
+        $query = ProgramKerja::query()->whereYear('created_at', $tahun);
+
+        $data = $waktu === 'semua'
+            ? $query->whereIn('waktu_pelaksanaan', $opsi)->get()
+            : $query->where('waktu_pelaksanaan', $waktu)->get();
+
+        $label = $waktu === 'semua' ? 'Semua Waktu' : ucfirst($waktu);
+
         $pdf = Pdf::loadView('program-kerja.pdf', [
-            'data' => $data,
-            'waktu' => ucfirst($waktu),
-        ])
-            ->setPaper([0, 0, 595.28, 935.43], 'landscape'); // F4 landscape
+            'data'  => $data,
+            'waktu' => $label,
+            'tahun' => $tahun,
+        ])->setPaper([0, 0, 595.28, 935.43], 'landscape');
 
-        return $pdf->download("program-kerja-{$waktu}.pdf");
+        $filename = $waktu === 'semua'
+            ? "program-kerja-semua-{$tahun}.pdf"
+            : "program-kerja-{$waktu}-{$tahun}.pdf";
+
+        // tampilkan di browser, bukan download
+        return $pdf->stream($filename);
     }
 }

@@ -79,6 +79,19 @@
           </form>
 
           {{-- Export --}}
+          <!-- <div class="flex flex-wrap gap-2">
+            <a href="{{ route('program-kerja.export.pdf', 'bulanan') }}" target="_blank" rel="noopener noreferrer"
+              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Bulanan</a>
+
+            <a href="{{ route('program-kerja.export.pdf', 'triwulan') }}" target="_blank" rel="noopener noreferrer"
+              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Triwulan</a>
+
+            <a href="{{ route('program-kerja.export.pdf', 'semester') }}" target="_blank" rel="noopener noreferrer"
+              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Semester</a>
+
+            <a href="{{ route('program-kerja.export.pdf', 'tahunan') }}" target="_blank" rel="noopener noreferrer"
+              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Tahunan</a>
+          </div> -->
           <div class="flex flex-wrap gap-2">
             <a href="{{ route('program-kerja.export.pdf', 'bulanan') }}" target="_blank" rel="noopener noreferrer"
               class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Bulanan</a>
@@ -91,7 +104,13 @@
 
             <a href="{{ route('program-kerja.export.pdf', 'tahunan') }}" target="_blank" rel="noopener noreferrer"
               class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Tahunan</a>
+            <a href="{{ route('program-kerja.exportPdf', 'semua') }}" target="_blank"
+              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+              Semua
+            </a>
+
           </div>
+
 
         </div>
 

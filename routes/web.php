@@ -102,8 +102,10 @@ Route::resource('surat-masuk', SuratMasukController::class);
 
 #PROGRAM KERJA
 Route::resource('program-kerja', ProgramKerjaController::class);
-// Route::put('/program-kerja/{program_kerja}', [ProgramKerjaController::class, 'update'])
-//     ->name('program-kerja.update');
+Route::get('/program-kerja/export/{waktu}', [ProgramKerjaController::class, 'exportPdf'])
+    ->name('program-kerja.exportPdf');
+
+
 
 Route::get('program-kerja/export/pdf/{waktu}', [ProgramKerjaController::class, 'exportPdf'])
     ->name('program-kerja.export.pdf');
