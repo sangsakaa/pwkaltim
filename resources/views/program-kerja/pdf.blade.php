@@ -5,9 +5,18 @@
   <meta charset="utf-8">
   <title>Program Kerja - {{ $waktu }}</title>
   <style>
+    @page {
+      margin-top: 0.5cm;
+      margin-bottom: 0.5cm;
+      margin-left: 0.5cm;
+      margin-right: 0.5cm;
+    }
+
     body {
       font-family: DejaVu Sans, sans-serif;
       font-size: 12px;
+      margin: 0;
+      /* biar tidak dobel dengan @page */
     }
 
     table {
@@ -29,7 +38,7 @@
 
     h2 {
       text-align: center;
-      margin-bottom: 15px;
+      margin: 15px 0;
     }
 
     tfoot td {
@@ -85,7 +94,7 @@
 <body>
   <div>
     <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/kopdprw.png'))) }}"
-      height="" width="100%" alt="Example Image" ">
+      width="100%" alt="Example Image">
   </div>
 
   <h2>Program Kerja - {{ ucfirst($waktu) }}</h2>
@@ -117,9 +126,9 @@
       </tr>
       @empty
       <tr>
-        <td colspan=" 7" style="text-align: center">Tidak ada data</td>
-    </tr>
-    @endforelse
+        <td colspan="7" style="text-align: center">Tidak ada data</td>
+      </tr>
+      @endforelse
     </tbody>
     @if(count($data) > 0)
     <tfoot>
@@ -129,7 +138,7 @@
       </tr>
     </tfoot>
     @endif
-    </table>
+  </table>
 </body>
 
 </html>

@@ -20,4 +20,16 @@ class SuratMasuk extends Model
         'keterangan',
         'file_surat',
     ];
+    public function scopeSearch($query, $term)
+    {
+        if ($term) {
+            $query->where(function ($q) use ($term) {
+                $q->where('nomor_surat', 'like', "%{$term}%")
+                    ->orWhere('asal_surat', 'like', "%{$term}%")
+                    ->orWhere('perihal', 'like', "%{$term}%")
+                    ->orWhere('keterangan', 'like', "%{$term}%");
+            });
+        }
+        return $query;
+    }
 }

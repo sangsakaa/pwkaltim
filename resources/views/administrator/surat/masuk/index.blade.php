@@ -79,7 +79,7 @@
 
       <!-- Table -->
       <div class="overflow-x-auto">
-        <table class="min-w-full table-auto border border-gray-200 rounded-lg overflow-hidden">
+        <table class="min-w-full table-auto border border-gray-200 rounded-lg ">
           <thead class="bg-gray-100 text-gray-700">
             <tr>
               <th class="px-4 py-2 text-left">No</th>
@@ -91,7 +91,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            @forelse($surat as $s)
+            @forelse($suratMasuk as $s)
             <tr class="hover:bg-gray-50 transition">
               <td class="px-4 py-2">{{ $loop->iteration }}</td>
               <td class="px-4 py-2 whitespace-nowrap">{{ $s->nomor_surat }}</td>
@@ -129,10 +129,10 @@
       <!-- Pagination -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-5">
         <div class="text-sm text-gray-500">
-          Menampilkan {{ $surat->firstItem() ?: 0 }} - {{ $surat->lastItem() ?: 0 }} dari {{ $surat->total() }} data
+          Menampilkan {{ $suratMasuk->firstItem() ?: 0 }} - {{ $suratMasuk->lastItem() ?: 0 }} dari {{ $suratMasuk->total() }} data
         </div>
         <div>
-          {{ $surat->links() }}
+          {{ $suratMasuk->links() }}
         </div>
       </div>
     </div>

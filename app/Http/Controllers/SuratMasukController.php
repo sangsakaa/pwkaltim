@@ -8,10 +8,14 @@ use Illuminate\Support\Facades\Storage;
 
 class SuratMasukController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $surat = SuratMasuk::latest()->paginate(10);
-        return view('administrator.surat.masuk.index', compact('surat'));
+        $q = $request->get('q');
+
+        $suratMasuk = SuratMasuk::search($q)
+            ->orderBy('tanggal_terima', 'desc')
+            ->paginate(10);
+        return view('administrator.surat.masuk.index', compact('suratMasuk', 'q'));
     }
 
     public function create()
