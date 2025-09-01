@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Program Kerja - {{ $waktu }}</title>
+  <title>Program Kerja - {{ ucfirst($waktu) }}</title>
   <style>
     @page {
       margin-top: 0.5cm;
@@ -16,7 +16,6 @@
       font-family: DejaVu Sans, sans-serif;
       font-size: 12px;
       margin: 0;
-      /* biar tidak dobel dengan @page */
     }
 
     table {
@@ -36,57 +35,19 @@
       background: #f2f2f2;
     }
 
-    h2 {
+    h4 {
       text-align: center;
       margin: 15px 0;
+    }
+
+    h3 {
+      margin-top: 20px;
+      margin-bottom: 5px;
     }
 
     tfoot td {
       font-weight: bold;
       background: #f9f9f9;
-    }
-
-    /* Kop styling */
-    table.kop {
-      width: 100%;
-      border: none;
-      background-color: #1b5e20;
-      /* Hijau gelap */
-      color: white;
-      padding: 10px;
-    }
-
-    table.kop td {
-      border: none;
-      vertical-align: middle;
-    }
-
-    .kop-surat {
-      text-align: center;
-    }
-
-    .kop-surat .yayasan {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    .kop-surat .departemen {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    .kop-surat .departemen span {
-      display: block;
-      font-size: 20px;
-      /* Lebih besar untuk wilayah */
-      font-weight: bold;
-      margin-top: 2px;
-    }
-
-    .kop-surat .akta {
-      font-size: 11px;
     }
   </style>
 </head>
@@ -97,14 +58,21 @@
       width="100%" alt="Example Image">
   </div>
 
-  <h2>Program Kerja - {{ ucfirst($waktu) }}</h2>
+  <h4>PROGRAM KERJA <br> DEPATEMEN PEMBINA REMAJA WAHIDIYAH <br>TAHUN {{ date('Y') }}</h4>
+
+
+  @php $totalBiayaSemua = 0; @endphp
+
+  @if ($waktu == 'semua')
+  {{-- Loop berdasarkan kelompok waktu --}}
+  @foreach ($data->groupBy('waktu_pelaksanaan') as $kelompokWaktu => $items)
+  <h3>Waktu Pelaksanaan: {{ ucfirst($kelompokWaktu) }}</h3>
 
   <table>
     <thead>
       <tr>
         <th>Nomor</th>
         <th>Uraian Kegiatan</th>
-        <th>Waktu</th>
         <th>Tujuan</th>
         <th>Sasaran</th>
         <th>Biaya</th>
@@ -113,32 +81,92 @@
     </thead>
     <tbody>
       @php $totalBiaya = 0; @endphp
-      @forelse ($data as $row)
-      @php $totalBiaya += $row->biaya; @endphp
+      @foreach ($items as $row)
+      @php $totalBiaya += $row->biaya; $totalBiayaSemua += $row->biaya; @endphp
       <tr>
         <td>{{ $row->nomor }}</td>
         <td>{{ $row->uraian_kegiatan }}</td>
-        <td>{{ ucfirst($row->waktu_pelaksanaan) }}</td>
         <td>{{ $row->target }}</td>
         <td>{{ $row->sasaran }}</td>
         <td>Rp {{ number_format($row->biaya, 0, ',', '.') }}</td>
         <td>{{ $row->penanggung_jawab }}</td>
       </tr>
+      @endforeach
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" style="text-align:right">Total Biaya {{ ucfirst($kelompokWaktu) }}</td>
+        <td colspan="2">Rp {{ number_format($totalBiaya, 0, ',', '.') }}</td>
+      </tr>
+    </tfoot>
+  </table>
+  @endforeach
+
+  <h3 style="margin-top:20px;">Total Biaya Semua Waktu: Rp {{ number_format($totalBiayaSemua, 0, ',', '.') }}</h3>
+
+  @else
+  {{-- Jika hanya 1 waktu --}}
+  <p><strong>Waktu Pelaksanaan:</strong> {{ ucfirst($waktu) }}</p>
+
+  <table border="1" cellspacing="0" cellpadding="6" style="width:100%">
+    <thead>
+      <tr>
+        <th>Nomor</th>
+        <th>Uraian Kegiatan</th>
+        <th>Tujuan</th>
+        <th>Sasaran</th>
+        <th>Biaya</th>
+        <th>Penanggung Jawab</th>
+      </tr>
+    </thead>
+    <tbody>
+      @php
+      $grandTotal = 0;
+      @endphp
+
+      @forelse ($data->groupBy('waktu_pelaksanaan') as $waktu => $group)
+      {{-- Judul per Waktu --}}
+      <tr style="background:#f0f0f0; font-weight:bold;">
+        <td colspan="6">{{ ucfirst($waktu) }}</td>
+      </tr>
+
+      @php $subtotal = 0; @endphp
+      @foreach ($group as $row)
+      @php $subtotal += $row->biaya; $grandTotal += $row->biaya; @endphp
+      <tr>
+        <td>{{ $row->nomor }}</td>
+        <td>{{ $row->uraian_kegiatan }}</td>
+        <td>{{ $row->target }}</td>
+        <td>{{ $row->sasaran }}</td>
+        <td>Rp {{ number_format($row->biaya, 0, ',', '.') }}</td>
+        <td>{{ $row->penanggung_jawab }}</td>
+      </tr>
+      @endforeach
+
+      {{-- Subtotal per Waktu --}}
+      <tr style="font-weight:bold; background:#e8f5e9;">
+        <td colspan="4" style="text-align:right">Subtotal {{ ucfirst($waktu) }}</td>
+        <td colspan="2">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
+      </tr>
       @empty
       <tr>
-        <td colspan="7" style="text-align: center">Tidak ada data</td>
+        <td colspan="6" style="text-align:center">Tidak ada data</td>
       </tr>
       @endforelse
     </tbody>
+
+    {{-- Total Keseluruhan --}}
     @if(count($data) > 0)
     <tfoot>
-      <tr>
-        <td colspan="5" style="text-align: right">Total Biaya</td>
-        <td colspan="2">Rp {{ number_format($totalBiaya, 0, ',', '.') }}</td>
+      <tr style="background:#c8e6c9; font-weight:bold;">
+        <td colspan="4" style="text-align:right">Total Biaya Keseluruhan</td>
+        <td colspan="2">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
       </tr>
     </tfoot>
     @endif
   </table>
+
+  @endif
 </body>
 
 </html>

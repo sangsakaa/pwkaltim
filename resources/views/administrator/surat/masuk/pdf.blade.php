@@ -6,24 +6,19 @@
   <title>Laporan Expedisi Surat Masuk</title>
   <style>
     @page {
-      margin-top: 0.5cm;
-      margin-bottom: 0.5cm;
-      margin-left: 0.5cm;
-      margin-right: 0.5cm;
+      margin: 0.5cm;
     }
 
     body {
       font-family: DejaVu Sans, sans-serif;
       font-size: 12px;
-      margin-top: 2px;
-      margin-left: 2px;
-      margin-right: 2px;
+      margin: 0;
+      /* hilangkan margin body */
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-
     }
 
     th,
@@ -40,6 +35,7 @@
 
     h2 {
       text-align: center;
+      margin: 10px 0;
     }
   </style>
 </head>
