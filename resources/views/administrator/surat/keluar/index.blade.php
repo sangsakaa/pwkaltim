@@ -24,7 +24,7 @@
         <img src="{{ asset('image/logo.png') }}" alt="Logo" class="w-12 h-12 object-contain">
         <div>
           <h2 class="text-xl font-bold text-gray-800">
-            Dashboard PW <span class="text-green-700">{{ $wilayah }}</span>
+            Dashboard <span class="text-green-700">{{ $wilayah }}</span>
           </h2>
           <p class="text-sm text-gray-500">Selamat datang di dashboard PW {{ $wilayah }}</p>
         </div>

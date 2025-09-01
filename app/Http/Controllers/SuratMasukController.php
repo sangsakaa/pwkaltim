@@ -93,7 +93,7 @@ class SuratMasukController extends Controller
             'file_surat' => $filePath,
         ]);
 
-        return redirect()->route('administrator.masuk.index')->with('success', 'Surat masuk berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Surat masuk berhasil diperbarui.');
     }
 
     public function destroy($id)
