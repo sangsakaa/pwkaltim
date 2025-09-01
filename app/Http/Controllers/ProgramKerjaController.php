@@ -108,7 +108,9 @@ class ProgramKerjaController extends Controller
             'data'  => $data,
             'waktu' => $label,
             'tahun' => $tahun,
-        ])->setPaper([0, 0, 595.28, 935.43], 'landscape');
+            // ])->setPaper([0, 0, 595.28, 935.43], 'landscape');
+        ])->setPaper([0, 0, 595.28, 935.43], 'portrait'); // F4 portrait
+
 
         $filename = $waktu === 'semua'
             ? "program-kerja-semua-{$tahun}.pdf"
