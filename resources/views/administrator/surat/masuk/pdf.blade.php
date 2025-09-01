@@ -5,15 +5,25 @@
   <meta charset="utf-8">
   <title>Laporan Expedisi Surat Masuk</title>
   <style>
+    @page {
+      margin-top: 0.5cm;
+      margin-bottom: 0.5cm;
+      margin-left: 0.5cm;
+      margin-right: 0.5cm;
+    }
+
     body {
       font-family: DejaVu Sans, sans-serif;
       font-size: 12px;
+      margin-top: 2px;
+      margin-left: 2px;
+      margin-right: 2px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+
     }
 
     th,
@@ -35,6 +45,12 @@
 </head>
 
 <body>
+  <div>
+    <div>
+      <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/kopdprw.png'))) }}"
+        width="100%" alt="Example Image">
+    </div>
+  </div>
   <h2>Laporan Expedisi Surat Masuk</h2>
 
   <table>

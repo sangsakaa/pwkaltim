@@ -112,7 +112,8 @@ class SuratMasukController extends Controller
         $suratMasuk = SuratMasuk::orderBy('tanggal_terima', 'desc')->get();
 
         $pdf = Pdf::loadView('administrator.surat.masuk.pdf', compact('suratMasuk'))
-            ->setPaper('A4', 'landscape'); // Expedisi biasanya landscape
+            ->setPaper('A4', 'portrait'); // Expedisi biasanya portrait
+        // ->setPaper('A4', 'landscape'); // Expedisi biasanya landscape
 
         return $pdf->stream('Laporan_Expedisi_Surat_Masuk.pdf');
         // Jika ingin ditampilkan langsung di browser:
