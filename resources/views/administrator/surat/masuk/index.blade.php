@@ -94,9 +94,9 @@
             @forelse($suratMasuk as $s)
             <tr class="hover:bg-gray-50 transition">
               <td class="px-4 py-2">{{ $loop->iteration }}</td>
-              <td class="px-4 py-2 whitespace-nowrap">{{ $s->nomor_surat }}</td>
-              <td class="px-4 py-2 whitespace-nowrap">{{ $s->asal_surat }}</td>
-              <td class="px-4 py-2 hidden sm:table-cell whitespace-nowrap">{{ $s->tanggal_surat }}</td>
+              <td class="px-4 py-2 ">{{ $s->nomor_surat }}</td>
+              <td class="px-4 py-2 ">{{ $s->asal_surat }}</td>
+              <td class="px-4 py-2 hidden sm:table-cell ">{{ $s->tanggal_surat }}</td>
               <td class="px-4 py-2 max-w-xs truncate">{{ $s->perihal }}</td>
               <td class="px-4 py-2 text-center flex justify-center gap-2">
                 <a href="{{ route('surat-masuk.show', $s->id) }}"
