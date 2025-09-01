@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
 class SuratMasukController extends Controller
@@ -105,5 +106,17 @@ class SuratMasukController extends Controller
         $surat->delete();
 
         return redirect()->back()->with('success', 'Surat masuk berhasil dihapus.');
+    }
+    public function exportSuratMasuk()
+    {
+        $suratMasuk = SuratMasuk::orderBy('tanggal_terima', 'desc')->get();
+
+        $pdf = Pdf::loadView('administrator.surat.masuk.pdf', compact('suratMasuk'))
+            ->setPaper('A4', 'landscape'); // Expedisi biasanya landscape
+
+        return $pdf->stream('Laporan_Expedisi_Surat_Masuk.pdf');
+        // Jika ingin ditampilkan langsung di browser:
+        // return $pdf->stream('Laporan_Expedisi_Surat_Masuk.pdf');
+
     }
 }

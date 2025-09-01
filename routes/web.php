@@ -14,6 +14,7 @@ use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\ProgramKerjaController;
 use App\Http\Controllers\Administrator\PengamalController;
 use App\Http\Controllers\Administrator\DashboardController;
+use App\Models\SuratMasuk;
 
 Route::get('/', function () {
     return view('welcome');
@@ -99,6 +100,8 @@ Route::get('/surat/file/{id}/view', [SuratKeluarController::class, 'viewFile'])-
 
 // SURAT MASUK
 Route::resource('surat-masuk', SuratMasukController::class);
+Route::get('/export/surat-masuk', [SuratMasukController::class, 'exportSuratMasuk']);
+
 
 #PROGRAM KERJA
 Route::resource('program-kerja', ProgramKerjaController::class);
