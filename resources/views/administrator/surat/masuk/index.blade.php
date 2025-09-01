@@ -78,7 +78,7 @@
       </div>
 
       <!-- Table -->
-      <div class="overflow-x-auto">
+      <div class="">
         <table class="min-w-full table-auto border border-gray-200 rounded-lg ">
           <thead class="bg-gray-100 text-gray-700">
             <tr>
