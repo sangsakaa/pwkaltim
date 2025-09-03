@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Pengamal;
+use App\Models\SuratMasuk;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
@@ -9,12 +10,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\SuratMasukController;
+use App\Http\Controllers\SuratTugasController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\ProgramKerjaController;
 use App\Http\Controllers\Administrator\PengamalController;
 use App\Http\Controllers\Administrator\DashboardController;
-use App\Models\SuratMasuk;
 
 Route::get('/', function () {
     return view('welcome');
@@ -101,6 +102,11 @@ Route::get('/surat/file/{id}/view', [SuratKeluarController::class, 'viewFile'])-
 // SURAT MASUK
 Route::resource('surat-masuk', SuratMasukController::class);
 Route::get('/export/surat-masuk', [SuratMasukController::class, 'exportSuratMasuk']);
+
+// SURAT TUGAS
+Route::resource('surat-tugas', SuratTugasController::class);
+Route::get('/surat-tugas/{id}/pdf', [SuratTugasController::class, 'cetakPdf'])->name('surat-tugas.pdf');
+
 
 
 #PROGRAM KERJA

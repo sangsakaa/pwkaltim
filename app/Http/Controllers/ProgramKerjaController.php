@@ -90,6 +90,7 @@ class ProgramKerjaController extends Controller
     {
         $opsi = ['bulanan', 'triwulan', 'semester', 'tahunan'];
 
+
         if ($waktu !== 'semua' && ! in_array($waktu, $opsi)) {
             abort(404, 'Jenis waktu tidak valid');
         }
