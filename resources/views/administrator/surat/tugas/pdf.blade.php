@@ -70,7 +70,9 @@
       <tr>
         <td style="text-align: left; vertical-align: top;">Tanggal</td>
         <td style="text-align: left; vertical-align: top;">:</td>
-        <td style="text-align: left; vertical-align: top;">{{ $surat->tanggal_hijriyah }} / {{ $surat->tanggal_masehi }}</td>
+        <td style="text-align: left; vertical-align: top;">{{ $surat->tanggal_hijriyah }} /
+          {{ \Carbon\Carbon::parse($surat->tanggal_masehi)->translatedFormat('d F Y') }} M
+        </td>
       </tr>
       <tr>
         <td style="text-align: left; vertical-align: top;">Pukul</td>
