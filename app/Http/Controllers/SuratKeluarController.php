@@ -79,7 +79,7 @@ class SuratKeluarController extends Controller
 
         SuratKeluar::create($request->all());
 
-        return redirect()->with('success', 'Data surat berhasil disimpan.');
+        return redirect()->back()->with('success', 'Data surat berhasil disimpan.');
     }
     public function upload(Request $request, $id)
     {
