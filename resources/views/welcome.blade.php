@@ -116,7 +116,7 @@
       <div class=" grid grid-cols-1 md:grid-cols-1 gap-6 mb-4 mt-4">
         <div class="p-6 bg-white shadow rounded-lg">
           <h2 class="text-2xl font-bold text-gray-800 mb-4">Selamat Datang di YPW KALIMANTAN TIMUR</h2>
-          <p class="text-gray-600 mb-4">Sistem Pengelolaan Data Pengamal Sekalimantan Timur</p>
+          <p class="text-gray-600 mb-4">SINTAK "Sistem Informasi Terpadu Pengamal Kalimantan Timur"</p>
           <!-- <a href="#persyaratan" class="text-blue-600 hover:underline">Lihat Persyaratan Pendaftaran</a> -->
         </div>
       </div>
