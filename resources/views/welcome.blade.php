@@ -121,7 +121,7 @@
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="p-6 bg-white shadow rounded-lg">
+        <!-- <div class="p-6 bg-white shadow rounded-lg">
           <h3 class=" font-bold text-gray-800 mb-2">
             <span class="text-xl">DEPARTEMEN PENYIARAN DAN PEMBINA WAHIDIYAH (DPPW)</span> <br>
             <span></span>
@@ -139,7 +139,7 @@
         <div class="p-6 bg-white shadow rounded-lg">
           <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA KANAK-KANAK WAHIDIYAH (DPKW)</h3>
           <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
-        </div>
+        </div> -->
         <!-- <div class="p-6 bg-white shadow rounded-lg">
                     <h3 class="text-xl font-bold text-gray-800 mb-2">DEPARTEMEN PEMBINA KANAK KANAK WAHIDIYAH</h3>
                     <p class="text-gray-600">Description of DEPARTEMEN PEMBINA.</p>
