@@ -97,8 +97,9 @@ class ProgramKerjaController extends Controller
 
         $tahun = now()->year;
 
-        $query = ProgramKerja::query()->whereYear('created_at', $tahun);
-
+        $query = ProgramKerja::query()
+            ->whereYear('created_at', $tahun)
+            ->orderByRaw("FIELD(waktu_pelaksanaan, 'bulanan', 'triwulan', 'semester', 'tahunan')");
         $data = $waktu === 'semua'
             ? $query->whereIn('waktu_pelaksanaan', $opsi)->get()
             : $query->where('waktu_pelaksanaan', $waktu)->get();

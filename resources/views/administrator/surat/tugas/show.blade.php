@@ -6,19 +6,19 @@
   </x-slot>
 
   <div class="py-6">
-    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+    <div class="">
       <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-6">
 
         <!-- Nomor Surat -->
         <div class="mb-4">
           <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Nomor Surat</h3>
-          <p class="text-gray-700 dark:text-gray-300">{{ $surat_tuga->nomor_surat }}</p>
+          <p class="text-gray-700 dark:text-gray-300">{{ $surat_tuga->nomor }}</p>
         </div>
 
         <!-- Perihal -->
         <div class="mb-4">
           <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Perihal</h3>
-          <p class="text-gray-700 dark:text-gray-300">{{ $surat_tuga->perihal }}</p>
+          <p class="text-gray-700 dark:text-gray-300">{{ $surat_tuga->keperluan }}</p>
         </div>
 
         <!-- Tanggal -->
