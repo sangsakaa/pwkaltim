@@ -11,7 +11,15 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    
+    public function home()
+    {
+        $posts = Post::where('status', 'approved')
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('home', compact('posts'));
+    }
     public function create()
     {   
         $categories = Category::all();
@@ -19,21 +27,53 @@ class PostController extends Controller
     }
     public function showPublic($id)
     {
-        $post = Post::where('status', 'approved')->findOrFail($id);
+        $user = auth()->user();
 
-        // Ambil post sebelumnya
-        $previousPost = Post::where('status', 'approved')
+        $query = Post::query()
+            ->where('status', 'approved');
+
+        // 🔐 FILTER BERDASARKAN ROLE SAJA
+        if ($user && $user->role !== 'admin') {
+            // user biasa tetap boleh lihat post approved
+            // kalau mau dibatasi, bisa tambah filter lain nanti
+        }
+
+        // Ambil post utama
+        $post = (clone $query)->findOrFail($id);
+
+        // Previous post
+        $previousPost = (clone $query)
             ->where('id', '<', $post->id)
             ->orderByDesc('id')
             ->first();
 
-        // Ambil post berikutnya
-        $nextPost = Post::where('status', 'approved')
+        // Next post
+        $nextPost = (clone $query)
             ->where('id', '>', $post->id)
-            ->orderBy('id')
+            ->orderBy('id', 'asc')
             ->first();
 
-        return view('administrator.post.detail', compact('post', 'previousPost', 'nextPost'));
+        // Sidebar: latest posts
+        $latestPosts = (clone $query)
+            ->where('id', '!=', $post->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // Sidebar: older posts
+        $olderPosts = (clone $query)
+            ->where('id', '!=', $post->id)
+            ->oldest()
+            ->take(5)
+            ->get();
+
+        return view('administrator.post.detail', compact(
+            'post',
+            'previousPost',
+            'nextPost',
+            'latestPosts',
+            'olderPosts'
+        ));
     }
     public function store(Request $request)
     {
@@ -67,32 +107,39 @@ class PostController extends Controller
 
     public function approval()
     {
-        $posts = Post::where('status', 'pending')->with('creator')->get();
-        $rejectposts = Post::where('status', 'rejected')->with('creator')->get();
-        return view('administrator.post.approval', compact('posts', 'rejectposts'));
-    }
+        return view('administrator.post.approval', [
+            'pendingPosts' => Post::where('status', 'pending')
+                // ->with('creator')
+                ->latest()
+                ->get(),
 
+            'rejectedPosts' => Post::where('status', 'rejected')
+                // ->with('creator')
+                ->latest()
+                ->get(),
+        ]);
+    }
     public function approve(Request $request, $id)
     {
         $post = Post::findOrFail($id);
 
-        if ($request->action === 'approve') {
-            $post->update([
-                'status' => 'approved',
-                'approved_by' => auth()->id(),
-                'approved_at' => now(),
-                'was_approved' => true,
-            ]);
-        } elseif ($request->action === 'reject') {
-            $post->update([
-                'status' => 'rejected',
-                'approved_by' => auth()->id(),
-                'approved_at' => now(),
-                // 'was_approved' => false,
-            ]);
+        if (!in_array($request->action, ['approve', 'reject'])) {
+            return back()->with('error', 'Aksi tidak valid');
         }
 
-        return redirect()->back()->with('success', 'Aksi berhasil dilakukan.');
+        $post->status = $request->action === 'approve'
+            ? 'approved'
+            : 'rejected';
+
+        $post->approved_by = auth()->id();
+        $post->approved_at = now();
+
+        // optional flag
+        $post->was_approved = $request->action === 'approve';
+
+        $post->save();
+
+        return back()->with('success', 'Status post berhasil diperbarui');
     }
     public function rejectedAfterApproval()
     {

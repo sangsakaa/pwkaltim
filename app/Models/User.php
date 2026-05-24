@@ -92,4 +92,27 @@ class User extends Authenticatable
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
     }
+    public function getWilayahAttribute()
+    {
+        if ($this->regency?->name) {
+            if (Str::startsWith($this->regency->name, 'Kab.')) {
+                return 'Kabupaten ' . ltrim(substr($this->regency->name, 4));
+            }
+            return $this->regency->name;
+        }
+
+        if ($this->district?->name) {
+            return 'Kec. ' . $this->district->name;
+        }
+
+        if ($this->village?->name) {
+            return $this->village->name;
+        }
+
+        if ($this->province?->name) {
+            return $this->province->name;
+        }
+
+        return 'Tidak diketahui';
+    }
 }

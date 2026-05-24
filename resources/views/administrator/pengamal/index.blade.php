@@ -1,14 +1,17 @@
 <x-app-layout>
+
+    {{-- HEADER --}}
     <x-slot name="header">
         @php
         $user = auth()->user();
         $wilayah = 'Tidak diketahui';
+
         if ($user->regency?->name) {
         $wilayah = Str::startsWith($user->regency->name, 'Kab.')
         ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
         : $user->regency->name;
         } elseif ($user->district?->name) {
-        $wilayah = 'Kec. ' . $user->district->name;
+        $wilayah = 'Kecamatan ' . $user->district->name;
         } elseif ($user->village?->name) {
         $wilayah = $user->village->name;
         } elseif ($user->province?->name) {
@@ -18,133 +21,191 @@
 
         @section('title', 'PW ' . $wilayah)
 
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <h2 class="text-xl font-semibold text-gray-800 leading-tight">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+
+            <h2 class="text-xl font-bold text-gray-800">
                 Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
             </h2>
+
         </div>
     </x-slot>
 
-    <!-- Card Wilayah -->
-    <div class="grid gap-2">
-        <div class="bg-green-800  text-white rounded-md shadow-md flex items-center">
-            <div class="bg-green-800 p-2 rounded-md flex items-center justify-center">
-                <img src="{{ asset('image/logo.png') }}" alt="Logo" width="50">
+    {{-- WRAPPER --}}
+    <div class="space-y-4">
+
+        {{-- HEADER CARD --}}
+        <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow-lg p-4 flex items-center gap-4">
+
+            <img src="{{ asset('image/logo.png') }}" class="w-12 h-12  rounded-full p-1">
+
+            <div>
+                <h3 class="text-lg font-bold uppercase">
+                    PW {{ $wilayah }}
+                </h3>
+                <p class="text-sm text-green-100">
+                    Sistem Data Pengamal Terintegrasi
+                </p>
             </div>
-            <div class="ml-4">
-                <h3 class="uppercase text-lg font-semibold ">PW {{ $wilayah }}</h3>
-            </div>
+
         </div>
 
-        <!-- Tools -->
-        <div class="bg-white p-4 rounded-md shadow-md">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                <div class="flex gap-2 flex-wrap">
+        {{-- TOOLBAR --}}
+        <div class="bg-white rounded-xl shadow p-4 border border-gray-100">
+
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+
+                {{-- BUTTONS --}}
+                <div class="flex flex-wrap gap-2">
+
                     @role('admin-provinsi')
-                    <a href="/pengamal/create" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
-                        Tambah Pengamal
+                    <a href="/pengamal/create"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm shadow">
+                        + Tambah Pengamal
                     </a>
                     @endrole
 
                     @role('admin-kabupaten')
-                    <a href="/pengamal/create" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
-                        Tambah Pengamal
+                    <a href="/pengamal/create"
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm shadow">
+                        + Tambah Pengamal
                     </a>
                     @endrole
 
                     @role('admin-kecamatan')
-                    <a href="/pengamal/create" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded">
-                        Tambah Pengamal
+                    <a href="/pengamal/create"
+                        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm shadow">
+                        + Tambah Pengamal
                     </a>
                     @endrole
 
-                    <a href="/laporan" target="_blank" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
-                        PDF
+                    <a href="/laporan" target="_blank"
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm shadow">
+                        Export PDF
                     </a>
+
                 </div>
 
-                <form action="{{ route('pengamal.index') }}" method="GET" class="mb-4 flex items-center gap-2">
-                    <input
-                        type="text"
+                {{-- SEARCH --}}
+                <form action="{{ route('pengamal.index') }}" method="GET"
+                    class="flex items-center gap-2">
+
+                    <input type="text"
                         name="search"
                         value="{{ request('search') }}"
-                        placeholder="Cari nama atau NIK..."
-                        class="border border-gray-300 rounded px-3 py-2 w-64">
-                    <button
-                        type="submit"
-                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        placeholder="Cari nama / NIK..."
+                        class="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none">
+
+                    <button type="submit"
+                        class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg text-sm">
                         Cari
                     </button>
 
                     @if(request('search'))
-                    <a
-                        href="{{ route('pengamal.index') }}"
-                        class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">
+                    <a href="{{ route('pengamal.index') }}"
+                        class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg text-sm">
                         Reset
                     </a>
                     @endif
+
                 </form>
+
             </div>
         </div>
 
-        <!-- Tabel Data Pengamal -->
-        <div class="bg-white p-4 rounded-md shadow-md overflow-x-auto">
-            <table class="min-w-full table-auto border divide-y divide-gray-200">
-                <thead class="bg-green-900 text-white">
-                    <tr>
-                        <th class="py-2 px-3 text-center">No</th>
-                        <th class="py-2 px-3 text-left">Nama</th>
-                        <th class="py-2 px-3 text-left">Kabupaten</th>
-                        <th class="py-2 px-3 text-left">Kecamatan</th>
-                        <th class="py-2 px-3 text-left">Desa</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm text-gray-700">
-                    @forelse ($dataPengamal as $item)
-                    <tr class="hover:bg-gray-50 border-b">
-                        <td class="py-2 px-3 text-center">{{ $loop->iteration }}</td>
-                        <td class="py-2 px-3">
-                            <a href="/pengamal/show/{{ $item->id }}" class="text-blue-600 hover:underline">
-                                {{ $item->nama_lengkap }}
-                            </a>
-                        </td>
-                        <td class="py-2 px-3">{{ $item->regency->name ?? '-' }}</td>
-                        <td class="py-2 px-3">Kec. {{ $item->district->name ?? '-' }}</td>
-                        <td class="py-2 px-3">{{ $item->village->name ?? '-' }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="text-center py-4">Data tidak ditemukan.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            <div class="mt-4">
+        {{-- TABLE --}}
+        <div class="bg-white rounded-xl shadow overflow-hidden border border-gray-100">
+
+            <div class="overflow-x-auto">
+
+                <table class="min-w-full text-sm">
+
+                    <thead class="bg-green-900 text-white">
+                        <tr>
+                            <th class="px-4 py-3 text-center">No</th>
+                            <th class="px-4 py-3 text-left">Nama</th>
+                            <th class="px-4 py-3 text-left">Kabupaten</th>
+                            <th class="px-4 py-3 text-left">Kecamatan</th>
+                            <th class="px-4 py-3 text-left">Desa</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-100">
+
+                        @forelse ($dataPengamal as $item)
+                        <tr class="hover:bg-green-50 transition">
+
+                            <td class="px-4 py-3 text-center text-gray-500">
+                                {{ $loop->iteration }}
+                            </td>
+
+                            <td class="px-4 py-3 font-medium">
+                                <a href="/pengamal/show/{{ $item->id }}"
+                                    class="text-green-700 hover:underline">
+                                    {{ $item->nama_lengkap }}
+                                </a>
+                            </td>
+
+                            <td class="px-4 py-3 text-gray-600">
+                                {{ $item->regency->name ?? '-' }}
+                            </td>
+
+                            <td class="px-4 py-3 text-gray-600">
+                                {{ $item->district->name ?? '-' }}
+                            </td>
+
+                            <td class="px-4 py-3 text-gray-600">
+                                {{ $item->village->name ?? '-' }}
+                            </td>
+
+                        </tr>
+                        @empty
+
+                        <tr>
+                            <td colspan="5" class="text-center py-6 text-gray-500">
+                                Tidak ada data ditemukan
+                            </td>
+                        </tr>
+
+                        @endforelse
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            {{-- PAGINATION --}}
+            <div class="p-4 border-t">
                 {{ $dataPengamal->links() }}
             </div>
+
         </div>
+
     </div>
 
-    <!-- Toastr JS -->
+    {{-- TOASTR --}}
     <script>
         toastr.options = {
             closeButton: true,
             progressBar: true,
             positionClass: "toast-top-right",
-            timeOut: "5000",
+            timeOut: "4000",
         };
 
         @if(Session::has('success'))
         toastr.success("{{ Session::get('success') }}");
         @endif
+
         @if(Session::has('error'))
         toastr.error("{{ Session::get('error') }}");
         @endif
+
         @if(Session::has('info'))
         toastr.info("{{ Session::get('info') }}");
         @endif
+
         @if(Session::has('warning'))
         toastr.warning("{{ Session::get('warning') }}");
         @endif
     </script>
+
 </x-app-layout>

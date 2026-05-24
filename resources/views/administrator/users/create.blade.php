@@ -1,129 +1,124 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <h2 class="text-xl font-semibold leading-tight">
-                @php
-                $user = auth()->user();
 
-                if ($user->regency?->name) {
-                if (Str::startsWith($user->regency->name, 'Kab.')) {
-                $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
-                } else {
-                $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
-                }
-                } elseif ($user->district?->name) {
-                $wilayah = 'Kec. ' . $user->district->name;
-                } elseif ($user->village?->name) {
-                $wilayah = $user->village->name;
-                } elseif ($user->province?->name) {
-                $wilayah = $user->province->name;
-                } else {
-                $wilayah = 'Tidak diketahui';
-                }
-                @endphp
-                @section('title', 'PW '. $wilayah .' - User Management' )
-                <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between ">
-                    <h2 class="text-xl font-semibold leading-tight">
-                        {{ __('User Management') }}
-                    </h2>
-                </div>
+    @php
+    $auth = auth()->user();
+
+    $wilayah = 'Tidak diketahui';
+
+    if ($auth->regency?->name) {
+    if (Str::startsWith($auth->regency->name, 'Kab.')) {
+    $wilayah = 'Kabupaten ' . ltrim(substr($auth->regency->name, 4));
+    } else {
+    $wilayah = $auth->regency->name;
+    }
+    } elseif ($auth->district?->name) {
+    $wilayah = 'Kec. ' . $auth->district->name;
+    } elseif ($auth->village?->name) {
+    $wilayah = $auth->village->name;
+    } elseif ($auth->province?->name) {
+    $wilayah = $auth->province->name;
+    }
+    @endphp
+
+    {{-- HEADER --}}
+    <x-slot name="header">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <h2 class="text-xl font-bold text-gray-800">
+                Tambah User
+                <span class="text-green-700">({{ $wilayah }})</span>
             </h2>
         </div>
     </x-slot>
-    <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
-        <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md">
-            <div class="  flex ">
 
-                <div class="bg-green-800 flex flex-col items-center justify-center p-1">
-                    <img src="{{ asset('image/logo.png') }}" width="50" alt="Logo">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+
+        {{-- CARD HEADER --}}
+        <div class="bg-white shadow rounded-xl overflow-hidden border border-green-100">
+
+            <div class="flex items-center bg-green-700 text-white">
+                <div class="p-3 bg-green-800">
+                    <img src="{{ asset('image/logo.png') }}" width="50">
                 </div>
 
-                <div class="bg-green-800 w-full sm:grid sm:grid-cols-1 flex flex-col items-center text-white fw-semibold p-4">
-                    @php
-                    $user = auth()->user();
-
-                    if ($user->regency?->name) {
-                    if (Str::startsWith($user->regency->name, 'Kab.')) {
-                    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
-                    } else {
-                    $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
-                    }
-                    } elseif ($user->district?->name) {
-                    $wilayah = 'Kec. ' . $user->district->name;
-                    } elseif ($user->village?->name) {
-                    $wilayah = $user->village->name;
-                    } elseif ($user->province?->name) {
-                    $wilayah = $user->province->name;
-                    } else {
-                    $wilayah = 'Tidak diketahui';
-                    }
-                    @endphp
-                    <span class="uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
+                <div class="px-4 font-bold uppercase">
+                    PW {{ $wilayah }}
                 </div>
-
             </div>
-        </div>
-    </div>
-    <div class="  p-2 overflow-hidden bg-white rounded-md shadow-md">
-        <div class="  flex justify-between items-center ">
 
         </div>
-        <div>
-            <div class=" overflow-auto">
-                <div class="container">
-                    <div class="container px-2">
-                        <h2>Tambah User</h2>
 
-                        <form action="/users/create" method="POST">
-                            @csrf
+        {{-- FORM --}}
+        <div class="mt-4 bg-white shadow rounded-xl p-6 border border-gray-100">
 
-                            <div class="mb-3">
-                                <label>Nama</label>
-                                <input type="text" name="name" class=" w-full rounded-md px-2 form-control" value="{{ old('name') }}" required>
-                            </div>
+            <h2 class="text-lg font-semibold mb-4 text-gray-800">
+                Form Tambah User
+            </h2>
 
-                            <div class="mb-3">
-                                <label>Email</label>
-                                <input type="email" name="email" class=" w-full rounded-md px-2 form-control" value="{{ old('email') }}" required>
-                            </div>
-                            <div>
-                                <label for="code">Kode Daerah</label>
-                                <input type="text" name="code" class=" w-full rounded-md px-2" value="{{ old('code') }}" required>
-                                @error('code') <div>{{ $message }}</div> @enderror
-                            </div>
+            <form action="{{ route('users.store') }}" method="POST">
+                @csrf
 
-                            <div class=" grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                <div class="mb-3">
-                                    <label>Password</label>
-                                    <input type="password" name="password" class=" w-full rounded-md px-2 form-control" required>
-                                </div>
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Nama</label>
+                    <input type="text" name="name"
+                        class="w-full border rounded px-3 py-2"
+                        value="{{ old('name') }}" required>
+                </div>
 
-                                <div class="mb-3">
-                                    <label>Konfirmasi Password</label>
-                                    <input type="password" name="password_confirmation" class=" w-full rounded-md px-2 form-control" required>
-                                </div>
-                            </div>
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Email</label>
+                    <input type="email" name="email"
+                        class="w-full border rounded px-3 py-2"
+                        value="{{ old('email') }}" required>
+                </div>
 
-                            <div class="flex gap-2">
-                                <a
-                                    href="/users/assign-role"
-                                    class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300">
-                                    Kembali
-                                </a>
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Kode Daerah</label>
+                    <input type="text" name="code"
+                        class="w-full border rounded px-3 py-2"
+                        value="{{ old('code') }}" required>
 
-                                <button
-                                    type="submit"
-                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
-                                    Simpan
-                                </button>
-                            </div>
+                    @error('code')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                    @enderror
+                </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-
-                        </form>
+                    <div>
+                        <label class="text-sm font-medium">Password</label>
+                        <input type="password" name="password"
+                            class="w-full border rounded px-3 py-2"
+                            required>
                     </div>
+
+                    <div>
+                        <label class="text-sm font-medium">Konfirmasi Password</label>
+                        <input type="password" name="password_confirmation"
+                            class="w-full border rounded px-3 py-2"
+                            required>
+                    </div>
+
                 </div>
-            </div>
+
+                {{-- BUTTON --}}
+                <div class="flex gap-2 mt-5">
+
+                    <a href="{{ route('users.assign-role-index') }}"
+                        class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                        Kembali
+                    </a>
+
+                    <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                        Simpan
+                    </button>
+
+                </div>
+
+            </form>
+
         </div>
+
+    </div>
 
 </x-app-layout>

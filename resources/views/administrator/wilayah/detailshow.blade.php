@@ -1,14 +1,19 @@
 <x-app-layout>
+
+    {{-- HEADER --}}
     <x-slot name="header">
         @php
+
+
         $user = auth()->user();
         $wilayah = 'Tidak diketahui';
+
         if ($user->regency?->name) {
         $wilayah = Str::startsWith($user->regency->name, 'Kab.')
         ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
         : $user->regency->name;
         } elseif ($user->district?->name) {
-        $wilayah = 'Kec. ' . $user->district->name;
+        $wilayah = 'Kecamatan ' . $user->district->name;
         } elseif ($user->village?->name) {
         $wilayah = $user->village->name;
         } elseif ($user->province?->name) {
@@ -16,51 +21,126 @@
         }
         @endphp
 
-        @section('title', 'PW ' . $wilayah)
+        @section('title' . $wilayah)
 
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <h2 class="text-xl font-semibold text-gray-800 leading-tight">
-                Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
-            </h2>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">
+                    Dashboard
+                </h2>
+                <p class="text-sm text-gray-500">
+                    {{ $wilayah }}
+                </p>
+            </div>
         </div>
     </x-slot>
 
-    <!-- Header Section with Logo and Back Button -->
-    <div class="grid grid-cols-1 gap-2">
-        <div class="p-4 bg-white rounded-md shadow-md flex items-center justify-between">
-            <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo">
-            <a href="/wilayah/{{ substr($regency, 0, -3) }}"
-                class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
-                Kembali
-            </a>
+    <div class="space-y-5">
+
+        {{-- HERO HEADER --}}
+        <div
+            class="bg-gradient-to-r from-green-800 via-green-700 to-green-600 rounded-2xl shadow-lg p-5 text-white">
+
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+
+                <div class="flex items-center gap-4">
+                    <img src="{{ asset('image/favicon.png') }}"
+                        class="h-14 md:h-16 object-contain   p-2 "
+                        alt="Logo">
+
+                    <div>
+                        <h3 class="text-xl font-bold">
+                            Data Desa
+                        </h3>
+
+                        <p class="text-green-100 text-sm">
+                            Daftar kode desa wilayah {{ $wilayah }}
+                        </p>
+                    </div>
+                </div>
+
+                <a href="/wilayah/{{ substr($regency, 0, -3) }}"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 transition text-white font-medium border border-white/20">
+
+                    ← Kembali
+                </a>
+            </div>
         </div>
+
+        {{-- TABLE CARD --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+
+            {{-- TITLE --}}
+            <div class="px-6 py-4 border-b bg-gray-50">
+                <h2 class="font-semibold text-gray-800">
+                    Kode Desa
+                </h2>
+
+                <p class="text-sm text-gray-500">
+                    Total data: {{ count($desa) }}
+                </p>
+            </div>
+
+            {{-- TABLE --}}
+            <div class="overflow-x-auto">
+
+                <table class="min-w-full text-sm">
+
+                    <thead class="bg-green-800 text-white">
+                        <tr>
+                            <th class="px-4 py-3 text-center w-20">
+                                No
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Nama Desa
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Kode Desa
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-100">
+
+                        @forelse($desa as $index => $item)
+
+                        <tr class="hover:bg-green-50 transition duration-200">
+
+                            <td class="px-4 py-3 text-center text-gray-500">
+                                {{ $index + 1 }}
+                            </td>
+
+                            <td class="px-4 py-3 font-medium text-gray-800">
+                                {{ $item->name }}
+                            </td>
+
+                            <td class="px-4 py-3">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 font-medium">
+                                    {{ $item->code }}
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        @empty
+
+                        <tr>
+                            <td colspan="3"
+                                class="text-center py-10 text-gray-500">
+                                Tidak ada data desa ditemukan
+                            </td>
+                        </tr>
+
+                        @endforelse
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Data Table -->
-    <div class="mt-4 p-4 bg-white rounded-md shadow-md">
-        <h2 class="text-lg font-semibold mb-3">Kode Desa</h2>
-
-        <div class="overflow-auto">
-            <table class="table-auto w-full border border-gray-200 text-sm">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="text-left px-3 py-1 border">No</th>
-                        <th class="text-left px-3 py-1 border">Nama</th>
-                        <th class="text-left px-3 py-1 border">Kode Kecamatan</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($desa as $index => $user)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-1 py-1 border">{{ $index + 1 }}</td>
-                        <td class="px-1 py-1 border">{{ $user->name }}</td>
-                        <td class="px-1 py-1 border">{{ $user->code }}</td>
-
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
 </x-app-layout>

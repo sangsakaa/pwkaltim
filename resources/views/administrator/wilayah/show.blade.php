@@ -1,14 +1,16 @@
 <x-app-layout>
+
     <x-slot name="header">
         @php
         $user = auth()->user();
         $wilayah = 'Tidak diketahui';
+
         if ($user->regency?->name) {
         $wilayah = Str::startsWith($user->regency->name, 'Kab.')
         ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
         : $user->regency->name;
         } elseif ($user->district?->name) {
-        $wilayah = 'Kec. ' . $user->district->name;
+        $wilayah = 'Kecamatan ' . $user->district->name;
         } elseif ($user->village?->name) {
         $wilayah = $user->village->name;
         } elseif ($user->province?->name) {
@@ -16,60 +18,105 @@
         }
         @endphp
 
-        @section('title', 'PW ' . $wilayah)
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <h2 class="text-xl font-semibold text-gray-800 leading-tight">
-                Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
+        @section('title' . $wilayah)
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <h2 class="text-xl font-bold text-gray-800">
+                Dashboard - <span class="text-green-700">{{ $wilayah }}</span>
             </h2>
         </div>
     </x-slot>
 
-    <div class="grid gap-4">
-        <!-- Logo dan Tombol Kembali -->
-        <div class="grid grid-cols-1 gap-2">
-            <div class="bg-green-800  text-white rounded-md shadow-md flex items-center">
-                <div class="bg-green-800 p-2 rounded-md flex items-center justify-center">
-                    <img src="{{ asset('image/logo.png') }}" alt="Logo" width="50">
-                </div>
-                <div class="ml-4">
-                    <h3 class="uppercase text-lg font-semibold ">PW {{ $wilayah }}</h3>
-                </div>
+    {{-- WRAPPER --}}
+    <div class="space-y-4">
+
+        {{-- HEADER CARD --}}
+        <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow-lg p-4 flex items-center gap-4">
+
+            <img src="{{ asset('image/favicon.png') }}"
+                class="w-12 h-12  p-1">
+
+            <div>
+                <h3 class="text-lg font-bold uppercase">
+                    {{ $wilayah }}
+                </h3>
+                <p class="text-sm text-green-100">
+                    Data Kecamatan Terintegrasi
+                </p>
             </div>
+
         </div>
 
-        <!-- Tabel Data Kecamatan -->
-        <div class="p-6 bg-white rounded-md shadow-md">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold text-gray-800">Kode Kecamatan</h2>
+        {{-- TABLE CARD --}}
+        <div class="bg-white rounded-xl shadow border border-gray-100 p-4">
+
+            {{-- HEADER --}}
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+
+                <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-600 rounded-full"></span>
+                    Kode Kecamatan
+                </h2>
+
                 <a href="/wilayah"
-                    class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
-                    Kembali
+                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-sm transition">
+                    ← Kembali
                 </a>
+
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full table-auto border border-gray-300 text-sm">
-                    <thead class="bg-gray-100 text-left">
+
+            {{-- TABLE --}}
+            <div class="overflow-x-auto rounded-lg border">
+
+                <table class="min-w-full text-sm">
+
+                    <thead class="bg-green-900 text-white">
                         <tr>
-                            <th class="px-4 py-2 border">No</th>
-                            <th class="px-4 py-2 border">Nama</th>
-                            <th class="px-4 py-2 border">Kode Kecamatan</th>
+                            <th class="px-4 py-3 text-left">No</th>
+                            <th class="px-4 py-3 text-left">Nama Kecamatan</th>
+                            <th class="px-4 py-3 text-left">Kode</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach($kec as $index => $user)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-2 border">{{ $index + 1 }}</td>
-                            <td class="px-4 py-2 border">
-                                <a href="/wilayah-desa/{{ $user->code }}" class="text-blue-600 hover:underline">
-                                    {{ $user->name }}
+
+                    <tbody class="divide-y divide-gray-100">
+
+                        @forelse($kec as $index => $item)
+                        <tr class="hover:bg-green-50 transition">
+
+                            <td class="px-4 py-3 text-gray-500">
+                                {{ $index + 1 }}
+                            </td>
+
+                            <td class="px-4 py-3">
+                                <a href="/wilayah-desa/{{ $item->code }}"
+                                    class="text-green-700 font-medium hover:underline">
+                                    {{ $item->name }}
                                 </a>
                             </td>
-                            <td class="px-4 py-2 border">{{ $user->code }}</td>
+
+                            <td class="px-4 py-3 text-gray-700 font-semibold">
+                                {{ $item->code }}
+                            </td>
+
                         </tr>
-                        @endforeach
+                        @empty
+
+                        <tr>
+                            <td colspan="3" class="text-center py-6 text-gray-500">
+                                Data kecamatan tidak ditemukan
+                            </td>
+                        </tr>
+
+                        @endforelse
+
                     </tbody>
+
                 </table>
+
             </div>
+
         </div>
+
     </div>
+
 </x-app-layout>

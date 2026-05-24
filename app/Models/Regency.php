@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Regency extends Model
 {
-    // app/Models/Regency.php
+    protected $fillable = [
+        'code',
+        'name',
+        'province_code'
+    ];
     public function province()
     {
         return $this->belongsTo(Province::class, 'province_code', 'code');

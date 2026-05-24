@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Province extends Model
 {
-    //
-    // app/Models/Province.php
+    protected $fillable = ['code', 'name'];
     public function regencies()
     {
         return $this->hasMany(Regency::class, 'province_code', 'code');

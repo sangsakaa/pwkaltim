@@ -15,59 +15,102 @@ use Illuminate\Support\Facades\Storage;
 
 class PengamalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
-        // $user = auth()->user();
+        $user = Auth::user();
 
-        // // Mulai query builder
-        // $query = Pengamal::query()->orderBy('kecamatan', 'asc');
+        $query = Pengamal::with([
+            'province',
+            'regency',
+            'district',
+            'village'
+        ]);
 
-        // // Filter berdasarkan role dan code
-        // if ($user->hasRole('admin-provinsi')) {
-        //     $query->where('provinsi', $user->code);
-        // } elseif ($user->hasRole('admin-kabupaten')) {
-        //     $query->where('kabupaten', $user->code);
-        // } elseif ($user->hasRole('admin-kecamatan')) {
-        //     $query->where('kecamatan', $user->code);
-        // } elseif ($user->hasRole('admin-desa')) {
-        //     $query->where('desa', $user->code);
-        // } else {
-        //     abort(403, 'Anda tidak memiliki izin untuk mengakses data ini.');
-        // }
-        if (Auth::user()->hasRole(['admin-provinsi', 'superAdmin'])) {
-            $query = Pengamal::with(['regency', 'district', 'village'])
-                ->orderBy('kabupaten', 'asc') // Pastikan 'kabupaten' adalah kolom yang valid
-                ->paginate(10);
+
+        // Filter berdasarkan role
+        if ($user->hasRole('admin-provinsi')) {
+            $query->where('provinsi', $user->code);
+        } elseif ($user->hasRole('admin-kabupaten')) {
+            $query->where('kabupaten', $user->code);
+        } elseif ($user->hasRole('admin-kecamatan')) {
+            $query->where('kecamatan', $user->code);
+        } elseif ($user->hasRole('admin-desa')) {
+            $query->where('desa', $user->code);
         } else {
             abort(403, 'Unauthorized');
         }
 
+        // Search
+        $query->when($request->filled('search'), function ($q) use ($request) {
 
-        // Ambil data dengan paginasi
-        $dataPengamal = $query;
-
-        // Filter pencarian jika ada
-        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%")
+
+            $q->where(function ($sub) use ($search) {
+                $sub->where('nama_lengkap', 'like', "%{$search}%")
                     ->orWhere('nik', 'like', "%{$search}%");
             });
+        });
+
+        $dataPengamal = $query
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view(
+            'administrator.pengamal.index',
+            compact('dataPengamal')
+        );
+    }
+    public function show(Pengamal $pengamal)
+    {
+        $user = Auth::user();
+
+        // 🔒 CHECK ROLE
+        if (!$user->hasAnyRole(['admin-provinsi', 'admin-kabupaten', 'admin-kecamatan', 'admin-desa', 'superAdmin'])) {
+            abort(403, 'Unauthorized');
         }
 
-        // Ambil data dengan pagination dan simpan query search di URL
+        // 🔐 FILTER WILAYAH (biar tidak bisa buka data luar wilayah)
+        if ($user->hasRole('admin-provinsi') && $pengamal->provinsi != $user->code) {
+            abort(403);
+        }
 
+        if ($user->hasRole('admin-kabupaten') && $pengamal->kabupaten != $user->code) {
+            abort(403);
+        }
 
-        return view('administrator.pengamal.index', compact('dataPengamal'));
+        if ($user->hasRole('admin-kecamatan') && $pengamal->kecamatan != $user->code) {
+            abort(403);
+        }
+
+        if ($user->hasRole('admin-desa') && $pengamal->desa != $user->code) {
+            abort(403);
+        }
+
+        // 🔥 LOAD RELASI DETAIL
+        $pengamal->load(['province', 'regency', 'district', 'village']);
+
+        return view('administrator.pengamal.show', compact('pengamal'));
     }
 
     public function create()
     {
-        $provinces = Province::where('code', 64)->get(); // Ambil semua provinsi kecuali yang kode 00
-        return view('administrator/pengamal/create', compact('provinces'));
+        $provinces = Province::where('code', 64)->get();
+
+        return view('administrator.pengamal.create', [
+            'provinces' => $provinces,
+            'isPublic' => false,
+        ]);
+    }
+
+    public function createPublic()
+    {
+        $provinces = Province::where('code', 64)->get();
+
+        return view('administrator.pengamal.create', [
+            'provinces' => $provinces,
+            'isPublic' => true,
+        ]);
     }
 
     /**
@@ -75,100 +118,205 @@ class PengamalController extends Controller
      */
     public function store(Request $request)
     {
-
-
-
-        // dd($request->all());
         $validated = $request->validate([
-            'nik' => 'required|string|size:16|unique:pengamal,nik',
-            'nama_lengkap' => 'required|string',
+            // DATA PRIBADI
+            'nik' => 'nullable|digits:16|unique:pengamal,nik',
+            'nama_lengkap' => 'required|string|max:255',
             'tanggal_lahir' => 'nullable|date',
-            'tempat_lahir' => 'nullable|string',
+            'tempat_lahir' => 'nullable|string|max:100',
             'jenis_kelamin' => 'nullable|in:L,P',
-            'agama' => 'nullable|string',
+            'agama' => 'nullable|string|max:50',
+
+            // WILAYAH (WAJIB)
             'province_code' => 'required|string',
             'regency_code' => 'required|string',
             'district_code' => 'required|string',
             'village_code' => 'required|string',
-            'rt' => 'nullable|string',
-            'rw' => 'nullable|string',
-            'no_hp' => 'nullable|string',
-            'alamat' => 'nullable|string',
+
+            // KONTAK
+            'alamat' => 'nullable|string|max:500',
+            'no_hp' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'rt' => 'nullable|string|max:5',
+            'rw' => 'nullable|string|max:5',
+
+            // FILE
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'email' => 'nullable|email',
-            'pekerjaan' => 'required|string',
-            'status_perkawinan' => 'required|string',
+
+            // TAMBAHAN
+            'pekerjaan' => 'nullable|string|max:100',
+            'status_perkawinan' => 'nullable|string|max:100',
 
         ], [
-            'nik.required' => 'NIK wajib diisi.',
-            'nik.string' => 'NIK harus berupa teks.',
-            'nik.size' => 'NIK harus terdiri dari 16 digit.',
-            'nik.unique' => 'NIK ini sudah terdaftar.',
-            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
-            'nama_lengkap.string' => 'Nama lengkap harus berupa teks.',
-            'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
-            'tempat_lahir.string' => 'Tempat lahir harus berupa teks.',
-            'jenis_kelamin.in' => 'Jenis kelamin harus L (Laki-laki) atau P (Perempuan).',
-            'agama.string' => 'Agama harus berupa teks.',
-            'province_code.required' => 'Provinsi wajib dipilih.',
-            'regency_code.required' => 'Kabupaten/Kota wajib dipilih.',
-            'district_code.required' => 'Kecamatan wajib dipilih.',
-            'village_code.required' => 'Desa/Kelurahan wajib dipilih.',
-            'foto.image' => 'File harus berupa gambar.',
-            'foto.mimes' => 'Format gambar harus jpg, jpeg, atau png.',
-            'foto.max' => 'Ukuran gambar maksimal 2MB.',
-            'email.email' => 'Format email tidak valid.',
+
+            // NIK
+            'nik.digits' => 'NIK harus 16 digit.',
+            'nik.unique' => 'NIK sudah terdaftar.',
+
+            // REQUIRED
+            'nama_lengkap.required' =>
+            'Nama lengkap wajib diisi.',
+
+            'province_code.required' =>
+            'Provinsi wajib dipilih.',
+
+            'regency_code.required' =>
+            'Kabupaten/Kota wajib dipilih.',
+
+            'district_code.required' =>
+            'Kecamatan wajib dipilih.',
+
+            'village_code.required' =>
+            'Desa/Kelurahan wajib dipilih.',
+
+            // FORMAT
+            'tanggal_lahir.date' =>
+            'Tanggal lahir tidak valid.',
+
+            'jenis_kelamin.in' =>
+            'Jenis kelamin harus L atau P.',
+
+            'email.email' =>
+            'Format email tidak valid.',
+
+            // FOTO
+            'foto.image' =>
+            'File harus berupa gambar.',
+
+            'foto.mimes' =>
+            'Foto harus JPG, JPEG, atau PNG.',
+
+            'foto.max' =>
+            'Ukuran foto maksimal 2MB.',
         ]);
 
+        /*
+    |--------------------------------------------------------------------------
+    | Upload Foto
+    |--------------------------------------------------------------------------
+    */
         $fotoPath = null;
+
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('foto/pengamal', 'public');
+            $fotoPath = $request->file('foto')
+                ->store('foto/pengamal', 'public');
         }
 
-        $data = [
-            'nik' => $validated['nik'],
+        /*
+    |--------------------------------------------------------------------------
+    | Simpan Data
+    |--------------------------------------------------------------------------
+    */
+        Pengamal::create([
+            'nik' => $validated['nik'] ?? null,
             'nama_lengkap' => $validated['nama_lengkap'],
-            'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
-            'tempat_lahir' => $validated['tempat_lahir'] ?? null,
-            'jenis_kelamin' => $validated['jenis_kelamin'] ?? null,
-            'agama' => $validated['agama'] ?? null,
-            'provinsi' => $validated['province_code'],
-            'kabupaten' => $validated['regency_code'],
-            'kecamatan' => $validated['district_code'],
-            'desa' => $validated['village_code'],
-            'rt' => $validated['rt'] ?? null,
-            'rw' => $validated['rw'] ?? null,
-            'no_hp' => $validated['no_hp'] ?? null,
-            'alamat' => $validated['alamat'] ?? null,
+
+            'tanggal_lahir' =>
+            $validated['tanggal_lahir'] ?? null,
+
+            'tempat_lahir' =>
+            $validated['tempat_lahir'] ?? null,
+
+            'jenis_kelamin' =>
+            $validated['jenis_kelamin'] ?? null,
+
+            'agama' =>
+            $validated['agama'] ?? null,
+
+            'provinsi' =>
+            $validated['province_code'],
+
+            'kabupaten' =>
+            $validated['regency_code'],
+
+            'kecamatan' =>
+            $validated['district_code'],
+
+            'desa' =>
+            $validated['village_code'],
+
+            'alamat' =>
+            $validated['alamat'] ?? null,
+
+            'no_hp' =>
+            $validated['no_hp'] ?? null,
+
+            'email' =>
+            $validated['email'] ?? null,
+
+            'rt' =>
+            $validated['rt'] ?? null,
+
+            'rw' =>
+            $validated['rw'] ?? null,
+
             'foto' => $fotoPath,
-            'email' => $validated['email'] ?? null,
-            'pekerjaan' => $validated['pekerjaan'] ?? null,
-            'status_perkawinan' => $validated['status_perkawinan'] ?? null,
-        ];
 
-        Pengamal::create($data);
+            'pekerjaan' =>
+            $validated['pekerjaan'] ?? null,
 
+            'status_perkawinan' =>
+            $validated['status_perkawinan'] ?? null,
+        ]);
 
-        return redirect()->back()->with('success', 'Pengamal created successfully');
+        /*
+    |--------------------------------------------------------------------------
+    | MODE PUBLIC
+    |--------------------------------------------------------------------------
+    */
+        if (!auth()->check()) {
+            return back()->with(
+                'success',
+                'Data pengamal berhasil dikirim.'
+            );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | CALLBACK ROLE
+    |--------------------------------------------------------------------------
+    */
+        $user = auth()->user();
+
+        if ($user->hasRole('admin-provinsi')) {
+            return redirect()
+                ->route('pengamal.index')
+                ->with(
+                    'success',
+                    'Pengamal berhasil ditambahkan.'
+                );
+        }
+
+        if ($user->hasRole('admin-kabupaten')) {
+            return redirect('/dashboard')
+                ->with(
+                    'success',
+                    'Pengamal berhasil ditambahkan.'
+                );
+        }
+
+        if (
+            $user->hasRole('admin-kecamatan') ||
+            $user->hasRole('admin-desa')
+        ) {
+            return redirect()
+                ->route('pengamal.index')
+                ->with(
+                    'success',
+                    'Pengamal berhasil ditambahkan.'
+                );
+        }
+
+        return back()->with(
+            'success',
+            'Pengamal berhasil ditambahkan.'
+        );
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Pengamal $pengamal)
-    {
-        if (Auth::user()->hasRole('admin-provinsi')) {
-            // Ambil daftar pengamal dengan relasi
-            $pengamals = Pengamal::with(['province', 'regency', 'district', 'village'])->paginate(10);
-        } else {
-            abort(403, 'Unauthorized');
-        }
 
-        // akses nama wilayah:
-
-
-        return view('administrator/pengamal/show', compact('pengamal'));
-    }
 
     /**
      * Show the form for editing the specified resource.

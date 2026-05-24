@@ -1,5 +1,6 @@
 <x-guest-layout>
     <x-auth-card>
+
         <!-- Session Status -->
         <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -10,26 +11,30 @@
             @csrf
 
             <div class="grid gap-6">
-                <div class=" text-center bg-green-800 text-white py-4">
-                    <center>
-                        <img src="{{ asset('image/logo.png') }}" width="100px">
-                    </center>
-                    <p class=" font-semibold text-3xl">
+
+                <!-- HEADER -->
+                <div class="text-center bg-green-800 text-white py-6 rounded-lg">
+                    <div class="flex justify-center mb-2">
+                        <img src="{{ asset('image/logo.png') }}" width="90">
+                    </div>
+
+                    <p class="font-bold text-3xl tracking-wide">
                         SINTAK
                     </p>
-                    <p class=" uppercase">
-                        Sistem Informasi Terpadu Pengamal <br>Kalimantan Timur
+
+                    <p class="uppercase text-sm mt-1">
+                        Sistem Informasi Terpadu Pengamal <br>
+                        Kalimantan Timur
                     </p>
                 </div>
-                <!-- Email Address -->
+
+                <!-- EMAIL -->
                 <div class="space-y-2">
-                    <x-form.label
-                        for="email"
-                        :value="__('Email')" />
+                    <x-form.label for="email" :value="__('Email')" />
 
                     <x-form.input-with-icon-wrapper>
                         <x-slot name="icon">
-                            <x-heroicon-o-mail aria-hidden="true" class="w-5 h-5" />
+                            <x-heroicon-o-envelope class="w-5 h-5 text-gray-500" />
                         </x-slot>
 
                         <x-form.input
@@ -39,21 +44,19 @@
                             type="email"
                             name="email"
                             :value="old('email')"
-                            placeholder="{{ __('Email') }}"
+                            placeholder="Email"
                             required
                             autofocus />
                     </x-form.input-with-icon-wrapper>
                 </div>
 
-                <!-- Password -->
+                <!-- PASSWORD -->
                 <div class="space-y-2">
-                    <x-form.label
-                        for="password"
-                        :value="__('Password')" />
+                    <x-form.label for="password" :value="__('Password')" />
 
                     <x-form.input-with-icon-wrapper>
                         <x-slot name="icon">
-                            <x-heroicon-o-lock-closed aria-hidden="true" class="w-5 h-5" />
+                            <x-heroicon-o-lock-closed class="w-5 h-5 text-gray-500" />
                         </x-slot>
 
                         <x-form.input
@@ -64,48 +67,58 @@
                             name="password"
                             required
                             autocomplete="current-password"
-                            placeholder="{{ __('Password') }}" />
+                            placeholder="Password" />
                     </x-form.input-with-icon-wrapper>
                 </div>
 
-                <!-- Remember Me -->
+                <!-- REMEMBER + FORGOT -->
                 <div class="flex items-center justify-between">
-                    <label for="remember_me" class="inline-flex items-center">
+
+                    <label class="inline-flex items-center">
                         <input
                             id="remember_me"
                             type="checkbox"
-                            class="text-purple-500 border-gray-300 rounded focus:border-purple-300 focus:ring focus:ring-purple-500 dark:border-gray-600 dark:bg-dark-eval-1 dark:focus:ring-offset-dark-eval-1"
+                            class="rounded border-gray-300 text-green-600 focus:ring-green-500"
                             name="remember">
 
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                        <span class="ml-2 text-sm text-gray-600">
                             {{ __('Remember me') }}
                         </span>
                     </label>
 
                     @if (Route::has('password.request'))
-                    <a class="text-sm text-blue-500 hover:underline" href="{{ route('password.request') }}">
-                        {{ __('Forgot your password?') }}
+                    <a class="text-sm text-blue-600 hover:underline"
+                        href="{{ route('password.request') }}">
+                        {{ __('Forgot password?') }}
                     </a>
                     @endif
+
                 </div>
 
+                <!-- LOGIN BUTTON -->
                 <div>
-                    <x-button class="justify-center w-full gap-2">
-                        <x-heroicon-o-login class="w-6 h-6" aria-hidden="true" />
+                    <x-button class="w-full justify-center gap-2 bg-green-700 hover:bg-green-800">
+
+                        <x-heroicon-o-arrow-right-on-rectangle class="w-5 h-5" />
 
                         <span>{{ __('Log in') }}</span>
+
                     </x-button>
                 </div>
 
+                <!-- REGISTER -->
                 @if (Route::has('register'))
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    {{ __('Don’t have an account?') }}
-                    <a href="{{ route('register') }}" class="text-blue-500 hover:underline">
+                <p class="text-sm text-center text-gray-600">
+                    {{ __("Don't have an account?") }}
+                    <a href="{{ route('register') }}"
+                        class="text-blue-600 hover:underline">
                         {{ __('Register') }}
                     </a>
                 </p>
                 @endif
+
             </div>
         </form>
+
     </x-auth-card>
 </x-guest-layout>

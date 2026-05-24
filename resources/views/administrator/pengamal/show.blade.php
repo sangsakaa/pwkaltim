@@ -1,147 +1,234 @@
 <x-app-layout>
+
+    @php
+    $user = auth()->user();
+    $wilayah = 'Pendaftaran Pengamal';
+
+    if ($user) {
+    if ($user->regency?->name) {
+    $wilayah = \Illuminate\Support\Str::startsWith($user->regency->name, 'Kab.')
+    ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
+    : $user->regency->name;
+    } elseif ($user->district?->name) {
+    $wilayah = 'Kecamatan ' . $user->district->name;
+    } elseif ($user->village?->name) {
+    $wilayah = $user->village->name;
+    } elseif ($user->province?->name) {
+    $wilayah = $user->province->name;
+    }
+    }
+
+    $isPublic = !auth()->check();
+
+    // NIK MASKING
+    $nikMasked = $pengamal->nik
+    ? substr($pengamal->nik, 0, 4) .
+    str_repeat('*', max(strlen($pengamal->nik) - 4, 0))
+    : '-';
+
+    // TTL
+    $ttl = '-';
+
+    if ($pengamal->tempat_lahir || $pengamal->tanggal_lahir) {
+    $tempat = $pengamal->tempat_lahir ?? '-';
+
+    $tanggal = $pengamal->tanggal_lahir
+    ? \Carbon\Carbon::parse($pengamal->tanggal_lahir)
+    ->translatedFormat('d F Y')
+    : '-';
+
+    $ttl = $tempat . ', ' . $tanggal;
+    }
+
+    // USIA
+    $usia = $pengamal->tanggal_lahir
+    ? \Carbon\Carbon::parse($pengamal->tanggal_lahir)->age . ' Tahun'
+    : '-';
+
+    // RT RW
+    $rtRw =
+    $pengamal->rt || $pengamal->rw
+    ? 'RT ' .
+    ($pengamal->rt ?? '-') .
+    ' / RW ' .
+    ($pengamal->rw ?? '-')
+    : '-';
+
+    $rows = [
+    'NIK' => $nikMasked,
+    'Nama Lengkap' => $pengamal->nama_lengkap ?? '-',
+    'Agama' => $pengamal->agama ?? '-',
+    'Tempat, Tanggal Lahir' => $ttl,
+    'Jenis Kelamin' => $pengamal->jenis_kelamin ?? '-',
+    'Pekerjaan' => $pengamal->pekerjaan ?? '-',
+    'Status Perkawinan' => $pengamal->status_perkawinan ?? '-',
+    'Provinsi' => $pengamal->province->name ?? '-',
+    'Kabupaten' => $pengamal->regency->name ?? '-',
+    'Kecamatan' => $pengamal->district->name ?? '-',
+    'Desa' => $pengamal->village->name ?? '-',
+    'RT / RW' => $rtRw,
+    'Usia' => $usia,
+    'Alamat' => $pengamal->alamat ?? '-',
+    'No HP' => $pengamal->no_hp ?? '-',
+    'Email' => $pengamal->email ?? '-',
+    ];
+    @endphp
+
+    @section('title', $isPublic ? 'Detail Pengamal' : 'PW ' . $wilayah)
+
+    {{-- HEADER --}}
     <x-slot name="header">
-        @php
-        $user = auth()->user();
-        $wilayah = 'Tidak diketahui';
-
-        if ($user->regency?->name) {
-        $wilayah = Str::startsWith($user->regency->name, 'Kab.')
-        ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
-        : $user->regency->name;
-        } elseif ($user->district?->name) {
-        $wilayah = 'Kec. ' . $user->district->name;
-        } elseif ($user->village?->name) {
-        $wilayah = $user->village->name;
-        } elseif ($user->province?->name) {
-        $wilayah = $user->province->name;
-        }
-        @endphp
-
-        @section('title', 'PW ' . $wilayah)
-
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <h2 class="text-xl font-semibold text-gray-800 leading-tight">
-                Detail - <span class="text-green-700">PW {{ $wilayah }}</span>
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <h2 class="text-xl font-bold text-gray-800">
+                Detail Pengamal
+                @if (!$isPublic)
+                -
+                <span class="text-green-700">
+                    {{ $wilayah }}
+                </span>
+                @endif
             </h2>
         </div>
     </x-slot>
 
-    <!-- Wilayah Card -->
-    <div class="mb-4  bg-green-800 rounded-md shadow-md flex items-center">
-        <div class="bg-green-800 p-2 rounded-md">
-            <img src="{{ asset('image/logo.png') }}" alt="Logo" width="50">
-        </div>
-        <div class="ml-4 text-white">
-            <h3 class="uppercase text-lg font-semibold">PW {{ $wilayah }}</h3>
-        </div>
-    </div>
+    <div class="space-y-4">
 
-    <!-- Detail Pengamal -->
-    <div class="bg-white p-4 rounded-md shadow-md">
-        <div class="flex flex-col md:flex-row gap-4">
-            <!-- Foto -->
-            <div class="md:w-1/4 w-full flex items-center justify-center">
-                @if ($pengamal->foto && Storage::disk('public')->exists($pengamal->foto))
-                <img src="{{ asset('storage/' . $pengamal->foto) }}" alt="Foto Pengamal" class="w-48 h-48 object-cover rounded shadow">
-                @else
-                <img src="{{ asset('image/foto.png') }}" alt="Foto Default" class="w-48 h-48 object-cover rounded shadow">
-                @endif
+        {{-- HEADER CARD --}}
+        <div
+            class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow-md flex items-center overflow-hidden">
+
+            <div class="bg-green-900 p-3 flex items-center justify-center">
+                <img src="{{ asset('image/logo.png') }}"
+                    width="50">
             </div>
 
-            <!-- Info -->
-            <div class="md:w-3/4 w-full">
-                <h3 class="text-xl font-semibold text-gray-700 mb-4">Data Pribadi</h3>
+            <div class="p-4">
+                <h3 class="text-lg font-bold uppercase">
+                    {{ $isPublic ? 'Pendaftaran Pengamal' : 'PW ' . $wilayah }}
+                </h3>
 
-                @php
-                $rows = [
-                'NIK' => substr($pengamal->nik, 0, 4) . str_repeat('*', strlen($pengamal->nik) - 4),
-                'Nama' => $pengamal->nama_lengkap,
-                'Agama' => $pengamal->agama,
-                'Tempat Lahir' => $pengamal->tempat_lahir,
-                'Tanggal Lahir' => $pengamal->tanggal_lahir,
-                'Jenis Kelamin' => $pengamal->jenis_kelamin,
-                'Pekerjaan' => $pengamal->pekerjaan,
-                'Status' => $pengamal->status_perkawinan,
-                'Provinsi' => $pengamal->province->name ?? '-',
-                'Kabupaten' => $pengamal->regency->name ?? '-',
-                'Kecamatan' => $pengamal->district->name ?? '-',
-                'Desa' => $pengamal->village->name ?? '-',
-                'RT / RW' => 'RT ' . ($pengamal->rt ?? '-') . ', RW ' . ($pengamal->rw ?? '-'),
-                'Usia' => \Carbon\Carbon::parse($pengamal->tanggal_lahir)->age . ' tahun'
-                ];
-                @endphp
+                <p class="text-sm text-green-100">
+                    Detail Data Pengamal
+                </p>
+            </div>
+        </div>
 
-                <div class="grid sm:grid-cols-2 gap-4 text-sm">
-                    @foreach ($rows as $label => $value)
-                    <div class="flex">
-                        <div class=" w-28 font-medium text-gray-600">{{ $label }}</div>
-                        <div class="w-3 text-gray-600">:</div>
-                        <div class="text-gray-800">{{ $value }}</div>
+        {{-- MAIN CARD --}}
+        <div class="bg-white rounded-xl shadow-md p-6">
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                {{-- FOTO --}}
+                <div class="flex justify-center lg:justify-start">
+
+                    <div
+                        class="w-48 h-48 rounded-xl overflow-hidden border shadow-sm">
+
+                        @if ($pengamal->foto &&
+                        Storage::disk('public')->exists($pengamal->foto))
+                        <img src="{{ asset('storage/' . $pengamal->foto) }}"
+                            class="w-full h-full object-cover">
+                        @else
+                        <img src="{{ asset('image/foto.png') }}"
+                            class="w-full h-full object-cover">
+                        @endif
+
                     </div>
-                    @endforeach
+
                 </div>
 
-                <!-- Tombol Aksi -->
-                <div class="mt-6 flex flex-wrap gap-2">
-                    <a href="/pengamal/edit/{{ $pengamal->id }}">
-                        <button class="px-4 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">Edit</button>
-                    </a>
-                    <a href="/pengamal">
-                        <button class="px-4 py-1 text-white bg-gray-500 rounded hover:bg-gray-600">Kembali</button>
-                    </a>
+                {{-- DATA --}}
+                <div class="lg:col-span-2">
 
-                    @php
-                    $canDelete = auth()->user()->hasAnyRole(['superAdmin', 'admin-provinsi', 'admin-kabupaten']);
-                    @endphp
+                    <h3
+                        class="text-lg font-bold text-gray-800 mb-4">
+                        Data Pengamal
+                    </h3>
 
-                    <form action="/pengamal/show/{{ $pengamal->id }}" method="POST" class="form-delete">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                            class="px-4 py-1 text-white rounded {{ $canDelete ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-400 cursor-not-allowed' }}"
-                            {{ $canDelete ? '' : 'disabled' }}>
-                            Hapus
-                        </button>
-                    </form>
+                    <div
+                        class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
 
-                    <a href="https://wa.me/{{ $pengamal->no_hp }}?text=Halo%20saya%20tertarik%20dengan%20layanan%20Anda"
-                        target="_blank"
-                        class="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600">
-                        WA
-                    </a>
+                        @foreach ($rows as $label => $value)
+                        <div class="flex gap-2">
+
+                            <div
+                                class="w-40 text-gray-500 font-medium">
+                                {{ $label }}
+                            </div>
+
+                            <div
+                                class="text-gray-800 font-semibold">
+                                {{ $value }}
+                            </div>
+
+                        </div>
+                        @endforeach
+
+                    </div>
+
+                    {{-- ACTION --}}
+                    <div class="flex flex-wrap gap-2 mt-6">
+
+                        {{-- ADMIN ONLY --}}
+                        @auth
+
+                        <a href="/pengamal/edit/{{ $pengamal->id }}"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            Edit
+                        </a>
+
+                        <a href="/pengamal"
+                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
+                            Kembali
+                        </a>
+
+                        @php
+                        $canDelete = auth()->user()?->hasAnyRole([
+                        'superAdmin',
+                        'admin-provinsi',
+                        'admin-kabupaten',
+                        ]);
+                        @endphp
+
+                        <form action="/pengamal/show/{{ $pengamal->id }}"
+                            method="POST"
+                            class="form-delete">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button type="submit"
+                                class="px-4 py-2 rounded-lg text-white transition
+                                    {{ $canDelete ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-400 cursor-not-allowed' }}"
+                                {{ $canDelete ? '' : 'disabled' }}>
+
+                                Hapus
+
+                            </button>
+
+                        </form>
+
+                        @endauth
+
+                        {{-- WHATSAPP --}}
+                        @if ($pengamal->no_hp)
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pengamal->no_hp) }}"
+                            target="_blank"
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+
+                            WhatsApp
+
+                        </a>
+                        @endif
+
+                    </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
 
-    <!-- Script -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        $(document).ready(function() {
-            $('.form-delete').on('submit', function(e) {
-                e.preventDefault();
-                const form = this;
-
-                Swal.fire({
-                    title: 'Apakah kamu yakin?',
-                    text: "Data yang dihapus tidak bisa dikembalikan.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    } else {
-                        toastr.info('Penghapusan dibatalkan.');
-                    }
-                });
-            });
-        });
-    </script>
 </x-app-layout>

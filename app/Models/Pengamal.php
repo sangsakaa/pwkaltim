@@ -2,72 +2,165 @@
 
 namespace App\Models;
 
-use SoftDeletes;
-use Spatie\Activitylog\LogOptions;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Pengamal extends Model
 {
- protected $table = 'pengamal';
-    use LogsActivity;
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logAll() // log semua atribut
-            ->useLogName('pengamal') // nama log
-            ->logOnlyDirty() // hanya yang berubah
-            ->dontSubmitEmptyLogs(); // kalau gak ada perubahan, gak dicatat
-    }
-    // Pastikan kolom deleted_at tersedia di database
-    protected $dates = ['deleted_at'];
+    use SoftDeletes, LogsActivity;
 
+    protected $table = 'pengamal';
+
+    /**
+     * Soft delete column
+     */
+    protected $dates = [
+        'deleted_at',
+        'tanggal_lahir',
+        'created_at',
+        'updated_at',
+    ];
+
+    /**
+     * Mass assignment
+     */
     protected $fillable = [
         'nik',
         'nama_lengkap',
         'tanggal_lahir',
         'tempat_lahir',
-        'alamat',
         'jenis_kelamin',
         'agama',
+
         'provinsi',
         'kabupaten',
         'kecamatan',
         'desa',
+
         'rt',
         'rw',
-        'no_hp',
         'alamat',
-        'foto',
+
+        'no_hp',
         'email',
+
         'status_perkawinan',
         'pekerjaan',
-        // 'kewarganegaraan',
+
+        'foto',
     ];
 
+    /**
+     * Cast attribute
+     */
+    protected $casts = [
+        'tanggal_lahir' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
 
-    // app/Models/Pengamal.php
+    /**
+     * Activity Log
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->useLogName('pengamal');
+    }
 
+    /**
+     * Relasi wilayah
+     */
     public function province()
     {
-        return $this->belongsTo(Province::class, 'provinsi', 'code');
+        return $this->belongsTo(
+            Province::class,
+            'provinsi',
+            'code'
+        );
     }
 
     public function regency()
     {
-        return $this->belongsTo(Regency::class, 'kabupaten', 'code');
+        return $this->belongsTo(
+            Regency::class,
+            'kabupaten',
+            'code'
+        );
     }
 
     public function district()
     {
-        return $this->belongsTo(District::class, 'kecamatan', 'code');
+        return $this->belongsTo(
+            District::class,
+            'kecamatan',
+            'code'
+        );
     }
 
     public function village()
     {
-        return $this->belongsTo(Village::class, 'desa', 'code');
+        return $this->belongsTo(
+            Village::class,
+            'desa',
+            'code'
+        );
     }
 
+    /**
+     * Scope filter berdasarkan role user
+     */
+    public function scopeByUserRole($query, $user)
+    {
+        if ($user->hasRole('superAdmin')) {
+            return $query;
+        }
 
-    public $timestamps = false;
+        if ($user->hasRole('admin-provinsi')) {
+            return $query->where(
+                'provinsi',
+                $user->code
+            );
+        }
+
+        if ($user->hasRole('admin-kabupaten')) {
+            return $query->where(
+                'kabupaten',
+                $user->code
+            );
+        }
+
+        if ($user->hasRole('admin-kecamatan')) {
+            return $query->where(
+                'kecamatan',
+                $user->code
+            );
+        }
+
+        if ($user->hasRole('admin-desa')) {
+            return $query->where(
+                'desa',
+                $user->code
+            );
+        }
+
+        return $query;
+    }
+
+    /**
+     * Accessor umur
+     */
+    public function getUmurAttribute()
+    {
+        return $this->tanggal_lahir
+            ? $this->tanggal_lahir->age
+            : null;
+    }
 }

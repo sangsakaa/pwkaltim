@@ -1,115 +1,141 @@
 <x-app-layout>
-    <x-slot name="header">
-        @php
-        $user = auth()->user();
+    @php
+    $user = auth()->user();
 
-        if ($user->regency?->name) {
-        if (Str::startsWith($user->regency->name, 'Kab.')) {
-        $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
-        } else {
-        $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
-        }
-        } elseif ($user->district?->name) {
-        $wilayah = 'Kec. ' . $user->district->name;
-        } elseif ($user->village?->name) {
-        $wilayah = $user->village->name;
-        } elseif ($user->province?->name) {
-        $wilayah = $user->province->name;
-        } else {
-        $wilayah = 'Tidak diketahui';
-        }
-        @endphp
-        @section('title', 'PW '. $wilayah )
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between ">
-            <h2 class="text-xl font-semibold leading-tight">
-                {{ __('Roles Management') }}
-            </h2>
+    if ($user->regency?->name) {
+    if (Str::startsWith($user->regency->name, 'Kab.')) {
+    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
+    } else {
+    $wilayah = $user->regency->name;
+    }
+    } elseif ($user->district?->name) {
+    $wilayah = 'Kec. ' . $user->district->name;
+    } elseif ($user->village?->name) {
+    $wilayah = $user->village->name;
+    } elseif ($user->province?->name) {
+    $wilayah = $user->province->name;
+    } else {
+    $wilayah = 'Tidak diketahui';
+    }
+    @endphp
+
+    <x-slot name="header">
+        @section('title', 'PW ' . $wilayah)
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">
+                    Roles Management
+                </h2>
+                <p class="text-sm text-gray-500">
+                    Kelola role dan permission pengguna sistem
+                </p>
+            </div>
         </div>
     </x-slot>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1 mb-4"> {{-- Added mb-4 for spacing --}}
-        <div class="p-4 overflow-hidden bg-white rounded-md shadow-md"> {{-- Increased padding to p-4 --}}
-            <div class="flex">
-                <div class="bg-green-800 flex flex-col items-center justify-center p-2"> {{-- Increased padding to p-2 --}}
-
+    {{-- HERO / WILAYAH CARD --}}
+    <div class="mb-6">
+        <div class="bg-gradient-to-r from-green-700 to-emerald-600 rounded-xl shadow-md p-5 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm opacity-80">Wilayah Aktif</p>
+                    <h3 class="text-xl font-bold uppercase">
+                        {{ $wilayah }}
+                    </h3>
                 </div>
-                <div class="bg-green-800 flex-1 flex flex-col items-center justify-center text-white font-semibold p-4"> {{-- Used flex-1 to make it take remaining space, p-4 for consistent padding --}}
-                    @php
-                    $user = auth()->user();
-
-                    if ($user->regency?->name) {
-                    if (Str::startsWith($user->regency->name, 'Kab.')) {
-                    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
-                    } else {
-                    $wilayah = $user->regency->name;
-                    }
-                    } elseif ($user->district?->name) {
-                    $wilayah = 'Kec. ' . $user->district->name;
-                    } elseif ($user->village?->name) {
-                    $wilayah = $user->village->name;
-                    } elseif ($user->province?->name) {
-                    $wilayah = $user->province->name;
-                    } else {
-                    $wilayah = 'Tidak diketahui';
-                    }
-                    @endphp
-                    <span class="uppercase text-lg font-semibold text-center">PW {{ $wilayah }}</span> {{-- Added text-center for better alignment --}}
+                <div class="text-right text-sm opacity-80">
+                    {{ now()->format('d M Y') }}
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="p-4 overflow-hidden bg-white rounded-md shadow-md"> {{-- Increased padding to p-4 --}}
-        <h1 class="text-2xl font-bold mb-4">Manajemen Roles</h1> {{-- Added text-2xl, font-bold, mb-4 for better heading styling and spacing --}}
+    {{-- CONTENT --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
 
-        <div class="mb-4"> {{-- Added mb-4 for spacing --}}
-            <a class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300 ease-in-out" href="{{ route('roles.create') }}">+ Buat Role Baru</a> {{-- Added duration and ease for smooth transition --}}
+        {{-- HEADER ACTION --}}
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-5 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-800">
+                Daftar Roles
+            </h3>
+
+            <a href="{{ route('roles.create') }}"
+                class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                + Buat Role Baru
+            </a>
         </div>
 
-        <div class="overflow-x-auto"> {{-- Added overflow-x-auto for responsive table scrolling --}}
-            <table class="min-w-full border-collapse border border-gray-200"> {{-- Used min-w-full and border-collapse for better table styling --}}
-                <thead>
-                    <tr class="bg-gray-100 border-b border-gray-200"> {{-- Added bg-gray-100 for header background --}}
-                        <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200">Nama Role</th> {{-- Consistent padding and text styling --}}
-                        <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider border-r border-gray-200">Permissions</th>
-                        <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
+        {{-- TABLE --}}
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
+                    <tr>
+                        <th class="text-left px-6 py-3">Nama Role</th>
+                        <th class="text-left px-6 py-3">Permissions</th>
+                        <th class="text-left px-6 py-3">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach($roles as $role)
-                    <tr class="border-b border-gray-200 hover:bg-gray-50"> {{-- Added hover effect --}}
-                        <td class="py-3 px-4 whitespace-nowrap border-r border-gray-200">{{ $role->name }}</td> {{-- Added whitespace-nowrap to prevent text wrapping in narrow columns --}}
-                        <td class="py-3 px-4 border-r border-gray-200">{{ $role->permissions->pluck('name')->implode(', ') }}</td>
-                        <td class="py-3 px-4">
-                            <a class="text-blue-600 hover:text-blue-800 mr-2" href="{{ route('roles.edit', $role) }}">Edit</a>
-                            <form action="{{ route('roles.destroy', $role) }}" method="POST" class="inline-block"> {{-- Used inline-block for form to align better --}}
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800" onclick="return confirm('Hapus role ini?')">Hapus</button>
-                            </form>
+
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($roles as $role)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-medium text-gray-800 whitespace-nowrap">
+                            {{ $role->name }}
+                        </td>
+
+                        <td class="px-6 py-4 text-gray-600">
+                            <div class="flex flex-wrap gap-1">
+                                @forelse($role->permissions as $perm)
+                                <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-md">
+                                    {{ $perm->name }}
+                                </span>
+                                @empty
+                                <span class="text-gray-400">-</span>
+                                @endforelse
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <a href="{{ route('roles.edit', $role) }}"
+                                    class="text-blue-600 hover:text-blue-800 font-medium">
+                                    Edit
+                                </a>
+
+                                <form action="{{ route('roles.destroy', $role) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Hapus role ini?')">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit"
+                                        class="text-red-600 hover:text-red-800 font-medium">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="3" class="px-6 py-10 text-center text-gray-500">
+                            Tidak ada data role
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
     </div>
+
+    {{-- TOAST --}}
     <script>
         toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
+            closeButton: true,
+            progressBar: true,
+            positionClass: "toast-top-right",
+            timeOut: "4000",
         };
 
         @if(Session::has('success'))

@@ -2,98 +2,210 @@
 
 namespace App\Http\Controllers\Administrator;
 
-use Carbon\Carbon;
-use App\Models\Session;
-use App\Models\Pengamal;
-
-use App\Models\SuratKeluar;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\District;
+use App\Models\Pengamal;
 use App\Models\ProgramKerja;
+use App\Models\Province;
+use App\Models\Regency;
+use App\Models\SuratKeluar;
 use App\Models\SuratMasuk;
+use App\Models\Village;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Activitylog\Models\Activity;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-
     public function index()
     {
         $user = Auth::user();
 
+        $baseQuery = $this->basePengamalQuery($user);
 
-        // 6. Statistik jenis kelamin
-        $jumlahByGender = Pengamal::query()
-            ->when($user->hasRole('admin-provinsi'), fn($q) => $q->where('provinsi', $user->code))
-            ->when($user->hasRole('admin-kabupaten'), fn($q) => $q->where('kabupaten', $user->code))
-            ->when($user->hasRole('admin-kecamatan'), fn($q) => $q->where('kecamatan', $user->code))
+        return view('administrator.dashboard.dashboard', [
+            'user'           => $user,
+            'genderStat'     => $this->getGenderStat($baseQuery),
+            'wilayahStat'    => $this->getWilayahStat($user),
+            'kabupatenStats' => $this->getKabupatenStat($baseQuery),
+            'surat'          => $this->getSuratStat(),
+            'biaya'          => $this->getBiayaStat(),
+            'programKerja'   => ProgramKerja::count(),
+        ]);
+    }
+
+    /**
+     * Query dasar sesuai role
+     */
+    private function basePengamalQuery($user)
+    {
+        $query = Pengamal::query();
+
+        return match (true) {
+            $user->hasRole('superAdmin')
+            => $query,
+
+            $user->hasRole('admin-provinsi')
+            => $query->where('provinsi', $user->code),
+
+            $user->hasRole('admin-kabupaten')
+            => $query->where('kabupaten', $user->code),
+
+            $user->hasRole('admin-kecamatan')
+            => $query->where('kecamatan', $user->code),
+
+            $user->hasRole('admin-desa')
+            => $query->where('desa', $user->code),
+
+            default => abort(403, 'Unauthorized'),
+        };
+    }
+
+    /**
+     * Statistik gender
+     */
+    private function getGenderStat($query)
+    {
+        return (clone $query)
             ->select('jenis_kelamin', DB::raw('COUNT(*) as total'))
             ->groupBy('jenis_kelamin')
             ->pluck('total', 'jenis_kelamin');
-        $data = collect();
-        $labels = collect();
-        $values = collect();
+    }
 
-        $query = Pengamal::query()
-            ->when($user->hasRole(['admin-provinsi', 'superAdmin']), fn($q) => $q)
-            ->when($user->hasRole('admin-kabupaten'), fn($q) => $q->where('kabupaten', $user->code))
-            ->when($user->hasRole('admin-kecamatan'), fn($q) => $q->where('kecamatan', $user->code));
+    /**
+     * Statistik kabupaten
+     */
+    private function getKabupatenStat($query)
+    {
+        $data = (clone $query)
+            ->selectRaw('kabupaten, COUNT(*) as total')
+            ->groupBy('kabupaten')
+            ->orderByDesc('total')
+            ->get();
 
-        if ($user->hasRole(['admin-provinsi', 'superAdmin'])) {
-            $data = $query->selectRaw('kabupaten, COUNT(*) as total')
-                ->with('regency')
-                ->groupBy('kabupaten')
-                ->get();
+        return $data->map(function ($item) {
 
-            $labels = $data->map(
-                fn($item) =>
-                Str::startsWith(optional($item->regency)->name, 'Kab.')
-                    ? 'Kabupaten ' . ltrim(substr(optional($item->regency)->name, 4))
-                    : optional($item->regency)->name
+            $regency = Regency::where(
+                'code',
+                $item->kabupaten
+            )->first();
+
+            return [
+                'label' => $regency?->name
+                    ?? 'Tidak diketahui',
+
+                'total' => (int) $item->total,
+            ];
+        });
+    }
+
+    /**
+     * Statistik wilayah
+     */
+    private function getWilayahStat($user)
+    {
+        $query = $this->basePengamalQuery($user);
+
+        if (
+            $user->hasRole('superAdmin') ||
+            $user->hasRole('admin-provinsi')
+        ) {
+            return $this->buildWilayahStat(
+                $query,
+                'kabupaten',
+                Regency::class
             );
-        } elseif ($user->hasRole('admin-kabupaten')) {
-            $data = $query->selectRaw('kecamatan, COUNT(*) as total')
-                ->with('district')
-                ->groupBy('kecamatan')
-                ->get();
-
-            $labels = $data->map(fn($item) => 'Kec. ' . optional($item->district)->name);
-        } elseif ($user->hasRole('admin-kecamatan')) {
-            $data = $query->selectRaw('desa, COUNT(*) as total')
-                ->with('village')
-                ->groupBy('desa')
-                ->get();
-
-            $labels = $data->map(function ($item) {
-                $name = optional($item->village)->name;
-                return Str::startsWith($name, 'Desa') ? $name : 'Desa ' . $name;
-            });
         }
 
-        $values = $data->pluck('total');
-        $totalSuratKeluar = SuratKeluar::count();
-        $totalSuratMasuk = SuratMasuk::count();
+        if ($user->hasRole('admin-kabupaten')) {
+            return $this->buildWilayahStat(
+                $query,
+                'kecamatan',
+                District::class
+            );
+        }
 
-        $biaya = ProgramKerja::select('waktu_pelaksanaan', DB::raw('SUM(biaya) as total_biaya'))
+        if ($user->hasRole('admin-kecamatan')) {
+            return $this->buildWilayahStat(
+                $query,
+                'desa',
+                Village::class
+            );
+        }
+
+        if ($user->hasRole('admin-desa')) {
+            return [
+                'labels' => ['Pengamal'],
+                'values' => [(clone $query)->count()],
+            ];
+        }
+
+        return [
+            'labels' => [],
+            'values' => [],
+        ];
+    }
+
+    /**
+     * Builder statistik reusable
+     */
+    private function buildWilayahStat(
+        $query,
+        $column,
+        $modelClass
+    ) {
+        $data = (clone $query)
+            ->selectRaw("$column, COUNT(*) as total")
+            ->groupBy($column)
+            ->orderByDesc('total')
+            ->get();
+
+        return [
+            'labels' => $data
+                ->map(function ($item) use (
+                    $column,
+                    $modelClass
+                ) {
+
+                $wilayah = $modelClass::where(
+                    'code',
+                    $item->$column
+                )->first();
+
+                    return $wilayah?->name
+                        ?? 'Tidak diketahui';
+                })
+                ->values()
+                ->toArray(),
+
+            'values' => $data
+                ->pluck('total')
+                ->map(fn($v) => (int) $v)
+                ->values()
+                ->toArray(),
+        ];
+    }
+
+    /**
+     * Statistik surat
+     */
+    private function getSuratStat()
+    {
+        return [
+            'masuk'  => SuratMasuk::count(),
+            'keluar' => SuratKeluar::count(),
+        ];
+    }
+
+    /**
+     * Statistik biaya
+     */
+    private function getBiayaStat()
+    {
+        return ProgramKerja::select(
+            'waktu_pelaksanaan',
+            DB::raw('SUM(biaya) as total')
+        )
             ->groupBy('waktu_pelaksanaan')
-            ->pluck('total_biaya', 'waktu_pelaksanaan');
-
-        // Hitung jumlah program kerja
-        $programKerja = ProgramKerja::count();
-
-        // 7. Return view dengan semua data
-        return view('administrator/dashboard/dashboard', [
-            'user' => $user,
-
-
-            'jumlahByGender' => $jumlahByGender,
-            'labels' => $labels,
-            'values' => $values,
-            'totalSuratKeluar' => $totalSuratKeluar,
-            'totalSuratMasuk' => $totalSuratMasuk,
-            'programKerja' => $programKerja,
-            'biaya' => $biaya,
-        ]);
+            ->pluck('total', 'waktu_pelaksanaan');
     }
 }

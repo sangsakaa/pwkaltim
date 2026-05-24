@@ -12,21 +12,21 @@
         </div>
     </x-slot>
 
-    <div class="grid grid-cols-1 gap-4 lg:grid-cols-1">
-        <div class="p-4 bg-white rounded-md shadow-md">
-            <div class="flex flex-col md:flex-row items-center gap-4">
+    <div class="mb-6">
+        <div class="bg-gradient-to-r from-green-700 to-emerald-600 rounded-xl shadow-md p-5 text-white">
+            <div class="flex items-center justify-between">
                 <div>
-                    <img src="{{ asset('image/logofont.jpg') }}" width="200" alt="Logo" class="rounded-md">
+                    <p class="text-sm opacity-80">Wilayah Aktif</p>
+                    <h3 class="text-xl font-bold uppercase">
+                        {{ auth()->user()->wilayah }}
+                    </h3>
                 </div>
-                <div class="flex-1 w-full text-center md:text-left">
-                    <marquee behavior="scroll" direction="left" class="text-lg font-medium text-gray-700">
-                        Selamat datang di website kami!
-                    </marquee>
+                <div class="text-right text-sm opacity-80">
+                    {{ now()->format('d M Y') }}
                 </div>
             </div>
         </div>
     </div>
-
     <div class="p-4 mt-4 bg-white rounded-md shadow-md">
         <h1 class="text-2xl font-bold mb-4">Buat Role Baru</h1>
 

@@ -2,57 +2,127 @@
 $opsi = $opsiWaktu ?? ['bulanan', 'triwulan', 'semester', 'tahunan'];
 @endphp
 
-<div class="grid md:grid-cols-2 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+  {{-- NOMOR --}}
   <div>
-    <label class="block mb-1">Nomor <span class="text-red-600">*</span></label>
-    <input type="text" name="nomor" value="{{ old('nomor', $program_kerja->nomor ?? '') }}"
-      class="border rounded w-full px-3 py-2">
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Nomor <span class="text-red-500">*</span>
+    </label>
+    <input
+      type="text"
+      name="nomor"
+      value="{{ old('nomor', $program_kerja->nomor ?? '') }}"
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
+      placeholder="Masukkan nomor">
   </div>
 
+  {{-- WAKTU --}}
   <div>
-    <label class="block mb-1">Waktu Pelaksanaan <span class="text-red-600">*</span></label>
-    <select name="waktu_pelaksanaan" class="border rounded w-full px-3 py-2">
-      <option value="">-- Pilih --</option>
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Waktu Pelaksanaan <span class="text-red-500">*</span>
+    </label>
+
+    <select
+      name="waktu_pelaksanaan"
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2">
+
+      <option value="">-- Pilih Waktu --</option>
+
       @foreach ($opsi as $opt)
-      <option value="{{ $opt }}" @selected(old('waktu_pelaksanaan', $program_kerja->waktu_pelaksanaan ?? '') === $opt)>
+      <option value="{{ $opt }}"
+        @selected(old('waktu_pelaksanaan', $program_kerja->waktu_pelaksanaan ?? '') === $opt)>
         {{ ucfirst($opt) }}
       </option>
       @endforeach
+
     </select>
   </div>
 
+  {{-- URAIAN --}}
   <div class="md:col-span-2">
-    <label class="block mb-1">Uraian Kegiatan <span class="text-red-600">*</span></label>
-    <textarea name="uraian_kegiatan" rows="4" class="border rounded w-full px-3 py-2">{{ old('uraian_kegiatan', $program_kerja->uraian_kegiatan ?? '') }}</textarea>
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Uraian Kegiatan <span class="text-red-500">*</span>
+    </label>
+
+    <textarea
+      name="uraian_kegiatan"
+      rows="4"
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
+      placeholder="Deskripsi kegiatan...">{{ old('uraian_kegiatan', $program_kerja->uraian_kegiatan ?? '') }}</textarea>
   </div>
 
+  {{-- SASARAN --}}
   <div>
-    <label class="block mb-1">Sasaran <span class="text-red-600">*</span></label>
-    <input type="text" name="sasaran" value="{{ old('sasaran', $program_kerja->sasaran ?? '') }}"
-      class="border rounded w-full px-3 py-2">
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Sasaran <span class="text-red-500">*</span>
+    </label>
+
+    <input
+      type="text"
+      name="sasaran"
+      value="{{ old('sasaran', $program_kerja->sasaran ?? '') }}"
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
+      placeholder="Sasaran kegiatan">
   </div>
 
+  {{-- TUJUAN --}}
   <div>
-    <label class="block mb-1">Tujuan <span class="text-red-600">*</span></label>
-    <input type="text" name="target" value="{{ old('target', $program_kerja->target ?? '') }}"
-      class="border rounded w-full px-3 py-2">
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Tujuan <span class="text-red-500">*</span>
+    </label>
+
+    <input
+      type="text"
+      name="target"
+      value="{{ old('target', $program_kerja->target ?? '') }}"
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
+      placeholder="Tujuan kegiatan">
   </div>
 
+  {{-- BIAYA --}}
   <div>
-    <label class="block mb-1">Biaya (Rp) <span class="text-red-600">*</span></label>
-    <input type="number" name="biaya" min="0" step="1"
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Biaya (Rp) <span class="text-red-500">*</span>
+    </label>
+
+    <input
+      type="number"
+      name="biaya"
+      min="0"
+      step="1"
       value="{{ old('biaya', $program_kerja->biaya ?? 0) }}"
-      class="border rounded w-full px-3 py-2">
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
+      placeholder="0">
   </div>
 
+  {{-- PENANGGUNG JAWAB --}}
   <div>
-    <label class="block mb-1">Penanggung Jawab <span class="text-red-600">*</span></label>
-    <input type="text" name="penanggung_jawab" value="{{ old('penanggung_jawab', $program_kerja->penanggung_jawab ?? '') }}"
-      class="border rounded w-full px-3 py-2">
+    <label class="block text-sm font-medium text-gray-700 mb-1">
+      Penanggung Jawab <span class="text-red-500">*</span>
+    </label>
+
+    <input
+      type="text"
+      name="penanggung_jawab"
+      value="{{ old('penanggung_jawab', $program_kerja->penanggung_jawab ?? '') }}"
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
+      placeholder="Nama penanggung jawab">
   </div>
+
 </div>
 
-<div class="mt-4 flex gap-2">
-  <button class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
-  <a href="{{ route('program-kerja.index') }}" class="px-4 py-2 rounded border">Batal</a>
+{{-- ACTION BUTTONS --}}
+<div class="mt-6 flex flex-col sm:flex-row gap-3">
+
+  <button type="submit"
+    class="inline-flex justify-center items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow text-sm font-medium">
+    Simpan Data
+  </button>
+
+  <a href="{{ route('program-kerja.index') }}"
+    class="inline-flex justify-center items-center px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
+    Batal
+  </a>
+
 </div>

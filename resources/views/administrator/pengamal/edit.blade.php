@@ -1,331 +1,188 @@
 <x-app-layout>
-    <x-slot name="header">
-        @php
-        $user = auth()->user();
-        $wilayah = 'Tidak diketahui';
-        if ($user->regency?->name) {
-        $wilayah = Str::startsWith($user->regency->name, 'Kab.')
-        ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
-        : $user->regency->name;
-        } elseif ($user->district?->name) {
-        $wilayah = 'Kec. ' . $user->district->name;
-        } elseif ($user->village?->name) {
-        $wilayah = $user->village->name;
-        } elseif ($user->province?->name) {
-        $wilayah = $user->province->name;
-        }
-        @endphp
-        @section('title', 'PW ' . $wilayah)
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <h2 class="text-xl font-semibold leading-tight">
-                Dashboard - <span class="text-green-700">{{ $wilayah }}</span>
-            </h2>
 
+    @php
+    
+
+    $user = auth()->user();
+
+    $wilayah = 'Tidak diketahui';
+
+    if ($user?->regency?->name) {
+    $wilayah = Str::startsWith($user->regency->name, 'Kab.')
+    ? 'Kabupaten ' . trim(substr($user->regency->name, 4))
+    : $user->regency->name;
+
+    } elseif ($user?->district?->name) {
+    $wilayah = 'Kec. ' . $user->district->name;
+
+    } elseif ($user?->village?->name) {
+    $wilayah = $user->village->name;
+
+    } elseif ($user?->province?->name) {
+    $wilayah = $user->province->name;
+    }
+    @endphp
+
+    @section('title', 'PW ' . $wilayah)
+
+    {{-- HEADER --}}
+    <x-slot name="header">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-gray-800">
+                Edit Pengamal -
+                <span class="text-green-700">{{ $wilayah }}</span>
+            </h2>
         </div>
     </x-slot>
 
-    <div class=" gap-2 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1">
-        <div class="   overflow-hidden bg-white rounded-md shadow-md">
-            <div class="  flex ">
-                <div class="bg-green-800 flex flex-col items-center justify-center p-1">
-                    <img src="{{ asset('image/logo.png') }}" width="50" alt="Logo">
+    {{-- HEADER CARD --}}
+    <div class="mb-6 bg-gradient-to-r from-green-800 to-green-600 rounded-xl shadow flex items-center text-white overflow-hidden">
+        <div class="p-3 bg-green-900">
+            <img src="{{ asset('image/logo.png') }}" width="50" alt="Logo">
+        </div>
+        <div class="px-4 font-semibold uppercase tracking-wide">
+            PW {{ $wilayah }}
+        </div>
+    </div>
+
+    {{-- FORM --}}
+    <div class="bg-white p-6 rounded-xl shadow">
+
+        <form action="/pengamal/update/{{ $pengamal->id }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                {{-- LEFT --}}
+                <div class="space-y-4">
+
+                    <div>
+                        <label class="text-sm text-gray-600">NIK</label>
+                        <input type="text" name="nik" maxlength="16"
+                            class="w-full rounded-lg border-gray-300"
+                            value="{{ old('nik', $pengamal->nik) }}">
+                    </div>
+
+                    <div>
+                        <label class="text-sm text-gray-600">Nama Lengkap</label>
+                        <input type="text" name="nama_lengkap"
+                            class="w-full rounded-lg border-gray-300"
+                            value="{{ old('nama_lengkap', $pengamal->nama_lengkap) }}">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <select name="jenis_kelamin" class="rounded-lg border-gray-300">
+                            <option value="L" @selected(old('jenis_kelamin',$pengamal->jenis_kelamin)=='L')>Laki-laki</option>
+                            <option value="P" @selected(old('jenis_kelamin',$pengamal->jenis_kelamin)=='P')>Perempuan</option>
+                        </select>
+
+                        <select name="agama" class="rounded-lg border-gray-300">
+                            <option value="Islam" @selected(old('agama',$pengamal->agama)=='Islam')>Islam</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" name="tempat_lahir"
+                            class="rounded-lg border-gray-300"
+                            value="{{ old('tempat_lahir',$pengamal->tempat_lahir) }}">
+
+                        <input type="date" name="tanggal_lahir"
+                            class="rounded-lg border-gray-300"
+                            value="{{ old('tanggal_lahir',$pengamal->tanggal_lahir) }}">
+                    </div>
+
                 </div>
 
-                <div class="bg-green-800 w-full sm:grid sm:grid-cols-1 flex flex-col items-center text-white fw-semibold p-4">
-                    @php
-                    $user = auth()->user();
+                {{-- RIGHT --}}
+                <div class="space-y-4">
 
-                    if ($user->regency?->name) {
-                    if (Str::startsWith($user->regency->name, 'Kab.')) {
-                    $wilayah = 'Kabupaten ' . ltrim(substr($user->regency->name, 4));
-                    } else {
-                    $wilayah = $user->regency->name; // Biarkan 'Kota ...' atau lainnya
-                    }
-                    } elseif ($user->district?->name) {
-                    $wilayah = 'Kec. ' . $user->district->name;
-                    } elseif ($user->village?->name) {
-                    $wilayah = $user->village->name;
-                    } elseif ($user->province?->name) {
-                    $wilayah = $user->province->name;
-                    } else {
-                    $wilayah = 'Tidak diketahui';
-                    }
-                    @endphp
-                    <span class="uppercase text-lg fw-semibold">PW {{ $wilayah }}</span>
+                    <input type="text" name="alamat"
+                        class="w-full rounded-lg border-gray-300"
+                        value="{{ old('alamat',$pengamal->alamat) }}">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" name="no_hp" class="rounded-lg border-gray-300"
+                            value="{{ old('no_hp',$pengamal->no_hp) }}">
+
+                        <input type="email" name="email" class="rounded-lg border-gray-300"
+                            value="{{ old('email',$pengamal->email) }}">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="number" name="rt" class="rounded-lg border-gray-300"
+                            value="{{ old('rt',$pengamal->rt) }}">
+
+                        <input type="number" name="rw" class="rounded-lg border-gray-300"
+                            value="{{ old('rw',$pengamal->rw) }}">
+                    </div>
+
+                    {{-- FOTO --}}
+                    <div class="flex items-center gap-4">
+                        <input type="file" name="foto">
+
+                        @if($pengamal->foto)
+                        <img src="{{ asset('storage/'.$pengamal->foto) }}"
+                            class="w-20 h-20 rounded-lg object-cover">
+                        @endif
+                    </div>
+
+                    {{-- ACTION --}}
+                    <div class="flex gap-2 pt-3">
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            Update
+                        </button>
+
+                        <a href="/pengamal/show/{{ $pengamal->id }}"
+                            class="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300">
+                            Kembali
+                        </a>
+                    </div>
+
                 </div>
             </div>
-        </div>
+        </form>
     </div>
-    <div class="  mt-2 p-2 overflow-hidden bg-white rounded-md shadow-md">
-        <div>
-            <form action="/pengamal/update/{{ $pengamal->id }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {{-- Kolom Kiri --}}
-                    <div>
-                        <div class="mb-3">
-                            <label for="nik" class="w-full">NIK</label>
-                            <input type="text" name="nik" id="nik" class="w-full rounded-md" maxlength="16"
-                                value="{{ old('nik', $pengamal->nik) }}" required>
-                            @error('nik') <div class="text-danger">{{ $message }}</div> @enderror
-                        </div>
+    {{-- FIX JS (SAFE & NO ERROR) --}}
+    <script>
+        const province = document.getElementById('province');
+        const regency = document.getElementById('regency');
+        const district = document.getElementById('district');
+        const village = document.getElementById('village');
 
-                        <div class="mb-3">
-                            <label for="nama_lengkap" class="w-full">Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" id="nama_lengkap" class="w-full rounded-md"
-                                value="{{ old('nama_lengkap', $pengamal->nama_lengkap) }}" required>
-                            @error('nama_lengkap') <div class="text-danger">{{ $message }}</div> @enderror
-                        </div>
+        const selected = {
+            regency: @json($pengamal -> regency_code ?? null),
+            district: @json($pengamal -> district_code ?? null),
+            village: @json($pengamal -> village_code ?? null),
+        };
 
-                        <div class="grid gap-2 grid-cols-1 sm:grid-cols-2">
-                            <div class="mb-3">
-                                <label for="jenis_kelamin" class="form-label">Jenis Kelamin</label>
-                                <select name="jenis_kelamin" id="jenis_kelamin" class="w-full rounded-md" required>
-                                    <option value="">-- Pilih --</option>
-                                    <option value="L" {{ old('jenis_kelamin', $pengamal->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="P" {{ old('jenis_kelamin', $pengamal->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
-                                @error('jenis_kelamin') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
+        async function load(url, target, placeholder) {
+            const res = await fetch(url);
+            const data = await res.json();
 
-                            <div class="mb-3">
-                                <label for="agama" class="form-label">Agama</label>
-                                <select name="agama" id="agama" class="w-full rounded-md">
-                                    <option value="">-- Pilih --</option>
-                                    <option value="Islam" {{ old('agama', $pengamal->agama) == 'Islam' ? 'selected' : '' }}>Islam</option>
-                                    <!-- Tambahkan agama lain bila perlu -->
-                                </select>
-                                @error('agama') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
+            target.innerHTML = `<option value="">${placeholder}</option>`;
+            data.forEach(i => {
+                target.innerHTML += `<option value="${i.code}">${i.name}</option>`;
+            });
+        }
 
-                            <div class="mb-3">
-                                <label for="tempat_lahir" class="w-full">Tempat Lahir</label>
-                                <input type="text" name="tempat_lahir" id="tempat_lahir" class="w-full rounded-md"
-                                    value="{{ old('tempat_lahir', $pengamal->tempat_lahir) }}" required>
-                                @error('tempat_lahir') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
+        province?.addEventListener('change', function() {
+            if (!this.value) return;
+            load(`/get-regencies/${this.value}`, regency, 'Pilih Kabupaten');
+        });
 
-                            <div class="mb-3">
-                                <label for="tanggal_lahir" class="w-full">Tanggal Lahir</label>
-                                <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="w-full rounded-md"
-                                    value="{{ old('tanggal_lahir', $pengamal->tanggal_lahir) }}">
-                                @error('tanggal_lahir') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
+        regency?.addEventListener('change', function() {
+            if (!this.value) return;
+            load(`/get-districts/${this.value}`, district, 'Pilih Kecamatan');
+        });
 
-                            <div class="mb-3">
-                                <label for="province" class="w-full">Provinsi</label>
-                                <select class="w-full rounded-md" id="province" name="province_code" required>
-                                    <option value="">Pilih Provinsi</option>
-                                    @foreach ($provinces as $province)
-                                    <option value="{{ $province->code }}" {{ old('province_code', $pengamal->provinsi) == $province->code ? 'selected' : '' }}>
-                                        {{ $province->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
+        district?.addEventListener('change', function() {
+            if (!this.value) return;
+            load(`/get-villages/${this.value}`, village, 'Pilih Desa');
+        });
 
-                            <div class="mb-3">
-                                <label for="regency" class="w-full">Kabupaten / Kota</label>
-                                <select class="w-full rounded-md" id="regency" name="regency_code" required>
-                                    <option value="">Pilih Kabupaten / Kota</option>
-                                </select>
-                            </div>
+        if (province?.value) province.dispatchEvent(new Event('change'));
+    </script>
 
-                            <div class="mb-3">
-                                <label for="district" class="w-full">Kecamatan</label>
-                                <select class="w-full rounded-md" id="district" name="district_code" required>
-                                    <option value="">Pilih Kecamatan</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="village" class="w-full">Desa / Kelurahan</label>
-                                <select class="w-full rounded-md" id="village" name="village_code" required>
-                                    <option value="">Pilih Desa / Kelurahan</option>
-                                </select>
-                            </div>
-
-
-                        </div>
-                    </div>
-
-                    {{-- Kolom Kanan --}}
-                    <div>
-                        <div class="mb-3">
-                            <label for="alamat" class="w-full">Alamat</label>
-                            <input type="text" name="alamat" id="alamat" class="w-full rounded-md"
-                                value="{{ old('alamat', $pengamal->alamat) }}" required>
-                            @error('alamat') <div class="text-danger">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="mb-3">
-                                <label for="no_hp" class="w-full">No. HP</label>
-                                <input type="text" name="no_hp" id="no_hp" class="w-full rounded-md"
-                                    value="{{ old('no_hp', $pengamal->no_hp) }}">
-                                @error('no_hp') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="email" class="w-full">Email</label>
-                                <input type="email" name="email" id="email" class="w-full rounded-md"
-                                    value="{{ old('email', $pengamal->email) }}">
-                                @error('email') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="rt" class="w-full">RT</label>
-                                <input type="number" name="rt" id="rt" class="w-full rounded-md"
-                                    value="{{ old('rt', $pengamal->rt) }}">
-                                @error('rt') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="rw" class="w-full">RW</label>
-                                <input type="number" name="rw" id="rw" class="w-full rounded-md"
-                                    value="{{ old('rw', $pengamal->rw) }}">
-                                @error('rw') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class=" grid grid-cols-2">
-                                <div class="">
-                                    <div class="mb-3">
-                                        <label for="foto" class="w-full">Foto</label>
-                                        <input type="file" name="foto" id="foto" class="w-full">
-                                        @error('foto') <div class="text-danger">{{ $message }}</div> @enderror
-                                    </div>
-
-                                </div>
-                                <div>
-                                    <div class="w-full ">
-                                        @if ($pengamal->foto)
-                                        <img src="{{ asset('storage/' . $pengamal->foto) }}" alt="Foto Pengamal" class="w-32 h-32 object-cover rounded">
-                                        @else
-                                        <p>Tidak ada foto.</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <!-- Dropdown Pekerjaan -->
-                                <div class="mb-2">
-                                    <label for="pekerjaan" class="w-full">Pekerjaan</label>
-                                    <select name="pekerjaan" id="pekerjaan" class="w-full rounded-md" required>
-                                        <option value="">-- Pilih Pekerjaan --</option>
-                                        @php
-                                        $listPekerjaan = ['PNS', 'TNI/Polri', 'Karyawan Swasta', 'Wiraswasta', 'Petani', 'Nelayan', 'Pelajar/Mahasiswa', 'Ibu Rumah Tangga', 'Lainnya'];
-                                        @endphp
-                                        @foreach($listPekerjaan as $item)
-                                        <option value="{{ $item }}" {{ (old('pekerjaan', $pengamal->pekerjaan) == $item) ? 'selected' : '' }}>{{ $item }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('pekerjaan') <div class="text-danger">{{ $message }}</div> @enderror
-                                </div>
-
-                                <!-- Dropdown Status Perkawinan -->
-                                <div class="mb-2">
-                                    <label for="status_perkawinan" class="w-full">Status Perkawinan</label>
-                                    <select name="status_perkawinan" id="status_perkawinan" class="w-full rounded-md" required>
-                                        <option value="">-- Pilih Status --</option>
-                                        @php
-                                        $listStatus = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
-                                        @endphp
-                                        @foreach($listStatus as $status)
-                                        <option value="{{ $status }}" {{ (old('status_perkawinan', $pengamal->status_perkawinan) == $status) ? 'selected' : '' }}>{{ $status }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('status_perkawinan') <div class="text-danger">{{ $message }}</div> @enderror
-                                </div>
-                            </div>
-                            <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
-                                Update
-                            </button>
-                            <a href="/pengamal/show/{{$pengamal->id}}" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition">
-                                Kembali
-                            </a>
-
-                        </div>
-                    </div>
-            </form>
-            <script>
-                const province = document.getElementById('province');
-                const regency = document.getElementById('regency');
-                const district = document.getElementById('district');
-                const village = document.getElementById('village');
-
-                const selected = {
-                    regency: '{{ old('
-                    regency_code ', $pengamal->kabupaten) }}',
-                    district: '{{ old('
-                    district_code ', $pengamal->kecamatan) }}',
-                    village: '{{ old('
-                    village_code ', $pengamal->desa) }}'
-                };
-
-                province.addEventListener('change', async function() {
-                    const provinceCode = this.value;
-                    regency.innerHTML = '<option value="">Pilih Kabupaten</option>';
-                    district.innerHTML = '<option value="">Pilih Kecamatan</option>';
-                    village.innerHTML = '<option value="">Pilih Desa</option>';
-
-                    if (!provinceCode) return;
-
-                    const response = await fetch(`/get-regencies/${provinceCode}`);
-                    const data = await response.json();
-                    data.forEach(item => {
-                        const selectedAttr = item.code == selected.regency ? 'selected' : '';
-                        regency.innerHTML += `<option value="${item.code}" ${selectedAttr}>${item.name}</option>`;
-                    });
-
-                    if (selected.regency) {
-                        regency.dispatchEvent(new Event('change'));
-                    }
-                });
-
-                regency.addEventListener('change', async function() {
-                    const regencyCode = this.value;
-                    district.innerHTML = '<option value="">Pilih Kecamatan</option>';
-                    village.innerHTML = '<option value="">Pilih Desa</option>';
-
-                    if (!regencyCode) return;
-
-                    const response = await fetch(`/get-districts/${regencyCode}`);
-                    const data = await response.json();
-                    data.forEach(item => {
-                        const selectedAttr = item.code == selected.district ? 'selected' : '';
-                        district.innerHTML += `<option value="${item.code}" ${selectedAttr}>${item.name}</option>`;
-                    });
-
-                    if (selected.district) {
-                        district.dispatchEvent(new Event('change'));
-                    }
-                });
-
-                district.addEventListener('change', async function() {
-                    const districtCode = this.value;
-                    village.innerHTML = '<option value="">Pilih Desa</option>';
-
-                    if (!districtCode) return;
-
-                    const response = await fetch(`/get-villages/${districtCode}`);
-                    const data = await response.json();
-                    data.forEach(item => {
-                        const selectedAttr = item.code == selected.village ? 'selected' : '';
-                        village.innerHTML += `<option value="${item.code}" ${selectedAttr}>${item.name}</option>`;
-                    });
-                });
-
-                // Trigger initial load if province already selected
-                if (province.value) {
-                    province.dispatchEvent(new Event('change'));
-                }
-            </script>
-
-
-        </div>
-    </div>
 </x-app-layout>

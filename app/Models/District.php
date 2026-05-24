@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class District extends Model
 {
-    //
-    // app/Models/District.php
+
+    protected $fillable = [
+        'code',
+        'name',
+        'regency_code',
+    ];
     public function regency()
     {
         return $this->belongsTo(Regency::class, 'regency_code', 'code');

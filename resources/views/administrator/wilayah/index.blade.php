@@ -1,14 +1,16 @@
 <x-app-layout>
+
     <x-slot name="header">
         @php
         $user = auth()->user();
         $wilayah = 'Tidak diketahui';
+
         if ($user->regency?->name) {
         $wilayah = Str::startsWith($user->regency->name, 'Kab.')
         ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
         : $user->regency->name;
         } elseif ($user->district?->name) {
-        $wilayah = 'Kec. ' . $user->district->name;
+        $wilayah = 'Kecamatan ' . $user->district->name;
         } elseif ($user->village?->name) {
         $wilayah = $user->village->name;
         } elseif ($user->province?->name) {
@@ -16,81 +18,134 @@
         }
         @endphp
 
-        @section('title', 'PW ' . $wilayah)
+        @section('title' . $wilayah)
 
-        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <h2 class="text-xl font-semibold text-gray-800 leading-tight">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <h2 class="text-xl font-bold text-gray-800">
                 Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
             </h2>
         </div>
     </x-slot>
 
-    <!-- Welcome Section -->
-    <div class="grid grid-cols-1 gap-2">
-        <div class="bg-green-800  text-white rounded-md shadow-md flex items-center">
-            <div class="bg-green-800 p-2 rounded-md flex items-center justify-center">
-                <img src="{{ asset('image/logo.png') }}" alt="Logo" width="50">
-            </div>
-            <div class="ml-4">
-                <h3 class="uppercase text-lg font-semibold ">PW {{ $wilayah }}</h3>
-            </div>
-        </div>
-    </div>
+    {{-- WRAPPER --}}
+    <div class="space-y-4">
 
-    <!-- Data Tables Section -->
-    <div class="mt-4 bg-white p-4 rounded-md shadow-md">
-        <!-- Provinsi Table -->
-        <h2 class="text-lg font-semibold mb-2">Kode Provinsi</h2>
-        <div class="overflow-auto mb-6">
-            <table class="table-auto w-full border border-gray-200 text-sm">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="text-left px-3 py-2 border">No</th>
-                        <th class="text-left px-3 py-2 border">Nama</th>
-                        <th class="text-left px-3 py-2 border">Kode Province</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($prov as $index => $user)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-3 py-2 border">{{ $index + 1 }}</td>
-                        <td class="px-3 py-2 border">{{ $user->name }}</td>
-                        <td class="px-3 py-2 border">{{ $user->code }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        {{-- HEADER CARD --}}
+        <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow-lg p-4 flex items-center gap-4">
+
+            <img src="{{ asset('image/favicon.png') }}"
+                class="w-12 h-12 bg-white rounded-full p-1">
+
+            <div>
+                <h3 class="text-lg font-bold uppercase">
+                    {{ $wilayah }}
+                </h3>
+                <p class="text-sm text-green-100">
+                    Data Wilayah Administrasi Terintegrasi
+                </p>
+            </div>
+
         </div>
 
-        <!-- Kabupaten Table -->
-        <h2 class="text-lg font-semibold mb-2">Kode Kabupaten</h2>
-        <div class="overflow-auto">
-            <table class="table-auto w-full border border-gray-200 text-sm">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="text-left px-3 py-2 border">No</th>
-                        <th class="text-left px-3 py-2 border">Nama</th>
-                        <th class="text-left px-3 py-2 border">Kode Province</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($kab as $index => $user)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-3 py-2 border">{{ $index + 1 }}</td>
-                        <td class="px-3 py-2 border">
-                            <a href="{{ url('/wilayah/' . $user->code) }}" class="text-blue-600 hover:underline">
-                                {{ $user->name }}
-                            </a>
-                        </td>
-                        <td class="px-3 py-2 border">
-                            <a href="{{ url('/wilayah/' . $user->code) }}" class="text-blue-600 hover:underline">
-                                {{ $user->code }}
-                            </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        {{-- TABLE SECTION --}}
+        <div class="bg-white rounded-xl shadow border border-gray-100 p-4 space-y-8">
+
+            {{-- PROVINSI --}}
+            <div>
+                <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-600 rounded-full"></span>
+                    Kode Provinsi
+                </h2>
+
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="min-w-full text-sm">
+
+                        <thead class="bg-green-900 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left">No</th>
+                                <th class="px-4 py-3 text-left">Nama Provinsi</th>
+                                <th class="px-4 py-3 text-left">Kode</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-100">
+
+                            @foreach($prov as $index => $item)
+                            <tr class="hover:bg-green-50 transition">
+
+                                <td class="px-4 py-3 text-gray-500">
+                                    {{ $index + 1 }}
+                                </td>
+
+                                <td class="px-4 py-3 font-medium text-gray-800">
+                                    {{ $item->name }}
+                                </td>
+
+                                <td class="px-4 py-3 text-green-700 font-semibold">
+                                    {{ $item->code }}
+                                </td>
+
+                            </tr>
+                            @endforeach
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
+            {{-- KABUPATEN --}}
+            <div>
+                <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+                    Kode Kabupaten
+                </h2>
+
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="min-w-full text-sm">
+
+                        <thead class="bg-green-900 text-white">
+                            <tr>
+                                <th class="px-4 py-3 text-left">No</th>
+                                <th class="px-4 py-3 text-left">Nama Kabupaten</th>
+                                <th class="px-4 py-3 text-left">Kode</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-100">
+
+                            @foreach($kab as $index => $item)
+                            <tr class="hover:bg-green-50 transition">
+
+                                <td class="px-4 py-3 text-gray-500">
+                                    {{ $index + 1 }}
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    <a href="{{ url('/wilayah/' . $item->code) }}"
+                                        class="text-green-700 font-medium hover:underline">
+                                        {{ $item->name }}
+                                    </a>
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    <a href="{{ url('/wilayah/' . $item->code) }}"
+                                        class="text-blue-600 font-semibold hover:underline">
+                                        {{ $item->code }}
+                                    </a>
+                                </td>
+
+                            </tr>
+                            @endforeach
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+
         </div>
+
     </div>
+
 </x-app-layout>

@@ -1,187 +1,219 @@
 <x-app-layout>
-  <x-slot name="header">
-    @php
-    $user = auth()->user();
-    $wilayah = 'Tidak diketahui';
-    if ($user->regency?->name) {
-    $wilayah = Str::startsWith($user->regency->name, 'Kab.')
-    ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
-    : $user->regency->name;
-    } elseif ($user->district?->name) {
-    $wilayah = 'Kec. ' . $user->district->name;
-    } elseif ($user->village?->name) {
-    $wilayah = $user->village->name;
-    } elseif ($user->province?->name) {
-    $wilayah = $user->province->name;
-    }
-    @endphp
 
-    @section('title', 'PW ' . $wilayah)
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+  @php
+  $user = auth()->user();
+
+  $wilayah = 'Tidak diketahui';
+
+  if ($user->regency?->name) {
+  $wilayah = Str::startsWith($user->regency->name, 'Kab.')
+  ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
+  : $user->regency->name;
+  } elseif ($user->district?->name) {
+  $wilayah = 'Kec. ' . $user->district->name;
+  } elseif ($user->village?->name) {
+  $wilayah = $user->village->name;
+  } elseif ($user->province?->name) {
+  $wilayah = $user->province->name;
+  }
+  @endphp
+
+  @section('title', 'PW ' . $wilayah)
+
+  {{-- HEADER --}}
+  <x-slot name="header">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
       <div class="flex items-center gap-3">
-        <img src="{{ asset('image/logo.png') }}" alt="Logo" class="w-10 h-10 sm:w-12 sm:h-12 object-contain">
+        <img src="{{ asset('image/logo.png') }}"
+          class="w-10 h-10 sm:w-12 sm:h-12 object-contain"
+          alt="Logo">
+
         <div>
-          <h2 class="text-lg sm:text-xl font-semibold text-gray-800 leading-tight">
-            Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
+          <h2 class="text-lg sm:text-xl font-semibold text-gray-800">
+            Dashboard <span class="text-green-700">PW {{ $wilayah }}</span>
           </h2>
-          <p class="text-xs text-green-600 hidden sm:block">Selamat datang di dashboard PW {{ $wilayah }}</p>
+          <p class="text-xs text-gray-500 hidden sm:block">
+            Sistem administrasi program kerja
+          </p>
         </div>
       </div>
-      <div class="flex gap-2 items-center">
-        <!-- Tombol aksi header (jika diperlukan) -->
-        <a href="{{ route('program-kerja.create') }}"
-          class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded shadow text-sm">
-          + Tambah Program Kerja
-        </a>
-      </div>
+
+      <a href="{{ route('program-kerja.create') }}"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg shadow">
+        + Tambah Program
+      </a>
+
     </div>
   </x-slot>
-  <div class="space-y-4 p-4 sm:p-6">
-    <!-- Header Card (ringkasan) -->
-    <div class="bg-gradient-to-r from-green-800 to-green-700 text-white rounded-md shadow-md p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <img src="{{ asset('image/logo.png') }}" alt="Logo" class="w-12 h-12 sm:w-14 sm:h-14 object-contain">
+
+  {{-- CONTENT --}}
+  <div class="p-4 sm:p-6 space-y-6">
+
+    {{-- STATS CARD --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+      <div class="bg-gradient-to-r from-green-700 to-green-800 text-white rounded-lg shadow p-5">
+        <div class="flex items-center gap-3">
+          <img src="{{ asset('image/logo.png') }}" class="w-12 h-12" alt="logo">
+
+          <div>
+            <h3 class="text-lg font-semibold uppercase">
+              PW {{ $wilayah }}
+            </h3>
+            <p class="text-xs text-green-100">
+              Dashboard program kerja aktif
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-5 flex items-center justify-between">
         <div>
-          <h3 class="uppercase text-base sm:text-lg font-semibold">PW {{ $wilayah }}</h3>
-          <p class="text-sm text-green-100 hidden sm:block">Selamat datang di dashboard PW {{ $wilayah }}</p>
+          <p class="text-sm text-gray-500">Status Sistem</p>
+          <p class="text-lg font-semibold text-gray-800">Aktif</p>
+        </div>
+
+        <div class="text-right">
+          <p class="text-sm text-gray-500">Data</p>
+          <p class="text-lg font-semibold text-green-700">Terkelola</p>
         </div>
       </div>
-      <div class="text-sm text-green-100">
-        <!-- Contoh ringkasan kecil (bisa diganti dengan statistik) -->
-        <div class="flex gap-4">
-          <div class="flex flex-col">
-            <span class="font-semibold">Surat</span>
-            <span class="text-xs">Terbaru & Terkelola</span>
-          </div>
-          <div class="flex flex-col">
-            <span class="font-semibold">Anggota</span>
-            <span class="text-xs">--</span>
-          </div>
-        </div>
-      </div>
+
     </div>
-    <div class="bg-white p-4 sm:p-6 rounded-md shadow-md">
-      <div class="">
-        {{-- Flash message --}}
-        @include('components.flash')
 
-        {{-- Kontrol: pencarian + export --}}
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          {{-- Pencarian --}}
-          <form method="GET" action="{{ route('program-kerja.index') }}" class="flex w-full md:w-1/2">
-            <label for="q" class="sr-only">Cari</label>
-            <input id="q" name="q" type="text" value="{{ $q ?? '' }}"
-              placeholder="Cari nomor / uraian / sasaran / penanggung jawab"
-              class="w-full px-3 py-2 rounded-l-md border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              aria-label="Cari program kerja">
-            <button type="submit"
-              class="px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-r-md">Cari</button>
-          </form>
+    {{-- MAIN CARD --}}
+    <div class="bg-white rounded-lg shadow p-5 space-y-5">
 
-          {{-- Export --}}
-          <!-- <div class="flex flex-wrap gap-2">
-            <a href="{{ route('program-kerja.export.pdf', 'bulanan') }}" target="_blank" rel="noopener noreferrer"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Bulanan</a>
+      {{-- FLASH --}}
+      @include('components.flash')
 
-            <a href="{{ route('program-kerja.export.pdf', 'triwulan') }}" target="_blank" rel="noopener noreferrer"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Triwulan</a>
+      {{-- FILTER BAR --}}
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
 
-            <a href="{{ route('program-kerja.export.pdf', 'semester') }}" target="_blank" rel="noopener noreferrer"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Semester</a>
+        {{-- SEARCH --}}
+        <form method="GET"
+          action="{{ route('program-kerja.index') }}"
+          class="flex w-full md:w-1/2">
 
-            <a href="{{ route('program-kerja.export.pdf', 'tahunan') }}" target="_blank" rel="noopener noreferrer"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Tahunan</a>
-          </div> -->
-          <div class="flex flex-wrap gap-2">
-            <a href="{{ route('program-kerja.export.pdf', 'bulanan') }}" target="_blank" rel="noopener noreferrer"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Bulanan</a>
+          <input
+            name="q"
+            value="{{ $q ?? '' }}"
+            placeholder="Cari nomor, uraian, sasaran..."
+            class="w-full px-3 py-2 border rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
 
-            <a href="{{ route('program-kerja.export.pdf', 'triwulan') }}" target="_blank" rel="noopener noreferrer"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Triwulan</a>
+          <button class="px-4 bg-gray-900 text-white rounded-r-lg hover:bg-black">
+            Cari
+          </button>
 
-            <a href="{{ route('program-kerja.export.pdf', 'semester') }}" target="_blank" rel="noopener noreferrer"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Semester</a>
+        </form>
 
-            <a href="{{ route('program-kerja.export.pdf', 'tahunan') }}" target="_blank" rel="noopener noreferrer"
-              class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm">Tahunan</a>
-            <a href="{{ route('program-kerja.exportPdf', 'semua') }}" target="_blank"
-              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-              Semua
-            </a>
+        {{-- EXPORT --}}
+        <div class="flex flex-wrap gap-2">
 
-          </div>
+          @foreach (['bulanan','triwulan','semester','tahunan'] as $type)
+          <a href="{{ route('program-kerja.export.pdf', $type) }}"
+            target="_blank"
+            class="px-3 py-2 text-xs font-medium bg-red-600 hover:bg-red-700 text-white rounded-lg">
+            {{ ucfirst($type) }}
+          </a>
+          @endforeach
 
+          <a href="{{ route('program-kerja.exportPdf', 'semua') }}"
+            target="_blank"
+            class="px-3 py-2 text-xs font-medium bg-red-700 hover:bg-red-800 text-white rounded-lg">
+            Semua
+          </a>
 
         </div>
 
-        {{-- Table container: allow horizontal scroll on small screens --}}
-        <div class="bg-white shadow rounded overflow-x-auto mt-2">
-          <table class="min-w-full divide-y">
-            <thead class="bg-gray-100">
-              <tr>
-                <th class="text-left p-3 text-xs font-medium text-gray-600">Nomor</th>
-                <th class="text-left p-3 text-xs font-medium text-gray-600">Uraian</th>
-                <th class="text-left p-3 text-xs font-medium text-gray-600">Waktu</th>
-                <th class="text-left p-3 text-xs font-medium text-gray-600">Tujuan</th>
-                <th class="text-left p-3 text-xs font-medium text-gray-600">Sasaran</th>
-                <th class="text-left p-3 text-xs font-medium text-gray-600">Biaya</th>
-                <th class="text-left p-3 text-xs font-medium text-gray-600">Penanggung Jawab</th>
-                <th class="text-left p-3 text-xs font-medium text-gray-600 w-36">Aksi</th>
-              </tr>
-            </thead>
-
-            <tbody class="bg-white divide-y">
-              @forelse ($data as $row)
-              <tr class="hover:bg-gray-50">
-                <td class="p-3 align-top text-sm text-gray-700 whitespace-nowrap">{{ $row->nomor }}</td>
-
-                <td class="p-3 align-top text-sm text-gray-700 max-w-xs">
-                  <div class="line-clamp-3">{{ $row->uraian_kegiatan }}</div>
-                  {{-- Jika butuh ringkasan: Str::limit sudah dipakai awalnya --}}
-                </td>
-
-                <td class="p-3 align-top text-sm text-gray-700 capitalize">{{ $row->waktu_pelaksanaan }}</td>
-                <td class="p-3 align-top text-sm text-gray-700">{{ $row->target }}</td>
-                <td class="p-3 align-top text-sm text-gray-700">{{ $row->sasaran }}</td>
-                <td class="p-3 align-top text-sm text-gray-700">{{ $row->biaya_rupiah }}</td>
-                <td class="p-3 align-top text-sm text-gray-700">{{ $row->penanggung_jawab }}</td>
-
-                <td class="p-3 align-top text-sm text-gray-700">
-                  <div class="flex items-center gap-2">
-                    <!-- Detail -->
-                    <a href="{{ route('program-kerja.show', $row) }}"
-                      class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm">Detail</a>
-
-                    <!-- Edit -->
-                    <a href="{{ route('program-kerja.edit', $row) }}"
-                      class="px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white text-sm">Edit</a>
-
-                    <!-- Hapus -->
-                    <form method="POST" action="{{ route('program-kerja.destroy', $row) }}"
-                      onsubmit="return confirm('Hapus data ini?')" class="inline">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit"
-                        class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-sm">
-                        Hapus
-                      </button>
-                    </form>
-                  </div>
-                </td>
-
-              </tr>
-              @empty
-              <tr>
-                <td colspan="8" class="p-4 text-center text-gray-500">Belum ada data.</td>
-              </tr>
-              @endforelse
-            </tbody>
-          </table>
-        </div>
-
-        {{-- Pagination --}}
-        <div class="mt-4">
-          {{ $data->links() }}
-        </div>
       </div>
+
+      {{-- TABLE --}}
+      <div class="overflow-x-auto border rounded-lg">
+
+        <table class="min-w-full text-sm">
+
+          <thead class="bg-gray-100">
+            <tr>
+              @foreach (['Nomor','Uraian','Waktu','Tujuan','Sasaran','Biaya','PJ','Aksi'] as $col)
+              <th class="text-left p-3 text-xs font-semibold text-gray-600">
+                {{ $col }}
+              </th>
+              @endforeach
+            </tr>
+          </thead>
+
+          <tbody class="divide-y">
+
+            @forelse ($data as $row)
+            <tr class="hover:bg-gray-50 transition">
+
+              <td class="p-3 whitespace-nowrap">{{ $row->nomor }}</td>
+
+              <td class="p-3 max-w-xs">
+                <div class="line-clamp-2 text-gray-700">
+                  {{ $row->uraian_kegiatan }}
+                </div>
+              </td>
+
+              <td class="p-3 capitalize text-gray-600">{{ $row->waktu_pelaksanaan }}</td>
+              <td class="p-3 text-gray-600">{{ $row->target }}</td>
+              <td class="p-3 text-gray-600">{{ $row->sasaran }}</td>
+              <td class="p-3 text-gray-600">{{ $row->biaya_rupiah }}</td>
+              <td class="p-3 text-gray-600">{{ $row->penanggung_jawab }}</td>
+
+              <td class="p-3">
+                <div class="flex gap-2">
+
+                  <a href="{{ route('program-kerja.show', $row) }}"
+                    class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs">
+                    Detail
+                  </a>
+
+                  <a href="{{ route('program-kerja.edit', $row) }}"
+                    class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                    Edit
+                  </a>
+
+                  <form method="POST"
+                    action="{{ route('program-kerja.destroy', $row) }}"
+                    onsubmit="return confirm('Hapus data ini?')">
+
+                    @csrf
+                    @method('DELETE')
+
+                    <button class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">
+                      Hapus
+                    </button>
+
+                  </form>
+
+                </div>
+              </td>
+
+            </tr>
+            @empty
+            <tr>
+              <td colspan="8" class="p-6 text-center text-gray-500">
+                Tidak ada data program kerja.
+              </td>
+            </tr>
+            @endforelse
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      {{-- PAGINATION --}}
+      <div class="pt-3">
+        {{ $data->links() }}
+      </div>
+
+    </div>
+
+  </div>
+
 </x-app-layout>

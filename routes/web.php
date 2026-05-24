@@ -1,13 +1,12 @@
 <?php
 
-use App\Models\Pengamal;
-use App\Models\SuratMasuk;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserRoleController;
+use App\Http\Controllers\Administrator\UserRoleController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\SuratTugasController;
@@ -15,7 +14,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\ProgramKerjaController;
 use App\Http\Controllers\Administrator\PengamalController;
-use App\Http\Controllers\Administrator\DashboardController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,6 +34,14 @@ Route::get('/pengamal', [PengamalController::class, 'index'])
 Route::get('/pengamal/create', [PengamalController::class, 'create'])
     ->middleware(['auth', 'verified'])->name('pengamal.create');
 
+// PUBLIC
+Route::get('/daftar-pengamal', [PengamalController::class, 'createPublic'])
+    ->name('pengamal.public.create');
+// ADMIN
+Route::get('/pengamal/create', [PengamalController::class, 'create'])
+    ->middleware(['auth', 'verified'])
+    ->name('pengamal.create');
+
 Route::get('/pengamal/show/{pengamal}', [PengamalController::class, 'show']);
 Route::delete('/pengamal/show/{pengamal}', [PengamalController::class, 'destroy'])
     ->middleware(['auth', 'verified']);
@@ -44,7 +51,9 @@ Route::get('/pengamal/edit/{pengamal}', [PengamalController::class, 'edit'])
 Route::put('/pengamal/update/{pengamal}', [PengamalController::class, 'update'])
     ->middleware(['auth', 'verified'])
     ->name('pengamal.update');
-Route::post('/pengamal/store', [PengamalController::class, 'store']);
+// Route::post('/pengamal/store', [PengamalController::class, 'store']);
+Route::post('/pengamal/store', [PengamalController::class, 'store'])
+    ->name('pengamal.store');
 
 
 Route::middleware('auth')->group(function () {
@@ -56,10 +65,12 @@ Route::middleware('auth')->group(function () {
 
 
 // WILAYAH
-Route::get('/get-regencies/{provinceId}', [PengamalController::class, 'getRegencies'])->middleware(['auth', 'verified']);
-Route::get('/get-districts/{regencyId}', [PengamalController::class, 'getDistricts'])->middleware(['auth', 'verified']);
-Route::get('/get-villages/{districtId}', [PengamalController::class, 'getVillages'])->middleware(['auth', 'verified']);
-
+// Route::get('/get-regencies/{provinceId}', [PengamalController::class, 'getRegencies'])->middleware(['auth', 'verified']);
+// Route::get('/get-districts/{regencyId}', [PengamalController::class, 'getDistricts'])->middleware(['auth', 'verified']);
+// Route::get('/get-villages/{districtId}', [PengamalController::class, 'getVillages'])->middleware(['auth', 'verified']);
+Route::get('/get-regencies/{province}', [PengamalController::class, 'getRegencies']);
+Route::get('/get-districts/{regency}', [PengamalController::class, 'getDistricts']);
+Route::get('/get-villages/{district}', [PengamalController::class, 'getVillages']);
 // roles and permissions
 Route::resource('roles', RoleController::class)->middleware(['auth', 'verified']);
 
@@ -68,7 +79,9 @@ Route::resource('roles', RoleController::class)->middleware(['auth', 'verified']
 // usermanagement
 Route::get('/users/assign-role', [UserRoleController::class, 'index'])->name('users.assign-role-index')->middleware(['auth', 'verified']);
 Route::get('/users/create', [UserRoleController::class, 'create'])->name('users.create')->middleware(['auth', 'verified']);
-Route::post('/users/create', [UserRoleController::class, 'storeUser']);
+Route::post('/users/{user}/change-role', [UserRoleController::class, 'changeRole'])
+    ->name('users.change-role');
+Route::post('/users/create', [UserRoleController::class, 'storeUser'])->name('users.store')->middleware(['auth', 'verified']);
 Route::get('/users/{user}/assign-role', [UserRoleController::class, 'edit'])->name('users.assign-role')->middleware(['auth', 'verified']);
 Route::post('/users/{user}/assign-role', [UserRoleController::class, 'update'])->name('users.assign-role.update')->middleware(['auth', 'verified']);
 // routes/web.php
@@ -132,7 +145,7 @@ Route::middleware(['auth'])->group(function () {
 // Form create post + simpan post
 Route::middleware(['auth'])->group(function () {
     Route::get('/post/create', [PostController::class, 'create'])->name('post.create');
-    Route::post('/post/store', [PostController::class, 'store']);
+    Route::post('/post/store', [PostController::class, 'store'])->name('post.store');
     Route::get('/post/approval', [PostController::class, 'approval'])->name('post.approval');
     Route::put('/post/{id}/approve', [PostController::class, 'approve']);
     Route::get('/post/approved', [PostController::class, 'approvedList'])->name('post.approved');

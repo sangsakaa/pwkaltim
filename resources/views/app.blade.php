@@ -1,26 +1,84 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="shortcut icon" href="{{ asset('image/logo.png') }}" type="image/x-icon">
-    <title>@yield('title')</title>
+    <title>@yield('title', 'Admin Panel')</title>
 
-    <!-- Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet" />
-
-    <!-- Scripts -->
-    @routes
-    @vite('resources/js/app.js')
-    @inertiaHead
+    @vite('resources/css/app.css')
 </head>
 
-<body class="font-sans antialiased">
-    @inertia
+<body class="bg-gray-100" x-data="{ isSidebarOpen: true }">
+
+    <div class="flex h-screen overflow-hidden">
+
+        {{-- SIDEBAR --}}
+        <aside
+            class="bg-green-900 text-white w-64 p-4 space-y-4
+               transform transition-transform duration-200"
+            :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0 md:w-20'">
+
+            <div class="text-xl font-bold mb-6">
+                ADMIN PANEL
+            </div>
+
+            <nav class="space-y-2">
+
+                <a href="/admin/dashboard"
+                    class="block p-2 rounded hover:bg-green-700">
+                    Dashboard
+                </a>
+
+                <a href="/admin/users"
+                    class="block p-2 rounded hover:bg-green-700">
+                    Users
+                </a>
+
+                <a href="/admin/roles"
+                    class="block p-2 rounded hover:bg-green-700">
+                    Roles
+                </a>
+
+            </nav>
+        </aside>
+
+        {{-- MAIN --}}
+        <div class="flex-1 flex flex-col overflow-hidden">
+
+            {{-- TOPBAR --}}
+            <header class="bg-white shadow px-4 py-3 flex items-center justify-between">
+
+                {{-- Toggle Sidebar --}}
+                <button
+                    class="text-gray-700"
+                    @click="isSidebarOpen = !isSidebarOpen">
+
+                    <x-heroicon-o-bars-3 class="w-6 h-6" />
+
+                </button>
+
+                <h1 class="text-lg font-semibold">
+                    @yield('page-title')
+                </h1>
+
+                {{-- Right side (bisa search/user menu nanti) --}}
+                <div></div>
+
+            </header>
+
+            {{-- CONTENT --}}
+            <main class="flex-1 p-6 overflow-y-auto">
+
+                @yield('content')
+
+            </main>
+
+        </div>
+
+    </div>
+
 </body>
 
 </html>
