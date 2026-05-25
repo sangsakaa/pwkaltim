@@ -22,54 +22,42 @@
 
     // NIK MASKING
     $nikMasked = $pengamal->nik
-    ? substr($pengamal->nik, 0, 4) .
-    str_repeat('*', max(strlen($pengamal->nik) - 4, 0))
+    ? substr($pengamal->nik, 0, 4) . str_repeat('*', max(strlen($pengamal->nik) - 4, 0))
     : '-';
 
     // TTL
-    $ttl = '-';
-
-    if ($pengamal->tempat_lahir || $pengamal->tanggal_lahir) {
-    $tempat = $pengamal->tempat_lahir ?? '-';
-
-    $tanggal = $pengamal->tanggal_lahir
-    ? \Carbon\Carbon::parse($pengamal->tanggal_lahir)
-    ->translatedFormat('d F Y')
+    $ttl = $pengamal->tempat_lahir || $pengamal->tanggal_lahir
+    ? ($pengamal->tempat_lahir ?? '-') . ', ' .
+    ($pengamal->tanggal_lahir
+    ? \Carbon\Carbon::parse($pengamal->tanggal_lahir)->translatedFormat('d F Y')
+    : '-')
     : '-';
-
-    $ttl = $tempat . ', ' . $tanggal;
-    }
 
     // USIA
     $usia = $pengamal->tanggal_lahir
     ? \Carbon\Carbon::parse($pengamal->tanggal_lahir)->age . ' Tahun'
     : '-';
 
-    // RT RW
-    $rtRw =
-    $pengamal->rt || $pengamal->rw
-    ? 'RT ' .
-    ($pengamal->rt ?? '-') .
-    ' / RW ' .
-    ($pengamal->rw ?? '-')
+    $rtRw = ($pengamal->rt || $pengamal->rw)
+    ? 'RT ' . ($pengamal->rt ?? '-') . ' / RW ' . ($pengamal->rw ?? '-')
     : '-';
 
     $rows = [
     'NIK' => $nikMasked,
-    'Nama Lengkap' => $pengamal->nama_lengkap ?? '-',
+    'Nama' => $pengamal->nama_lengkap ?? '-',
     'Agama' => $pengamal->agama ?? '-',
-    'Tempat, Tanggal Lahir' => $ttl,
+    'TTL' => $ttl,
     'Jenis Kelamin' => $pengamal->jenis_kelamin ?? '-',
     'Pekerjaan' => $pengamal->pekerjaan ?? '-',
-    'Status Perkawinan' => $pengamal->status_perkawinan ?? '-',
+    'Status' => $pengamal->status_perkawinan ?? '-',
     'Provinsi' => $pengamal->province->name ?? '-',
     'Kabupaten' => $pengamal->regency->name ?? '-',
     'Kecamatan' => $pengamal->district->name ?? '-',
     'Desa' => $pengamal->village->name ?? '-',
-    'RT / RW' => $rtRw,
+    'RT/RW' => $rtRw,
     'Usia' => $usia,
     'Alamat' => $pengamal->alamat ?? '-',
-    'No HP' => $pengamal->no_hp ?? '-',
+    'HP' => $pengamal->no_hp ?? '-',
     'Email' => $pengamal->email ?? '-',
     ];
     @endphp
@@ -81,104 +69,87 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <h2 class="text-xl font-bold text-gray-800">
                 Detail Pengamal
-                @if (!$isPublic)
-                -
-                <span class="text-green-700">
-                    {{ $wilayah }}
-                </span>
+                @if(!$isPublic)
+                <span class="text-green-600 font-semibold">• {{ $wilayah }}</span>
                 @endif
             </h2>
         </div>
     </x-slot>
 
-    <div class="space-y-4">
+    <div class="max-w-6xl mx-auto space-y-6">
 
-        {{-- HEADER CARD --}}
-        <div
-            class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow-md flex items-center overflow-hidden">
+        {{-- HERO CARD --}}
+        <div class="relative overflow-hidden rounded-2xl shadow-lg bg-gradient-to-r from-green-700 to-green-500 text-white">
 
-            <div class="bg-green-900 p-3 flex items-center justify-center">
-                <img src="{{ asset('image/logo.png') }}"
-                    width="50">
-            </div>
+            <div class="flex items-center gap-4 p-6">
+                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+                    <img src="{{ asset('image/logo.png') }}" class="w-10 h-10">
+                </div>
 
-            <div class="p-4">
-                <h3 class="text-lg font-bold uppercase">
-                    {{ $isPublic ? 'Pendaftaran Pengamal' : 'PW ' . $wilayah }}
-                </h3>
-
-                <p class="text-sm text-green-100">
-                    Detail Data Pengamal
-                </p>
+                <div>
+                    <h3 class="text-lg font-bold uppercase">
+                        {{ $isPublic ? 'Pendaftaran Pengamal' : 'PW ' . $wilayah }}
+                    </h3>
+                    <p class="text-sm text-white/80">
+                        Detail informasi data pengamal
+                    </p>
+                </div>
             </div>
         </div>
 
-        {{-- MAIN CARD --}}
-        <div class="bg-white rounded-xl shadow-md p-6">
+        {{-- CONTENT CARD --}}
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid lg:grid-cols-3 gap-6 p-6">
 
                 {{-- FOTO --}}
-                <div class="flex justify-center lg:justify-start">
-
-                    <div
-                        class="w-48 h-48 rounded-xl overflow-hidden border shadow-sm">
-
-                        @if ($pengamal->foto &&
-                        Storage::disk('public')->exists($pengamal->foto))
-                        <img src="{{ asset('storage/' . $pengamal->foto) }}"
+                <div class="flex justify-center">
+                    <div class="w-52 h-52 rounded-2xl overflow-hidden border shadow-sm bg-gray-50">
+                        @if($pengamal->foto && Storage::disk('public')->exists($pengamal->foto))
+                        <img src="{{ asset('storage/'.$pengamal->foto) }}"
                             class="w-full h-full object-cover">
                         @else
                         <img src="{{ asset('image/foto.png') }}"
                             class="w-full h-full object-cover">
                         @endif
-
                     </div>
-
                 </div>
 
                 {{-- DATA --}}
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-2 space-y-5">
 
-                    <h3
-                        class="text-lg font-bold text-gray-800 mb-4">
-                        Data Pengamal
-                    </h3>
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-gray-800">
+                            Data Pribadi
+                        </h3>
 
-                    <div
-                        class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                        <span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                            {{ $isPublic ? 'Publik' : 'Admin View' }}
+                        </span>
+                    </div>
 
-                        @foreach ($rows as $label => $value)
-                        <div class="flex gap-2">
+                    <div class="grid sm:grid-cols-2 gap-4 text-sm">
 
-                            <div
-                                class="w-40 text-gray-500 font-medium">
-                                {{ $label }}
-                            </div>
-
-                            <div
-                                class="text-gray-800 font-semibold">
-                                {{ $value }}
-                            </div>
-
+                        @foreach($rows as $label => $value)
+                        <div class="flex flex-col">
+                            <span class="text-gray-500 text-xs">{{ $label }}</span>
+                            <span class="font-semibold text-gray-800">{{ $value }}</span>
                         </div>
                         @endforeach
 
                     </div>
 
                     {{-- ACTION --}}
-                    <div class="flex flex-wrap gap-2 mt-6">
+                    <div class="flex flex-wrap gap-3 pt-4 border-t">
 
-                        {{-- ADMIN ONLY --}}
                         @auth
-
                         <a href="/pengamal/edit/{{ $pengamal->id }}"
-                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
                             Edit
                         </a>
 
                         <a href="/pengamal"
-                            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
+                            class="px-4 py-2 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 transition">
                             Kembali
                         </a>
 
@@ -191,40 +162,32 @@
                         @endphp
 
                         <form action="/pengamal/show/{{ $pengamal->id }}"
-                            method="POST"
-                            class="form-delete">
+                            method="POST">
 
                             @csrf
                             @method('DELETE')
 
                             <button type="submit"
                                 class="px-4 py-2 rounded-lg text-white transition
-                                    {{ $canDelete ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-400 cursor-not-allowed' }}"
+                                {{ $canDelete ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-400 cursor-not-allowed' }}"
                                 {{ $canDelete ? '' : 'disabled' }}>
-
                                 Hapus
-
                             </button>
 
                         </form>
-
                         @endauth
 
-                        {{-- WHATSAPP --}}
-                        @if ($pengamal->no_hp)
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $pengamal->no_hp) }}"
+                        @if($pengamal->no_hp)
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/','',$pengamal->no_hp) }}"
                             target="_blank"
-                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-
+                            class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">
                             WhatsApp
-
                         </a>
                         @endif
 
                     </div>
 
                 </div>
-
             </div>
 
         </div>

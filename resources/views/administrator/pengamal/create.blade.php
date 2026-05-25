@@ -134,11 +134,6 @@
 
                             <select name="agama"
                                 class="rounded-lg border-gray-300">
-
-                                <option value="">
-                                    Agama
-                                </option>
-
                                 <option value="Islam">
                                     Islam
                                 </option>
@@ -243,7 +238,7 @@
                     </div>
 
                     {{-- RIGHT --}}
-                    <div class="space-y-5">
+                    <div class="space-y-5 ">
 
                         <h3 class="font-semibold border-b pb-2">
                             Kontak & Tambahan
@@ -255,55 +250,40 @@
                             value="{{ old('alamat') }}"
                             class="w-full rounded-lg border-gray-300">
 
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 gap-3">
 
                             <input type="text"
                                 name="no_hp"
                                 placeholder="No HP"
                                 value="{{ old('no_hp') }}"
                                 class="rounded-lg border-gray-300">
-
-                            <input type="email"
-                                name="email"
-                                placeholder="Email"
-                                value="{{ old('email') }}"
-                                class="rounded-lg border-gray-300">
-
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
 
-                            <input type="number"
-                                name="rt"
-                                placeholder="RT"
-                                value="{{ old('rt') }}"
-                                class="rounded-lg border-gray-300">
-
-                            <input type="number"
-                                name="rw"
-                                placeholder="RW"
-                                value="{{ old('rw') }}"
-                                class="rounded-lg border-gray-300">
-
-                        </div>
 
                         <input type="file"
                             name="foto"
                             class="w-full border rounded-lg p-2">
 
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-                            <select name="pekerjaan"
-                                class="rounded-lg border-gray-300">
+                            <select name="pekerjaan" class="rounded-lg border-gray-300">
+                                <option value="">Pilih Pekerjaan</option>
 
-                                <option value="">
-                                    Pekerjaan
-                                </option>
+                                <option value="PNS">PNS</option>
 
-                                <option>PNS</option>
-                                <option>Wiraswasta</option>
-                                <option>Pelajar/Mahasiswa</option>
+                                <option value="Guru/Dosen">Guru / Dosen</option>
+                                <option value="Pelajar/Mahasiswa">Pelajar / Mahasiswa</option>
+                                <option value="Karyawan Swasta">Karyawan Swasta</option>
 
+                                <option value="Wiraswasta">Wiraswasta</option>
+                                <option value="Pedagang">Pedagang</option>
+                                <option value="Petani">Petani</option>
+                                <option value="Peternak">Peternak</option>
+                                <option value="Nelayan">Nelayan</option>
+                                <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
+                                <option value="Tidak Bekerja">Tidak Bekerja</option>
+                                <option value="Lainnya">Lainnya</option>
                             </select>
 
                             <select name="status_perkawinan"

@@ -1,30 +1,24 @@
 <x-app-layout>
 
     <x-slot name="header">
-        @php
-        $user = auth()->user();
-        $wilayah = 'Tidak diketahui';
 
-        if ($user->regency?->name) {
-        $wilayah = Str::startsWith($user->regency->name, 'Kab.')
-        ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
-        : $user->regency->name;
-        } elseif ($user->district?->name) {
-        $wilayah = 'Kecamatan ' . $user->district->name;
-        } elseif ($user->village?->name) {
-        $wilayah = $user->village->name;
-        } elseif ($user->province?->name) {
-        $wilayah = $user->province->name;
-        }
+        @php
+        $wilayah = \Illuminate\Support\Str::startsWith($regency->name, 'Kab.')
+        ? 'Kabupaten ' . ltrim(substr($regency->name, 4))
+        : $regency->name;
         @endphp
 
-        @section('title' . $wilayah)
+        @section('title', $wilayah)
 
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <h2 class="text-xl font-bold text-gray-800">
-                Dashboard - <span class="text-green-700">{{ $wilayah }}</span>
+                Dashboard -
+                <span class="text-green-700">
+                    {{ $wilayah }}
+                </span>
             </h2>
         </div>
+
     </x-slot>
 
     {{-- WRAPPER --}}
@@ -34,12 +28,13 @@
         <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow-lg p-4 flex items-center gap-4">
 
             <img src="{{ asset('image/favicon.png') }}"
-                class="w-12 h-12  p-1">
+                class="w-12 h-12 p-1">
 
             <div>
                 <h3 class="text-lg font-bold uppercase">
                     {{ $wilayah }}
                 </h3>
+
                 <p class="text-sm text-green-100">
                     Data Kecamatan Terintegrasi
                 </p>
@@ -58,8 +53,9 @@
                     Kode Kecamatan
                 </h2>
 
-                <a href="/wilayah"
+                <a href="{{ route('wilayah.province', $regency->province_code) }}"
                     class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-sm transition">
+
                     ← Kembali
                 </a>
 
@@ -72,15 +68,24 @@
 
                     <thead class="bg-green-900 text-white">
                         <tr>
-                            <th class="px-4 py-3 text-left">No</th>
-                            <th class="px-4 py-3 text-left">Nama Kecamatan</th>
-                            <th class="px-4 py-3 text-left">Kode</th>
+                            <th class="px-4 py-3 text-left">
+                                No
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Nama Kecamatan
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Kode
+                            </th>
                         </tr>
                     </thead>
 
                     <tbody class="divide-y divide-gray-100">
 
                         @forelse($kec as $index => $item)
+
                         <tr class="hover:bg-green-50 transition">
 
                             <td class="px-4 py-3 text-gray-500">
@@ -88,8 +93,9 @@
                             </td>
 
                             <td class="px-4 py-3">
-                                <a href="/wilayah-desa/{{ $item->code }}"
+                                <a href="{{ route('wilayah.detail', $item->code) }}"
                                     class="text-green-700 font-medium hover:underline">
+
                                     {{ $item->name }}
                                 </a>
                             </td>
@@ -99,6 +105,7 @@
                             </td>
 
                         </tr>
+
                         @empty
 
                         <tr>

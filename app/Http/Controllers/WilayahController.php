@@ -15,22 +15,32 @@ class WilayahController extends Controller
 
         $prov = Province::where('code', $provinceCode)->get();
 
+        return view('administrator.wilayah.index', compact('prov'));
+    }
+
+    // Kabupaten/Kota berdasarkan provinsi
+    public function province($provinceCode)
+    {
+        $province = Province::where('code', $provinceCode)
+            ->firstOrFail();
+
         $kab = Regency::where('province_code', $provinceCode)
             ->orderBy('code')
             ->get();
 
-        $kec = District::orderBy('code')->get();
-
-        return view('administrator.wilayah.index', compact(
-            'prov',
-            'kab',
-            'kec'
+        return view('administrator.wilayah.province', compact(
+            'province',
+            'kab'
         ));
     }
 
-    public function show($regency)
+    // Kecamatan berdasarkan kabupaten
+    public function show($regencyCode)
     {
-        $kec = District::where('regency_code', $regency)
+        $regency = Regency::where('code', $regencyCode)
+            ->firstOrFail();
+
+        $kec = District::where('regency_code', $regencyCode)
             ->orderBy('code')
             ->get();
 
@@ -40,13 +50,21 @@ class WilayahController extends Controller
         ));
     }
 
-    public function detailshow($regency)
+    // Desa berdasarkan kecamatan
+    public function detailshow($districtCode)
     {
-        $desa = Village::where('district_code', $regency)
+        $district = District::where('code', $districtCode)
+            ->firstOrFail();
+
+        $regency = Regency::where('code', $district->regency_code)
+            ->first();
+
+        $desa = Village::where('district_code', $districtCode)
             ->orderBy('code')
             ->get();
 
         return view('administrator.wilayah.detailshow', compact(
+            'district',
             'regency',
             'desa'
         ));

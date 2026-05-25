@@ -2,37 +2,25 @@
 
     {{-- HEADER --}}
     <x-slot name="header">
+
         @php
-
-
-        $user = auth()->user();
-        $wilayah = 'Tidak diketahui';
-
-        if ($user->regency?->name) {
-        $wilayah = Str::startsWith($user->regency->name, 'Kab.')
-        ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
-        : $user->regency->name;
-        } elseif ($user->district?->name) {
-        $wilayah = 'Kecamatan ' . $user->district->name;
-        } elseif ($user->village?->name) {
-        $wilayah = $user->village->name;
-        } elseif ($user->province?->name) {
-        $wilayah = $user->province->name;
-        }
+        $wilayah = 'Kecamatan ' . $district->name;
         @endphp
 
-        @section('title' . $wilayah)
+        @section('title', $wilayah)
 
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div>
                 <h2 class="text-2xl font-bold text-gray-800">
                     Dashboard
                 </h2>
+
                 <p class="text-sm text-gray-500">
                     {{ $wilayah }}
                 </p>
             </div>
         </div>
+
     </x-slot>
 
     <div class="space-y-5">
@@ -44,11 +32,13 @@
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
 
                 <div class="flex items-center gap-4">
+
                     <img src="{{ asset('image/favicon.png') }}"
-                        class="h-14 md:h-16 object-contain   p-2 "
+                        class="h-14 md:h-16 object-contain p-2"
                         alt="Logo">
 
                     <div>
+
                         <h3 class="text-xl font-bold">
                             Data Desa
                         </h3>
@@ -56,14 +46,17 @@
                         <p class="text-green-100 text-sm">
                             Daftar kode desa wilayah {{ $wilayah }}
                         </p>
+
                     </div>
                 </div>
 
-                <a href="/wilayah/{{ substr($regency, 0, -3) }}"
+                {{-- KEMBALI KE HALAMAN KECAMATAN --}}
+                <a href="{{ route('wilayah.show', $district->regency_code) }}"
                     class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 transition text-white font-medium border border-white/20">
 
                     ← Kembali
                 </a>
+
             </div>
         </div>
 
@@ -72,13 +65,15 @@
 
             {{-- TITLE --}}
             <div class="px-6 py-4 border-b bg-gray-50">
+
                 <h2 class="font-semibold text-gray-800">
                     Kode Desa
                 </h2>
 
                 <p class="text-sm text-gray-500">
-                    Total data: {{ count($desa) }}
+                    Total data: {{ $desa->count() }}
                 </p>
+
             </div>
 
             {{-- TABLE --}}
@@ -117,8 +112,7 @@
                             </td>
 
                             <td class="px-4 py-3">
-                                <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 font-medium">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 font-medium">
                                     {{ $item->code }}
                                 </span>
                             </td>
@@ -130,6 +124,7 @@
                         <tr>
                             <td colspan="3"
                                 class="text-center py-10 text-gray-500">
+
                                 Tidak ada data desa ditemukan
                             </td>
                         </tr>
@@ -137,8 +132,11 @@
                         @endforelse
 
                     </tbody>
+
                 </table>
+
             </div>
+
         </div>
 
     </div>

@@ -1,4 +1,4 @@
-<footer class="border-t bg-white dark:bg-gray-900">
+<footer class="border-t bg-white dark:bg-gray-900 mt-4">
 
     <div class="px-6 py-4">
 

@@ -19,12 +19,12 @@
         }
         @endphp
 
-        @section('title', 'PW ' . $wilayah)
+        @section('title' . $wilayah)
 
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
 
             <h2 class="text-xl font-bold text-gray-800">
-                Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
+                Dashboard - <span class="text-green-700">{{ $wilayah }}</span>
             </h2>
 
         </div>
@@ -40,7 +40,7 @@
 
             <div>
                 <h3 class="text-lg font-bold uppercase">
-                    PW {{ $wilayah }}
+                    {{ $wilayah }}
                 </h3>
                 <p class="text-sm text-green-100">
                     Sistem Data Pengamal Terintegrasi

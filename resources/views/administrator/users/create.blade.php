@@ -2,17 +2,14 @@
 
     @php
     $auth = auth()->user();
-
     $wilayah = 'Tidak diketahui';
 
     if ($auth->regency?->name) {
-    if (Str::startsWith($auth->regency->name, 'Kab.')) {
-    $wilayah = 'Kabupaten ' . ltrim(substr($auth->regency->name, 4));
-    } else {
-    $wilayah = $auth->regency->name;
-    }
+    $wilayah = Str::startsWith($auth->regency->name, 'Kab.')
+    ? 'Kabupaten ' . ltrim(substr($auth->regency->name, 4))
+    : $auth->regency->name;
     } elseif ($auth->district?->name) {
-    $wilayah = 'Kec. ' . $auth->district->name;
+    $wilayah = 'Kecamatan ' . $auth->district->name;
     } elseif ($auth->village?->name) {
     $wilayah = $auth->village->name;
     } elseif ($auth->province?->name) {
@@ -22,95 +19,117 @@
 
     {{-- HEADER --}}
     <x-slot name="header">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
             <h2 class="text-xl font-bold text-gray-800">
                 Tambah User
-                <span class="text-green-700">({{ $wilayah }})</span>
+                <span class="text-green-600 font-semibold">({{ $wilayah }})</span>
             </h2>
         </div>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto px-4 py-4">
+    <div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
 
-        {{-- CARD HEADER --}}
-        <div class="bg-white shadow rounded-xl overflow-hidden border border-green-100">
+        {{-- HERO CARD --}}
+        <div class="rounded-2xl overflow-hidden shadow-md bg-gradient-to-r from-green-700 to-green-500 text-white">
 
-            <div class="flex items-center bg-green-700 text-white">
-                <div class="p-3 bg-green-800">
-                    <img src="{{ asset('image/logo.png') }}" width="50">
+            <div class="flex items-center gap-4 p-5">
+                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <img src="{{ asset('image/logo.png') }}" class="w-8 h-8">
                 </div>
 
-                <div class="px-4 font-bold uppercase">
-                    PW {{ $wilayah }}
+                <div>
+                    <h3 class="text-lg font-bold uppercase">
+                        PW {{ $wilayah }}
+                    </h3>
+                    <p class="text-sm text-white/80">
+                        Form pembuatan user baru sistem
+                    </p>
                 </div>
             </div>
 
         </div>
 
-        {{-- FORM --}}
-        <div class="mt-4 bg-white shadow rounded-xl p-6 border border-gray-100">
+        {{-- FORM CARD --}}
+        <div class="bg-white shadow-lg rounded-2xl border border-gray-100 overflow-hidden">
 
-            <h2 class="text-lg font-semibold mb-4 text-gray-800">
-                Form Tambah User
-            </h2>
+            <div class="px-6 py-4 border-b bg-gray-50">
+                <h2 class="text-lg font-semibold text-gray-800">
+                    Form Tambah User
+                </h2>
+                <p class="text-sm text-gray-500">
+                    Isi data dengan benar untuk membuat akun baru
+                </p>
+            </div>
 
-            <form action="{{ route('users.store') }}" method="POST">
+            <form action="{{ route('users.store') }}" method="POST" class="p-6 space-y-5">
                 @csrf
 
-                <div class="mb-3">
-                    <label class="text-sm font-medium">Nama</label>
-                    <input type="text" name="name"
-                        class="w-full border rounded px-3 py-2"
-                        value="{{ old('name') }}" required>
-                </div>
+                {{-- GRID --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                <div class="mb-3">
-                    <label class="text-sm font-medium">Email</label>
-                    <input type="email" name="email"
-                        class="w-full border rounded px-3 py-2"
-                        value="{{ old('email') }}" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="text-sm font-medium">Kode Daerah</label>
-                    <input type="text" name="code"
-                        class="w-full border rounded px-3 py-2"
-                        value="{{ old('code') }}" required>
-
-                    @error('code')
-                    <p class="text-red-500 text-sm">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-
+                    {{-- NAME --}}
                     <div>
-                        <label class="text-sm font-medium">Password</label>
+                        <label class="text-sm font-medium text-gray-700">Nama</label>
+                        <input type="text" name="name"
+                            value="{{ old('name') }}"
+                            class="mt-1 w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200"
+                            placeholder="Nama lengkap" required>
+                    </div>
+
+                    {{-- EMAIL --}}
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" name="email"
+                            value="{{ old('email') }}"
+                            class="mt-1 w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200"
+                            placeholder="email@domain.com" required>
+                    </div>
+
+                    {{-- CODE --}}
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Kode Daerah</label>
+                        <input type="text" name="code"
+                            value="{{ old('code') }}"
+                            class="mt-1 w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200"
+                            placeholder="Contoh: KT-01" required>
+
+                        @error('code')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- EMPTY SLOT (for balance layout) --}}
+                    <div></div>
+
+                    {{-- PASSWORD --}}
+                    <div>
+                        <label class="text-sm font-medium text-gray-700">Password</label>
                         <input type="password" name="password"
-                            class="w-full border rounded px-3 py-2"
-                            required>
+                            class="mt-1 w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200"
+                            placeholder="••••••••" required>
                     </div>
 
+                    {{-- CONFIRM PASSWORD --}}
                     <div>
-                        <label class="text-sm font-medium">Konfirmasi Password</label>
+                        <label class="text-sm font-medium text-gray-700">Konfirmasi Password</label>
                         <input type="password" name="password_confirmation"
-                            class="w-full border rounded px-3 py-2"
-                            required>
+                            class="mt-1 w-full rounded-lg border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200"
+                            placeholder="••••••••" required>
                     </div>
 
                 </div>
 
-                {{-- BUTTON --}}
-                <div class="flex gap-2 mt-5">
+                {{-- ACTION BUTTON --}}
+                <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t">
 
                     <a href="{{ route('users.assign-role-index') }}"
-                        class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                        class="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-center transition">
                         Kembali
                     </a>
 
                     <button type="submit"
-                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                        Simpan
+                        class="px-5 py-2.5 rounded-lg bg-green-600 text-white hover:bg-green-700 shadow-sm transition">
+                        Simpan User
                     </button>
 
                 </div>
