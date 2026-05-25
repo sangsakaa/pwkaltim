@@ -106,7 +106,7 @@
 
                         <input type="text"
                             name="nama_lengkap"
-                            placeholder="Nama Lengkap"
+                            placeholder="Nama Lengkap sesui KTP"
                             value="{{ old('nama_lengkap') }}"
                             required
                             class="w-full rounded-lg border-gray-300 focus:border-green-600 focus:ring-green-600">
@@ -246,7 +246,7 @@
 
                         <input type="text"
                             name="alamat"
-                            placeholder="Alamat"
+                            placeholder="Alamat Lengkap Domisili"
                             value="{{ old('alamat') }}"
                             class="w-full rounded-lg border-gray-300">
 
@@ -254,16 +254,24 @@
 
                             <input type="text"
                                 name="no_hp"
-                                placeholder="No HP"
+                                placeholder="No HP /whatapps yang aktif"
                                 value="{{ old('no_hp') }}"
                                 class="rounded-lg border-gray-300">
                         </div>
 
 
 
-                        <input type="file"
-                            name="foto"
-                            class="w-full border rounded-lg p-2">
+                        <div class="space-y-1">
+                            <label for="foto" class="block text-sm font-medium text-gray-700">
+                                Foto
+                            </label>
+
+                            <input
+                                type="file"
+                                id="foto"
+                                name="foto"
+                                class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
