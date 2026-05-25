@@ -81,8 +81,6 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 8px;
-      border-radius: 6px;
-      overflow: hidden;
     }
 
     th {
@@ -144,8 +142,7 @@
   <table class="kop">
     <tr class="kop-box">
       <td class="kop-left">
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}"
-          width="100">
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}" width="100">
       </td>
 
       <td class="kop-right">
@@ -167,7 +164,6 @@
 
   <h2>DATA PENGAMAL {{ Str::upper($wilayah) }}</h2>
 
-  {{-- ================= DATA + REKAP PER KABUPATEN ================= --}}
   @foreach ($grouped as $kabupaten => $items)
 
   <h3>Data Pengamal - {{ $kabupaten }}</h3>
@@ -191,23 +187,22 @@
         <td class="center">{{ $i + 1 }}</td>
         <td class="uppercase">{{ $d->nama_lengkap }}</td>
         <td>
-          {{ $d->tempat_lahir }},
-          {{ Carbon::parse($d->tanggal_lahir)->format('d-m-Y') }}
+          {{ $d->tempat_lahir ?? '-' }},
+          {{ $d->tanggal_lahir ? Carbon::parse($d->tanggal_lahir)->format('d-m-Y') : '-' }}
         </td>
-        <td class="center">{{ $d->jenis_kelamin }}</td>
-        <td class="center">{{ $d->agama }}</td>
+        <td class="center">{{ $d->jenis_kelamin ?? '-' }}</td>
+        <td class="center">{{ $d->agama ?? '-' }}</td>
         <td>
           {{ $d->village->name ?? '-' }},
           {{ $d->district->name ?? '-' }},
           {{ $d->regency->name ?? '-' }}
         </td>
-        <td class="center">{{ $d->no_hp }}</td>
+        <td class="center">{{ $d->no_hp ?? '-' }}</td>
       </tr>
       @endforeach
     </tbody>
   </table>
 
-  {{-- ================= REKAP PER KABUPATEN ================= --}}
   <h3>Rekap Usia - {{ $kabupaten }}</h3>
 
   <table>
@@ -234,6 +229,8 @@
       @foreach ($kategoriGlobal[$kabupaten] ?? [] as $kecamatan => $data)
 
       @php
+      $total = $data['Kanak-kanak'] + $data['Remaja'] + $data['Bapak-bapak'] + $data['Ibu-ibu'] + $data['Tidak diketahui'];
+
       $sumK += $data['Kanak-kanak'];
       $sumR += $data['Remaja'];
       $sumB += $data['Bapak-bapak'];
@@ -246,7 +243,7 @@
         <td class="center">{{ $data['Remaja'] }}</td>
         <td class="center">{{ $data['Bapak-bapak'] }}</td>
         <td class="center">{{ $data['Ibu-ibu'] }}</td>
-        <td class="center">{{ array_sum($data) }}</td>
+        <td class="center">{{ $total }}</td>
       </tr>
 
       @endforeach

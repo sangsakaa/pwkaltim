@@ -14,12 +14,7 @@ class LaporanController extends Controller
         $user = Auth::user();
 
         $query = Pengamal::query()
-            ->with([
-                'province',
-                'regency',
-                'district',
-                'village'
-            ])
+            ->with(['province', 'regency', 'district', 'village'])
             ->orderBy('kecamatan', 'asc')
             ->orderBy('nama_lengkap', 'asc');
 
@@ -35,25 +30,24 @@ class LaporanController extends Controller
         $pengamal = $query->get();
 
         /**
-         * Tambahkan kategori ke setiap pengamal
-         *
-         * < 11 tahun = Kanak-kanak
-         * 11 - 35 = Remaja
-         * > 35 = Bapak/Ibu
+         * Tambahkan usia + kategori
          */
         $pengamal->transform(function ($item) {
 
-            $usia = Carbon::parse($item->tanggal_lahir)->age;
-            $jk = strtolower(trim($item->jenis_kelamin));
+            $usia = $item->tanggal_lahir
+                ? Carbon::parse($item->tanggal_lahir)->age
+                : null;
 
-            if ($usia < 11) {
+            $jk = strtolower(trim($item->jenis_kelamin ?? ''));
+
+            if (!$usia) {
+                $kategori = 'Tidak diketahui';
+            } elseif ($usia < 11) {
                 $kategori = 'Kanak-kanak';
-            } elseif ($usia >= 11 && $usia <= 35) {
+            } elseif ($usia <= 35) {
                 $kategori = 'Remaja';
             } else {
-                $kategori = $jk === 'l'
-                    ? 'Bapak-bapak'
-                    : 'Ibu-ibu';
+                $kategori = $jk === 'l' ? 'Bapak-bapak' : 'Ibu-ibu';
             }
 
             $item->usia = $usia;
@@ -65,32 +59,31 @@ class LaporanController extends Controller
         /**
          * Group kabupaten
          */
-        $grouped = $pengamal->groupBy(
-            fn($item) => $item->regency->name ?? 'Tanpa Kabupaten'
-        );
+        $grouped = $pengamal->groupBy(fn($i) => $i->regency->name ?? 'Tanpa Kabupaten');
 
         /**
-         * Rekap kategori global
+         * Rekap kategori per kabupaten & kecamatan
          */
         $kategoriGlobal = [];
 
         foreach ($grouped as $kabupaten => $items) {
 
-            foreach ($items->groupBy('district.name') as $kecamatan => $kecamatanItems) {
+            $kategoriGlobal[$kabupaten] = [];
 
-                if (!isset($kategoriGlobal[$kabupaten])) {
-                    $kategoriGlobal[$kabupaten] = [];
-                }
+            foreach ($items->groupBy(fn($i) => $i->district->name ?? 'Tanpa Kecamatan') as $kecamatan => $kecamatanItems) {
 
                 $kategoriGlobal[$kabupaten][$kecamatan] = [
                     'Kanak-kanak' => 0,
                     'Remaja' => 0,
                     'Bapak-bapak' => 0,
                     'Ibu-ibu' => 0,
+                    'Tidak diketahui' => 0,
                 ];
 
                 foreach ($kecamatanItems as $item) {
-                    $kategoriGlobal[$kabupaten][$kecamatan][$item->kategori]++;
+                    if (isset($kategoriGlobal[$kabupaten][$kecamatan][$item->kategori])) {
+                        $kategoriGlobal[$kabupaten][$kecamatan][$item->kategori]++;
+                    }
                 }
             }
         }
@@ -102,11 +95,8 @@ class LaporanController extends Controller
             'kategoriGlobal' => $kategoriGlobal,
         ];
 
-        $pdf = Pdf::loadView(
-            'administrator.laporan.lap',
-            $data
-        )->setPaper([0, 0, 595.28, 935.43], 'portrait');
-        // )->setPaper([0, 0, 595.28, 935.43], 'landscape');
+        $pdf = Pdf::loadView('administrator.laporan.lap', $data)
+            ->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         return $pdf->stream('laporan-data-pengamal.pdf');
     }
