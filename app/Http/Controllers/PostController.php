@@ -107,16 +107,16 @@ class PostController extends Controller
 
     public function approval()
     {
-        return view('administrator.post.approval', [
-            'pendingPosts' => Post::where('status', 'pending')
-                // ->with('creator')
-                ->latest()
-                ->get(),
+        $posts = Post::with('creator')
+            ->latest()
+            ->get();
 
-            'rejectedPosts' => Post::where('status', 'rejected')
-                // ->with('creator')
-                ->latest()
-                ->get(),
+        return view('administrator.post.approval', [
+            'allPosts' => $posts,
+
+            'pendingPosts' => $posts->where('status', 'pending')->values(),
+            'rejectedPosts' => $posts->where('status', 'rejected')->values(),
+            'approvedPosts' => $posts->where('status', 'approved')->values(), // kalau ada
         ]);
     }
     public function approve(Request $request, $id)
