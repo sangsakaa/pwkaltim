@@ -129,17 +129,48 @@ class DashboardController extends Controller
             })
             ->values();
 
+
         /*
         |--------------------------------------------------------------------------
         | RETURN
         |--------------------------------------------------------------------------
         */
+        /*
+|--------------------------------------------------------------------------
+| KATEGORI USIA (KANAK-KANAK / REMAJA / BAPAK / IBU)
+|--------------------------------------------------------------------------
+*/
+        $kategoriStat = (clone $query)
+            ->get()
+            ->map(function ($item) {
+
+                $usia = $item->tanggal_lahir
+                    ? \Carbon\Carbon::parse($item->tanggal_lahir)->age
+                    : null;
+
+                $jk = strtolower(trim($item->jenis_kelamin ?? ''));
+
+                if (!$usia) {
+                    $kategori = 'Tidak diketahui';
+                } elseif ($usia < 11) {
+                    $kategori = 'Kanak-kanak';
+                } elseif ($usia <= 35) {
+                    $kategori = 'Remaja';
+                } else {
+                    $kategori = $jk === 'l' ? 'Bapak-bapak' : 'Ibu-ibu';
+                }
+
+                return $kategori;
+            })
+            ->countBy()
+            ->toArray();
         return view('administrator.dashboard.index', [
             'user' => $user,
             'wilayah' => $wilayah,
             'genderStat' => $genderStat,
             'wilayahStat' => $wilayahStat,
             'kabupatenStats' => $kabupatenStats,
+            'kategoriStat' => $kategoriStat,
         ]);
     }
 

@@ -10,14 +10,14 @@
     $wilayahTotals = collect($wilayahStat['values'] ?? [])->map(fn($v) => (int)$v)->values()->toArray();
 
     $kabupatenCollection = collect($kabupatenStats ?? [])->map(fn($i) => (array) $i)->values();
-
     $kabupatenLabels = $kabupatenCollection->pluck('label')->filter()->values()->toArray();
     $kabupatenTotals = $kabupatenCollection->pluck('total')->map(fn($v) => (int)$v)->values()->toArray();
+
+    $kategoriData = $kategoriStat ?? [];
 
     $roles = $user->roles->pluck('name')->implode(', ') ?: 'Tidak ada role';
     @endphp
 
-    {{-- HEADER --}}
     <x-slot name="header">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 
@@ -47,7 +47,6 @@
         </div>
     </x-slot>
 
-    {{-- CONTENT --}}
     <div class="py-8 space-y-8">
 
         {{-- HERO --}}
@@ -57,9 +56,7 @@
 
                 <div>
                     <span class="bg-white/10 px-4 py-2 rounded-full text-sm">👋 Selamat Datang</span>
-
                     <h2 class="mt-5 text-4xl font-bold">{{ $user->name }}</h2>
-
                     <p class="mt-3 text-green-100">
                         Dashboard wilayah <b>{{ $wilayah ?? '-' }}</b>
                     </p>
@@ -74,6 +71,7 @@
 
         {{-- CARDS --}}
         <section class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+
             @php
             $cards = [
             ['title' => 'Total Pengamal', 'value' => number_format($totalPengamal), 'color' => 'text-gray-800', 'icon' => '👥'],
@@ -94,7 +92,6 @@
         {{-- CHART --}}
         <section class="grid xl:grid-cols-3 gap-6">
 
-            {{-- WILAYAH --}}
             <div class="xl:col-span-2 rounded-2xl border bg-white p-6">
                 <h2 class="font-bold text-lg mb-4">Statistik Wilayah</h2>
                 <div class="h-[400px]">
@@ -102,7 +99,6 @@
                 </div>
             </div>
 
-            {{-- KABUPATEN --}}
             <div class="rounded-2xl border bg-white p-6">
                 <h2 class="font-bold text-lg mb-4">Kabupaten</h2>
                 <div class="h-[400px]">
@@ -111,9 +107,18 @@
             </div>
 
         </section>
+
+        {{-- CHART KATEGORI (FIX BARU) --}}
+        <section class="rounded-2xl border bg-white p-6">
+            <h2 class="font-bold text-lg mb-4">Kategori Usia</h2>
+            <div class="h-[400px]">
+                <canvas id="kategoriChart"></canvas>
+            </div>
+        </section>
+
     </div>
 
-    {{-- SCRIPT (WAJIB TANPA @if BIAR AMAN) --}}
+    {{-- SCRIPT --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -125,8 +130,10 @@
             const kabupatenLabels = @json($kabupatenLabels ?? []);
             const kabupatenTotals = @json($kabupatenTotals ?? []);
 
+            const kategoriData = @json($kategoriData);
+
             // ================= WILAYAH =================
-            if (wilayahLabels.length > 0) {
+            if (wilayahLabels.length) {
                 new Chart(document.getElementById('wilayahChart'), {
                     type: 'bar',
                     data: {
@@ -151,7 +158,7 @@
             }
 
             // ================= KABUPATEN =================
-            if (kabupatenLabels.length > 0) {
+            if (kabupatenLabels.length) {
                 new Chart(document.getElementById('kabupatenChart'), {
                     type: 'doughnut',
                     data: {
@@ -159,11 +166,8 @@
                         datasets: [{
                             data: kabupatenTotals,
                             backgroundColor: [
-                                '#16a34a',
-                                '#2563eb',
-                                '#ec4899',
-                                '#f59e0b',
-                                '#8b5cf6'
+                                '#16a34a', '#2563eb', '#ec4899',
+                                '#f59e0b', '#8b5cf6'
                             ]
                         }]
                     },
@@ -171,6 +175,31 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         cutout: '65%'
+                    }
+                });
+            }
+
+            // ================= KATEGORI USIA =================
+            if (Object.keys(kategoriData).length) {
+                new Chart(document.getElementById('kategoriChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(kategoriData),
+                        datasets: [{
+                            label: 'Kategori Usia',
+                            data: Object.values(kategoriData),
+                            backgroundColor: '#10b981',
+                            borderRadius: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
                     }
                 });
             }
