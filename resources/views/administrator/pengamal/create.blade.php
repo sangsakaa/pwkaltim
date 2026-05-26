@@ -143,13 +143,13 @@
 
                         <div class="grid grid-cols-2 gap-3">
 
-                            <input type="text"
+                            <input required type="text"
                                 name="tempat_lahir"
                                 placeholder="Tempat Lahir *"
                                 value="{{ old('tempat_lahir') }}"
                                 class="rounded-lg border-gray-300">
 
-                            <input type="date"
+                            <input required type="date"
                                 name="tanggal_lahir"
                                 value="{{ old('tanggal_lahir') }}"
                                 class="rounded-lg border-gray-300">
