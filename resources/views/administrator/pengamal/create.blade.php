@@ -150,7 +150,7 @@
                                 value="{{ old('tempat_lahir') }}"
                                 class="rounded-lg border-gray-300">
 
-                            <input type="date"
+                            <input required type="date"
                                 name="tanggal_lahir"
                                 value="{{ old('tanggal_lahir') }}"
                                 class="rounded-lg border-gray-300">
