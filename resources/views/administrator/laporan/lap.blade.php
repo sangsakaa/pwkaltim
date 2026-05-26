@@ -109,6 +109,11 @@
       text-transform: uppercase;
     }
 
+    .text-red {
+      color: #e11d48;
+      font-weight: bold;
+    }
+
     .page-break {
       page-break-after: always;
     }
@@ -135,6 +140,25 @@
   $wilayah = $user->province->name;
   } else {
   $wilayah = 'Tidak diketahui';
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | DUPLIKAT DETECTION
+  |--------------------------------------------------------------------------
+  */
+  $duplicateMap = [];
+
+  foreach ($grouped as $kabupaten => $items) {
+  foreach ($items as $d) {
+  $key = strtolower(
+  trim($d->nama_lengkap) . '|' .
+  trim($d->tempat_lahir ?? '') . '|' .
+  ($d->tanggal_lahir ?? '')
+  );
+
+  $duplicateMap[$key] = ($duplicateMap[$key] ?? 0) + 1;
+  }
   }
   @endphp
 
@@ -183,22 +207,41 @@
 
     <tbody>
       @foreach ($items as $i => $d)
+
+      @php
+      $key = strtolower(
+      trim($d->nama_lengkap) . '|' .
+      trim($d->tempat_lahir ?? '') . '|' .
+      ($d->tanggal_lahir ?? '')
+      );
+
+      $isDuplicate = ($duplicateMap[$key] ?? 0) > 1;
+      @endphp
+
       <tr>
         <td class="center">{{ $i + 1 }}</td>
-        <td class="uppercase">{{ $d->nama_lengkap }}</td>
+
+        <td class="uppercase {{ $isDuplicate ? 'text-red' : '' }}">
+          {{ $d->nama_lengkap }}
+        </td>
+
         <td>
           {{ $d->tempat_lahir ?? '-' }},
           {{ $d->tanggal_lahir ? Carbon::parse($d->tanggal_lahir)->format('d-m-Y') : '-' }}
         </td>
+
         <td class="center">{{ $d->jenis_kelamin ?? '-' }}</td>
         <td class="center">{{ $d->agama ?? '-' }}</td>
+
         <td>
           {{ $d->village->name ?? '-' }},
           {{ $d->district->name ?? '-' }},
           {{ $d->regency->name ?? '-' }}
         </td>
+
         <td class="center">{{ $d->no_hp ?? '-' }}</td>
       </tr>
+
       @endforeach
     </tbody>
   </table>

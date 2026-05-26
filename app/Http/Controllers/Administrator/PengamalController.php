@@ -32,7 +32,7 @@ class PengamalController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | BASE QUERY
+    | BASE QUERY (TABLE)
     |--------------------------------------------------------------------------
     */
         $query = Pengamal::query()
@@ -40,7 +40,7 @@ class PengamalController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | ROLE FILTER
+    | ROLE FILTER (TABLE)
     |--------------------------------------------------------------------------
     */
         $query->when(
@@ -83,18 +83,15 @@ class PengamalController extends Controller
             });
         });
 
-        /*
-    |--------------------------------------------------------------------------
-    | PAGINATION
-    |--------------------------------------------------------------------------
-    */
         $dataPengamal = $query->latest()
             ->paginate(10)
             ->withQueryString();
 
         /*
     |--------------------------------------------------------------------------
-    | CHART DINAMIS BERDASARKAN ROLE
+    | CHART ROLE LOGIC
+    |--------------------------------------------------------------------------
+    | kecamatan => tampil desa di kecamatan itu saja
     |--------------------------------------------------------------------------
     */
         $groupColumn = match (true) {
@@ -113,22 +110,54 @@ class PengamalController extends Controller
             default                            => 'pengamal.kabupaten',
         };
 
-        $chartData = DB::table('pengamal')
+        /*
+    |--------------------------------------------------------------------------
+    | CHART QUERY (IMPORTANT FIX: APPLY ROLE FILTER HERE TOO)
+    |--------------------------------------------------------------------------
+    */
+        $chartQuery = DB::table('pengamal')
+            ->leftJoin('regencies', 'regencies.code', '=', 'pengamal.kabupaten')
+            ->leftJoin('districts', 'districts.code', '=', 'pengamal.kecamatan')
+            ->leftJoin('villages', 'villages.code', '=', 'pengamal.desa')
             ->select(
             $groupKey,
             DB::raw("$groupColumn as label"),
             DB::raw('COUNT(*) as total')
-            )
-            ->leftJoin('regencies', 'regencies.code', '=', 'pengamal.kabupaten')
-            ->leftJoin('districts', 'districts.code', '=', 'pengamal.kecamatan')
-            ->leftJoin('villages', 'villages.code', '=', 'pengamal.desa')
+            );
+
+        // 🔥 APPLY SAME ROLE FILTER (INI YANG KURANG SEBELUMNYA)
+        $chartQuery->when(
+            $user->hasRole('admin-provinsi'),
+            fn($q) =>
+            $q->where('pengamal.provinsi', $user->code)
+        );
+
+        $chartQuery->when(
+            $user->hasRole('admin-kabupaten'),
+            fn($q) =>
+            $q->where('pengamal.kabupaten', $user->code)
+        );
+
+        $chartQuery->when(
+            $user->hasRole('admin-kecamatan'),
+            fn($q) =>
+            $q->where('pengamal.kecamatan', $user->code)
+        );
+
+        $chartQuery->when(
+            $user->hasRole('admin-desa'),
+            fn($q) =>
+            $q->where('pengamal.desa', $user->code)
+        );
+
+        $chartData = $chartQuery
             ->groupBy($groupKey, 'label')
             ->get();
 
         return view('administrator.pengamal.index', [
-            'dataPengamal' => $dataPengamal,
+            'dataPengamal'   => $dataPengamal,
             'chartKabupaten' => $chartData,
-            'chartTitle' => $this->getChartTitle($user),
+            'chartTitle'     => $this->getChartTitle($user),
         ]);
     }
 
