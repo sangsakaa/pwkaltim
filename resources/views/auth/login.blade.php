@@ -7,6 +7,24 @@
         <!-- Validation Errors -->
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
+        {{-- INFO NOTICE --}}
+        <div class="mb-4 rounded-lg bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 text-sm">
+            <p class="font-bold">Keterangan Akses Sistem</p>
+
+            <ul class="list-disc ml-5 mt-2 space-y-1">
+                <li><b>Admin / Operator</b> dapat login menggunakan akun resmi</li>
+                <li><b>Pengguna umum</b> tidak perlu login untuk input data</li>
+                <li>Gunakan link pendaftaran untuk mengisi data pengamal</li>
+            </ul>
+
+            <div class="mt-3">
+                <a href="{{ route('pengamal.public.create') }}"
+                    class="inline-block text-green-700 font-semibold hover:underline">
+                    ➜ Klik di sini untuk Pendaftaran Pengamal
+                </a>
+            </div>
+        </div>
+
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
@@ -105,17 +123,6 @@
 
                     </x-button>
                 </div>
-
-                <!-- REGISTER -->
-                @if (Route::has('register'))
-                <p class="text-sm text-center text-gray-600">
-                    {{ __("Don't have an account?") }}
-                    <a href="{{ route('register') }}"
-                        class="text-blue-600 hover:underline">
-                        {{ __('Register') }}
-                    </a>
-                </p>
-                @endif
 
             </div>
         </form>
