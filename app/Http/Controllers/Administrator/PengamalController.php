@@ -20,11 +20,6 @@ class PengamalController extends Controller
     {
         $user = Auth::user();
 
-        /*
-    |--------------------------------------------------------------------------
-    | BASIC AUTHORIZATION
-    |--------------------------------------------------------------------------
-    */
         if (!$user->hasAnyRole([
             'admin-provinsi',
             'admin-kabupaten',
@@ -45,32 +40,39 @@ class PengamalController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | REGION FILTERING (ROLE BASED)
+    | ROLE FILTER
     |--------------------------------------------------------------------------
     */
-        $query->when($user->hasRole('admin-provinsi'), function ($q) use ($user) {
-            $q->where('provinsi', $user->code);
-        });
+        $query->when(
+            $user->hasRole('admin-provinsi'),
+            fn($q) =>
+            $q->where('provinsi', $user->code)
+        );
 
-        $query->when($user->hasRole('admin-kabupaten'), function ($q) use ($user) {
-            $q->where('kabupaten', $user->code);
-        });
+        $query->when(
+            $user->hasRole('admin-kabupaten'),
+            fn($q) =>
+            $q->where('kabupaten', $user->code)
+        );
 
-        $query->when($user->hasRole('admin-kecamatan'), function ($q) use ($user) {
-            $q->where('kecamatan', $user->code);
-        });
+        $query->when(
+            $user->hasRole('admin-kecamatan'),
+            fn($q) =>
+            $q->where('kecamatan', $user->code)
+        );
 
-        $query->when($user->hasRole('admin-desa'), function ($q) use ($user) {
-            $q->where('desa', $user->code);
-        });
+        $query->when(
+            $user->hasRole('admin-desa'),
+            fn($q) =>
+            $q->where('desa', $user->code)
+        );
 
         /*
     |--------------------------------------------------------------------------
-    | SEARCH FILTER
+    | SEARCH
     |--------------------------------------------------------------------------
     */
         $query->when($request->filled('search'), function ($q) use ($request) {
-
             $search = $request->search;
 
             $q->where(function ($sub) use ($search) {
@@ -83,25 +85,67 @@ class PengamalController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | RESULT
+    | PAGINATION
     |--------------------------------------------------------------------------
     */
-        $dataPengamal = $query
-            ->latest()
+        $dataPengamal = $query->latest()
             ->paginate(10)
             ->withQueryString();
-        $chartKabupaten = DB::table('pengamal')
-            ->leftJoin('regencies', 'regencies.code', '=', 'pengamal.kabupaten')
-            ->select(
-                'pengamal.kabupaten',
-                'regencies.name as kabupaten_name',
-                DB::raw('count(*) as total')
-            )
-            ->groupBy('pengamal.kabupaten', 'regencies.name')
-            ->get();
-        // dd($chartKabupaten);
 
-        return view('administrator.pengamal.index', compact('dataPengamal', 'chartKabupaten'));
+        /*
+    |--------------------------------------------------------------------------
+    | CHART DINAMIS BERDASARKAN ROLE
+    |--------------------------------------------------------------------------
+    */
+        $groupColumn = match (true) {
+            $user->hasRole('admin-provinsi')  => 'regencies.name',
+            $user->hasRole('admin-kabupaten') => 'districts.name',
+            $user->hasRole('admin-kecamatan') => 'villages.name',
+            $user->hasRole('admin-desa')      => 'villages.name',
+            default                            => 'regencies.name',
+        };
+
+        $groupKey = match (true) {
+            $user->hasRole('admin-provinsi')  => 'pengamal.kabupaten',
+            $user->hasRole('admin-kabupaten') => 'pengamal.kecamatan',
+            $user->hasRole('admin-kecamatan') => 'pengamal.desa',
+            $user->hasRole('admin-desa')      => 'pengamal.desa',
+            default                            => 'pengamal.kabupaten',
+        };
+
+        $chartData = DB::table('pengamal')
+            ->select(
+            $groupKey,
+            DB::raw("$groupColumn as label"),
+            DB::raw('COUNT(*) as total')
+            )
+            ->leftJoin('regencies', 'regencies.code', '=', 'pengamal.kabupaten')
+            ->leftJoin('districts', 'districts.code', '=', 'pengamal.kecamatan')
+            ->leftJoin('villages', 'villages.code', '=', 'pengamal.desa')
+            ->groupBy($groupKey, 'label')
+            ->get();
+
+        return view('administrator.pengamal.index', [
+            'dataPengamal' => $dataPengamal,
+            'chartKabupaten' => $chartData,
+            'chartTitle' => $this->getChartTitle($user),
+        ]);
+    }
+
+    /*
+|--------------------------------------------------------------------------
+| OPTIONAL: helper judul chart
+|--------------------------------------------------------------------------
+*/
+    private function getChartTitle($user)
+    {
+        return match (true) {
+            $user->hasRole('admin-provinsi')  => 'Grafik Pengamal per Kabupaten',
+            $user->hasRole('admin-kabupaten') => 'Grafik Pengamal per Kecamatan',
+            $user->hasRole('admin-kecamatan') => 'Grafik Pengamal per Desa',
+            $user->hasRole('admin-desa')      => 'Grafik Pengamal per Desa',
+            default                            => 'Grafik Pengamal',
+        };
     }
     public function show(Pengamal $pengamal)
     {

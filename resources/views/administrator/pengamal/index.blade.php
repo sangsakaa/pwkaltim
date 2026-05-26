@@ -1,24 +1,30 @@
+@php
+use Illuminate\Support\Str;
+
+$user = auth()->user();
+
+$wilayah = 'Tidak diketahui';
+
+if ($user->regency?->name) {
+$wilayah = Str::startsWith($user->regency->name, 'Kab.')
+? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
+: $user->regency->name;
+
+} elseif ($user->district?->name) {
+$wilayah = 'Kecamatan ' . $user->district->name;
+
+} elseif ($user->village?->name) {
+$wilayah = $user->village->name;
+
+} elseif ($user->province?->name) {
+$wilayah = $user->province->name;
+}
+@endphp
+
 <x-app-layout>
 
     {{-- HEADER --}}
     <x-slot name="header">
-        @php
-        $user = auth()->user();
-        $wilayah = 'Tidak diketahui';
-
-        if ($user->regency?->name) {
-        $wilayah = Str::startsWith($user->regency->name, 'Kab.')
-        ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
-        : $user->regency->name;
-        } elseif ($user->district?->name) {
-        $wilayah = 'Kecamatan ' . $user->district->name;
-        } elseif ($user->village?->name) {
-        $wilayah = $user->village->name;
-        } elseif ($user->province?->name) {
-        $wilayah = $user->province->name;
-        }
-        @endphp
-
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <h2 class="text-xl font-bold text-gray-800">
                 Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
@@ -26,7 +32,6 @@
         </div>
     </x-slot>
 
-    {{-- WRAPPER --}}
     <div class="space-y-4">
 
         {{-- HEADER CARD --}}
@@ -92,7 +97,7 @@
         <div class="bg-white rounded-xl shadow p-4 border border-gray-100">
 
             <h3 class="text-lg font-bold text-gray-700 mb-4">
-                Grafik Pengamal per Kabupaten
+                {{ $chartTitle ?? 'Grafik Pengamal' }}
             </h3>
 
             <div style="height: 300px;">
@@ -124,7 +129,7 @@
                         <tr class="hover:bg-green-50">
 
                             <td class="px-4 py-2 text-center">
-                                {{ $loop->iteration }}
+                                {{ $dataPengamal->firstItem() + $loop->index }}
                             </td>
 
                             <td class="px-4 py-2">
@@ -175,7 +180,7 @@
         @endif
     </script>
 
-    {{-- CHART SCRIPT (FIX TOTAL) --}}
+    {{-- CHART --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -183,8 +188,8 @@
 
             const data = @json($chartKabupaten ?? []);
 
-            const labels = data.map(i => i.kabupaten_name ?? i.kabupaten);
-            const values = data.map(i => i.total);
+            const labels = data.map(i => i.label ?? '-');
+            const values = data.map(i => i.total ?? 0);
 
             const canvas = document.getElementById('chartKabupaten');
             if (!canvas) return;
@@ -197,7 +202,6 @@
                         label: 'Jumlah Pengamal',
                         data: values,
                         backgroundColor: 'rgba(34, 197, 94, 0.7)',
-                        borderColor: 'rgba(22, 163, 74, 1)',
                         borderWidth: 1
                     }]
                 },
