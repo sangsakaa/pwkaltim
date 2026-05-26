@@ -89,9 +89,17 @@ Route::middleware('auth')->group(function () {
 */
 
 Route::resource('roles', RoleController::class)
-    ->middleware(['auth', 'verified']);
+    ->middleware([
+        'auth',
+        'verified',
+        'role:admin-provinsi|superAdmin'
+    ]);
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware([
+    'auth',
+    'verified',
+    'role:admin-provinsi|superAdmin'
+])->group(function () {
 
     Route::get('/users/assign-role', [UserRoleController::class, 'index'])
         ->name('users.assign-role-index');
@@ -119,7 +127,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/users/reset-password', [UserRoleController::class, 'resetPassword']);
 });
-
 /*
 |--------------------------------------------------------------------------
 | WILAYAH

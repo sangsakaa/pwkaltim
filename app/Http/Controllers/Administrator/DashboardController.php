@@ -5,207 +5,169 @@ namespace App\Http\Controllers\Administrator;
 use App\Http\Controllers\Controller;
 use App\Models\District;
 use App\Models\Pengamal;
-use App\Models\ProgramKerja;
 use App\Models\Province;
 use App\Models\Regency;
-use App\Models\SuratKeluar;
-use App\Models\SuratMasuk;
 use App\Models\Village;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        $code = $user->code;
 
-        $baseQuery = $this->basePengamalQuery($user);
+        /*
+        |--------------------------------------------------------------------------
+        | WILAYAH NAME
+        |--------------------------------------------------------------------------
+        */
+        $wilayah = $this->getWilayahName($code);
 
-        return view('administrator.dashboard.dashboard', [
-            'user'           => $user,
-            'genderStat'     => $this->getGenderStat($baseQuery),
-            'wilayahStat'    => $this->getWilayahStat($user),
-            'kabupatenStats' => $this->getKabupatenStat($baseQuery),
-            'surat'          => $this->getSuratStat(),
-            'biaya'          => $this->getBiayaStat(),
-            'programKerja'   => ProgramKerja::count(),
+        /*
+        |--------------------------------------------------------------------------
+        | BASE QUERY
+        |--------------------------------------------------------------------------
+        */
+        $query = Pengamal::query();
+
+        if ($code) {
+
+            if (preg_match('/^\d{2}$/', $code)) {
+                $query->where('provinsi', $code);
+            } elseif (preg_match('/^\d{2}\.\d{2}$/', $code)) {
+                $query->where('kabupaten', $code);
+            } elseif (preg_match('/^\d{2}\.\d{2}\.\d{2}$/', $code)) {
+                $query->where('kecamatan', $code);
+            } elseif (preg_match('/^\d{2}\.\d{2}\.\d{2}\.\d{4}$/', $code)) {
+                $query->where('desa', $code);
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | GENDER STAT
+        |--------------------------------------------------------------------------
+        */
+        $genderStat = (clone $query)
+            ->selectRaw('jenis_kelamin, COUNT(*) as total')
+            ->groupBy('jenis_kelamin')
+            ->pluck('total', 'jenis_kelamin');
+
+        /*
+        |--------------------------------------------------------------------------
+        | MAP REFERENCE (FIX PERFORMANCE - NO LOOP QUERY)
+        |--------------------------------------------------------------------------
+        */
+        $regencyMap = Regency::pluck('name', 'code');
+        $districtMap = District::pluck('name', 'code');
+        $villageMap = Village::pluck('name', 'code');
+
+        /*
+        |--------------------------------------------------------------------------
+        | WILAYAH STAT (BAR CHART)
+        |--------------------------------------------------------------------------
+        */
+        $wilayahStat = ['labels' => [], 'values' => []];
+
+        if (preg_match('/^\d{2}$/', $code)) {
+
+            $data = Pengamal::query()
+                ->selectRaw('kabupaten, COUNT(*) as total')
+                ->where('provinsi', $code)
+                ->groupBy('kabupaten')
+                ->get();
+
+            $wilayahStat = [
+                'labels' => $data->map(fn($i) => $regencyMap[$i->kabupaten] ?? $i->kabupaten)->values()->toArray(),
+                'values' => $data->pluck('total')->map(fn($v) => (int)$v)->values()->toArray(),
+            ];
+        } elseif (preg_match('/^\d{2}\.\d{2}$/', $code)) {
+
+            $data = Pengamal::query()
+                ->selectRaw('kecamatan, COUNT(*) as total')
+                ->where('kabupaten', $code)
+                ->groupBy('kecamatan')
+                ->get();
+
+            $wilayahStat = [
+                'labels' => $data->map(fn($i) => $districtMap[$i->kecamatan] ?? $i->kecamatan)->values()->toArray(),
+                'values' => $data->pluck('total')->map(fn($v) => (int)$v)->values()->toArray(),
+            ];
+        } elseif (preg_match('/^\d{2}\.\d{2}\.\d{2}$/', $code)) {
+
+            $data = Pengamal::query()
+                ->selectRaw('desa, COUNT(*) as total')
+                ->where('kecamatan', $code)
+                ->groupBy('desa')
+                ->get();
+
+            $wilayahStat = [
+                'labels' => $data->map(fn($i) => $villageMap[$i->desa] ?? $i->desa)->values()->toArray(),
+                'values' => $data->pluck('total')->map(fn($v) => (int)$v)->values()->toArray(),
+            ];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | KABUPATEN (DOUGHNUT FIXED)
+        |--------------------------------------------------------------------------
+        */
+        $provinceCode = substr($code, 0, 2);
+
+        $kabupatenStats = Pengamal::query()
+            ->selectRaw('kabupaten, COUNT(*) as total')
+            ->when($code, fn($q) => $q->where('provinsi', $provinceCode))
+            ->groupBy('kabupaten')
+            ->get()
+            ->map(function ($item) use ($regencyMap) {
+                return [
+                'label' => $regencyMap[$item->kabupaten] ?? $item->kabupaten,
+                'total' => (int) $item->total,
+            ];
+            })
+            ->values();
+
+        /*
+        |--------------------------------------------------------------------------
+        | RETURN
+        |--------------------------------------------------------------------------
+        */
+        return view('administrator.dashboard.index', [
+            'user' => $user,
+            'wilayah' => $wilayah,
+            'genderStat' => $genderStat,
+            'wilayahStat' => $wilayahStat,
+            'kabupatenStats' => $kabupatenStats,
         ]);
     }
 
-    /**
-     * Query dasar sesuai role
-     */
-    private function basePengamalQuery($user)
+    /*
+    |--------------------------------------------------------------------------
+    | WILAYAH NAME
+    |--------------------------------------------------------------------------
+    */
+    private function getWilayahName(?string $code): string
     {
-        $query = Pengamal::query();
+        if (!$code) return 'Tidak diketahui';
 
-        return match (true) {
-            $user->hasRole('superAdmin')
-            => $query,
-
-            $user->hasRole('admin-provinsi')
-            => $query->where('provinsi', $user->code),
-
-            $user->hasRole('admin-kabupaten')
-            => $query->where('kabupaten', $user->code),
-
-            $user->hasRole('admin-kecamatan')
-            => $query->where('kecamatan', $user->code),
-
-            $user->hasRole('admin-desa')
-            => $query->where('desa', $user->code),
-
-            default => abort(403, 'Unauthorized'),
-        };
-    }
-
-    /**
-     * Statistik gender
-     */
-    private function getGenderStat($query)
-    {
-        return (clone $query)
-            ->select('jenis_kelamin', DB::raw('COUNT(*) as total'))
-            ->groupBy('jenis_kelamin')
-            ->pluck('total', 'jenis_kelamin');
-    }
-
-    /**
-     * Statistik kabupaten
-     */
-    private function getKabupatenStat($query)
-    {
-        $data = (clone $query)
-            ->selectRaw('kabupaten, COUNT(*) as total')
-            ->groupBy('kabupaten')
-            ->orderByDesc('total')
-            ->get();
-
-        return $data->map(function ($item) {
-
-            $regency = Regency::where(
-                'code',
-                $item->kabupaten
-            )->first();
-
-            return [
-                'label' => $regency?->name
-                    ?? 'Tidak diketahui',
-
-                'total' => (int) $item->total,
-            ];
-        });
-    }
-
-    /**
-     * Statistik wilayah
-     */
-    private function getWilayahStat($user)
-    {
-        $query = $this->basePengamalQuery($user);
-
-        if (
-            $user->hasRole('superAdmin') ||
-            $user->hasRole('admin-provinsi')
-        ) {
-            return $this->buildWilayahStat(
-                $query,
-                'kabupaten',
-                Regency::class
-            );
+        if (preg_match('/^\d{2}$/', $code)) {
+            return Province::where('code', $code)->value('name') ?? 'Tidak diketahui';
         }
 
-        if ($user->hasRole('admin-kabupaten')) {
-            return $this->buildWilayahStat(
-                $query,
-                'kecamatan',
-                District::class
-            );
+        if (preg_match('/^\d{2}\.\d{2}$/', $code)) {
+            return Regency::where('code', $code)->value('name') ?? 'Tidak diketahui';
         }
 
-        if ($user->hasRole('admin-kecamatan')) {
-            return $this->buildWilayahStat(
-                $query,
-                'desa',
-                Village::class
-            );
+        if (preg_match('/^\d{2}\.\d{2}\.\d{2}$/', $code)) {
+            return District::where('code', $code)->value('name') ?? 'Tidak diketahui';
         }
 
-        if ($user->hasRole('admin-desa')) {
-            return [
-                'labels' => ['Pengamal'],
-                'values' => [(clone $query)->count()],
-            ];
+        if (preg_match('/^\d{2}\.\d{2}\.\d{2}\.\d{4}$/', $code)) {
+            return Village::where('code', $code)->value('name') ?? 'Tidak diketahui';
         }
 
-        return [
-            'labels' => [],
-            'values' => [],
-        ];
-    }
-
-    /**
-     * Builder statistik reusable
-     */
-    private function buildWilayahStat(
-        $query,
-        $column,
-        $modelClass
-    ) {
-        $data = (clone $query)
-            ->selectRaw("$column, COUNT(*) as total")
-            ->groupBy($column)
-            ->orderByDesc('total')
-            ->get();
-
-        return [
-            'labels' => $data
-                ->map(function ($item) use (
-                    $column,
-                    $modelClass
-                ) {
-
-                $wilayah = $modelClass::where(
-                    'code',
-                    $item->$column
-                )->first();
-
-                    return $wilayah?->name
-                        ?? 'Tidak diketahui';
-                })
-                ->values()
-                ->toArray(),
-
-            'values' => $data
-                ->pluck('total')
-                ->map(fn($v) => (int) $v)
-                ->values()
-                ->toArray(),
-        ];
-    }
-
-    /**
-     * Statistik surat
-     */
-    private function getSuratStat()
-    {
-        return [
-            'masuk'  => SuratMasuk::count(),
-            'keluar' => SuratKeluar::count(),
-        ];
-    }
-
-    /**
-     * Statistik biaya
-     */
-    private function getBiayaStat()
-    {
-        return ProgramKerja::select(
-            'waktu_pelaksanaan',
-            DB::raw('SUM(biaya) as total')
-        )
-            ->groupBy('waktu_pelaksanaan')
-            ->pluck('total', 'waktu_pelaksanaan');
+        return 'Tidak diketahui';
     }
 }

@@ -19,14 +19,10 @@
         }
         @endphp
 
-        @section('title' . $wilayah)
-
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-
             <h2 class="text-xl font-bold text-gray-800">
-                Dashboard - <span class="text-green-700">{{ $wilayah }}</span>
+                Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
             </h2>
-
         </div>
     </x-slot>
 
@@ -35,18 +31,12 @@
 
         {{-- HEADER CARD --}}
         <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow-lg p-4 flex items-center gap-4">
-
-            <img src="{{ asset('image/logo.png') }}" class="w-12 h-12  rounded-full p-1">
+            <img src="{{ asset('image/logo.png') }}" class="w-12 h-12 rounded-full p-1">
 
             <div>
-                <h3 class="text-lg font-bold uppercase">
-                    {{ $wilayah }}
-                </h3>
-                <p class="text-sm text-green-100">
-                    Sistem Data Pengamal Terintegrasi
-                </p>
+                <h3 class="text-lg font-bold uppercase">{{ $wilayah }}</h3>
+                <p class="text-sm text-green-100">Sistem Data Pengamal Terintegrasi</p>
             </div>
-
         </div>
 
         {{-- TOOLBAR --}}
@@ -54,62 +44,61 @@
 
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
 
-                {{-- BUTTONS --}}
                 <div class="flex flex-wrap gap-2">
 
                     @role('admin-provinsi')
-                    <a href="/pengamal/create"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm shadow">
+                    <a href="/pengamal/create" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
                         + Tambah Pengamal
                     </a>
                     @endrole
 
                     @role('admin-kabupaten')
-                    <a href="/pengamal/create"
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm shadow">
+                    <a href="/pengamal/create" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
                         + Tambah Pengamal
                     </a>
                     @endrole
 
                     @role('admin-kecamatan')
-                    <a href="/pengamal/create"
-                        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm shadow">
+                    <a href="/pengamal/create" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">
                         + Tambah Pengamal
                     </a>
                     @endrole
 
-                    <a href="/laporan" target="_blank"
-                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm shadow">
+                    <a href="/laporan" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
                         Export PDF
                     </a>
 
                 </div>
 
                 {{-- SEARCH --}}
-                <form action="{{ route('pengamal.index') }}" method="GET"
-                    class="flex items-center gap-2">
+                <form action="{{ route('pengamal.index') }}" method="GET" class="flex items-center gap-2">
 
                     <input type="text"
                         name="search"
                         value="{{ request('search') }}"
                         placeholder="Cari nama / NIK..."
-                        class="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:outline-none">
+                        class="w-64 px-4 py-2 rounded-lg border">
 
-                    <button type="submit"
-                        class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg text-sm">
+                    <button class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
                         Cari
                     </button>
-
-                    @if(request('search'))
-                    <a href="{{ route('pengamal.index') }}"
-                        class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg text-sm">
-                        Reset
-                    </a>
-                    @endif
 
                 </form>
 
             </div>
+        </div>
+
+        {{-- CHART --}}
+        <div class="bg-white rounded-xl shadow p-4 border border-gray-100">
+
+            <h3 class="text-lg font-bold text-gray-700 mb-4">
+                Grafik Pengamal per Kabupaten
+            </h3>
+
+            <div style="height: 300px;">
+                <canvas id="chartKabupaten"></canvas>
+            </div>
+
         </div>
 
         {{-- TABLE --}}
@@ -121,7 +110,7 @@
 
                     <thead class="bg-green-900 text-white">
                         <tr>
-                            <th class="px-4 py-3 text-center">No</th>
+                            <th class="px-4 py-3">No</th>
                             <th class="px-4 py-3 text-left">Nama</th>
                             <th class="px-4 py-3 text-left">Kabupaten</th>
                             <th class="px-4 py-3 text-left">Kecamatan</th>
@@ -129,51 +118,40 @@
                         </tr>
                     </thead>
 
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y">
 
                         @forelse ($dataPengamal as $item)
-                        <tr class="hover:bg-green-50 transition">
+                        <tr class="hover:bg-green-50">
 
-                            <td class="px-4 py-3 text-center text-gray-500">
+                            <td class="px-4 py-2 text-center">
                                 {{ $loop->iteration }}
                             </td>
 
-                            <td class="px-4 py-3 font-medium">
-                                <a href="/pengamal/show/{{ $item->id }}"
-                                    class="text-green-700 hover:underline">
+                            <td class="px-4 py-2">
+                                <a href="/pengamal/show/{{ $item->id }}" class="text-green-700">
                                     {{ $item->nama_lengkap }}
                                 </a>
                             </td>
 
-                            <td class="px-4 py-3 text-gray-600">
-                                {{ $item->regency->name ?? '-' }}
-                            </td>
-
-                            <td class="px-4 py-3 text-gray-600">
-                                {{ $item->district->name ?? '-' }}
-                            </td>
-
-                            <td class="px-4 py-3 text-gray-600">
-                                {{ $item->village->name ?? '-' }}
-                            </td>
+                            <td class="px-4 py-2">{{ $item->regency->name ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $item->district->name ?? '-' }}</td>
+                            <td class="px-4 py-2">{{ $item->village->name ?? '-' }}</td>
 
                         </tr>
                         @empty
-
                         <tr>
                             <td colspan="5" class="text-center py-6 text-gray-500">
-                                Tidak ada data ditemukan
+                                Tidak ada data
                             </td>
                         </tr>
-
                         @endforelse
 
                     </tbody>
+
                 </table>
 
             </div>
 
-            {{-- PAGINATION --}}
             <div class="p-4 border-t">
                 {{ $dataPengamal->links() }}
             </div>
@@ -191,21 +169,53 @@
             timeOut: "4000",
         };
 
-        @if(Session::has('success'))
-        toastr.success("{{ Session::get('success') }}");
+        @if(Session::has('success')) toastr.success("{{ Session::get('success') }}");
         @endif
+        @if(Session::has('error')) toastr.error("{{ Session::get('error') }}");
+        @endif
+    </script>
 
-        @if(Session::has('error'))
-        toastr.error("{{ Session::get('error') }}");
-        @endif
+    {{-- CHART SCRIPT (FIX TOTAL) --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        @if(Session::has('info'))
-        toastr.info("{{ Session::get('info') }}");
-        @endif
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
 
-        @if(Session::has('warning'))
-        toastr.warning("{{ Session::get('warning') }}");
-        @endif
+            const data = @json($chartKabupaten ?? []);
+
+            const labels = data.map(i => i.kabupaten_name ?? i.kabupaten);
+            const values = data.map(i => i.total);
+
+            const canvas = document.getElementById('chartKabupaten');
+            if (!canvas) return;
+
+            new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jumlah Pengamal',
+                        data: values,
+                        backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                        borderColor: 'rgba(22, 163, 74, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
     </script>
 
 </x-app-layout>

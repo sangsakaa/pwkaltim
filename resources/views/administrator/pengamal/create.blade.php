@@ -30,7 +30,7 @@
         <div class="flex items-center justify-between">
             <h2 class="text-xl font-bold text-gray-800">
                 @if($isPublic)
-                Pendaftaran Pengamal
+                Pendataan Pengamal
                 @else
                 Tambah Pengamal -
                 <span class="text-green-700">{{ $wilayah }}</span>
@@ -51,7 +51,7 @@
         {{-- MODE INFO --}}
         @if($isPublic)
         <div class="rounded-lg bg-blue-100 text-blue-700 p-4">
-            Form pendaftaran pengamal (Publik)
+            Form Pendataan Pengamal (Publik)
         </div>
         @else
         <div class="rounded-lg bg-green-100 text-green-700 p-4">
@@ -70,7 +70,7 @@
 
             <div class="p-4">
                 <h3 class="text-lg font-bold uppercase">
-                    {{ $isPublic ? 'Pendaftaran Pengamal' : 'PW ' . $wilayah }}
+                    {{ $isPublic ? 'Pendataan Pengamal' : 'PW ' . $wilayah }}
                 </h3>
 
                 <p class="text-sm text-green-100">

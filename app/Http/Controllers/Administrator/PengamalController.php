@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Administrator;
 
-use App\Models\Regency;
-use App\Models\Village;
+use App\Http\Controllers\Controller;
 use App\Models\District;
 use App\Models\Pengamal;
 use App\Models\Province;
+use App\Models\Regency;
+use App\Models\Village;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class PengamalController extends Controller
 {
@@ -19,47 +20,88 @@ class PengamalController extends Controller
     {
         $user = Auth::user();
 
-        $query = Pengamal::with([
-            'province',
-            'regency',
-            'district',
-            'village'
-        ]);
-
-
-        // Filter berdasarkan role
-        if ($user->hasRole('admin-provinsi')) {
-            $query->where('provinsi', $user->code);
-        } elseif ($user->hasRole('admin-kabupaten')) {
-            $query->where('kabupaten', $user->code);
-        } elseif ($user->hasRole('admin-kecamatan')) {
-            $query->where('kecamatan', $user->code);
-        } elseif ($user->hasRole('admin-desa')) {
-            $query->where('desa', $user->code);
-        } else {
+        /*
+    |--------------------------------------------------------------------------
+    | BASIC AUTHORIZATION
+    |--------------------------------------------------------------------------
+    */
+        if (!$user->hasAnyRole([
+            'admin-provinsi',
+            'admin-kabupaten',
+            'admin-kecamatan',
+            'admin-desa',
+            'superAdmin'
+        ])) {
             abort(403, 'Unauthorized');
         }
 
-        // Search
+        /*
+    |--------------------------------------------------------------------------
+    | BASE QUERY
+    |--------------------------------------------------------------------------
+    */
+        $query = Pengamal::query()
+            ->with(['province', 'regency', 'district', 'village']);
+
+        /*
+    |--------------------------------------------------------------------------
+    | REGION FILTERING (ROLE BASED)
+    |--------------------------------------------------------------------------
+    */
+        $query->when($user->hasRole('admin-provinsi'), function ($q) use ($user) {
+            $q->where('provinsi', $user->code);
+        });
+
+        $query->when($user->hasRole('admin-kabupaten'), function ($q) use ($user) {
+            $q->where('kabupaten', $user->code);
+        });
+
+        $query->when($user->hasRole('admin-kecamatan'), function ($q) use ($user) {
+            $q->where('kecamatan', $user->code);
+        });
+
+        $query->when($user->hasRole('admin-desa'), function ($q) use ($user) {
+            $q->where('desa', $user->code);
+        });
+
+        /*
+    |--------------------------------------------------------------------------
+    | SEARCH FILTER
+    |--------------------------------------------------------------------------
+    */
         $query->when($request->filled('search'), function ($q) use ($request) {
 
             $search = $request->search;
 
             $q->where(function ($sub) use ($search) {
                 $sub->where('nama_lengkap', 'like', "%{$search}%")
-                    ->orWhere('nik', 'like', "%{$search}%");
+                    ->orWhere('nik', 'like', "%{$search}%")
+                    ->orWhere('no_hp', 'like', "%{$search}%")
+                    ->orWhere('alamat', 'like', "%{$search}%");
             });
         });
 
+        /*
+    |--------------------------------------------------------------------------
+    | RESULT
+    |--------------------------------------------------------------------------
+    */
         $dataPengamal = $query
             ->latest()
             ->paginate(10)
             ->withQueryString();
+        $chartKabupaten = DB::table('pengamal')
+            ->leftJoin('regencies', 'regencies.code', '=', 'pengamal.kabupaten')
+            ->select(
+                'pengamal.kabupaten',
+                'regencies.name as kabupaten_name',
+                DB::raw('count(*) as total')
+            )
+            ->groupBy('pengamal.kabupaten', 'regencies.name')
+            ->get();
+        // dd($chartKabupaten);
 
-        return view(
-            'administrator.pengamal.index',
-            compact('dataPengamal')
-        );
+        return view('administrator.pengamal.index', compact('dataPengamal', 'chartKabupaten'));
     }
     public function show(Pengamal $pengamal)
     {
