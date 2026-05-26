@@ -46,7 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pengamal/create', [PengamalController::class, 'create'])
         ->name('pengamal.create');
 
-    Route::get('/pengamal/show/{pengamal}', [PengamalController::class, 'show']);
+    Route::get('/pengamal/show/{pengamal}', [PengamalController::class, 'show'])->name('pengamal.show');
 
     Route::delete('/pengamal/show/{pengamal}', [PengamalController::class, 'destroy']);
 

@@ -438,9 +438,19 @@ class PengamalController extends Controller
      */
     public function edit(Pengamal $pengamal)
     {
-        // $provinces = Province::all();
-        $provinces = Province::where('code', 64)->get(); // Ambil semua provinsi kecuali yang kode 00
-        return view('administrator/pengamal/edit', compact('pengamal', 'provinces'))->with('success', 'Pengamal berhasil diperbarui.');
+        $provinces = Province::where('code', 64)->get();
+
+        $regencies = Regency::where('province_code', $pengamal->provinsi)->get();
+        $districts = District::where('regency_code', $pengamal->kabupaten)->get();
+        $villages  = Village::where('district_code', $pengamal->kecamatan)->get();
+
+        return view('administrator.pengamal.edit', compact(
+            'pengamal',
+            'provinces',
+            'regencies',
+            'districts',
+            'villages'
+        ));
     }
 
     /**
@@ -448,93 +458,80 @@ class PengamalController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Ambil data pengamal berdasarkan ID
-        // dd($request->all());
         $pengamal = Pengamal::findOrFail($id);
 
-        // Validasi input
+        $user = auth()->user();
+
+        // SECURITY CHECK
+        if ($user->hasRole('admin-provinsi') && $pengamal->provinsi != $user->code) abort(403);
+        if ($user->hasRole('admin-kabupaten') && $pengamal->kabupaten != $user->code) abort(403);
+        if ($user->hasRole('admin-kecamatan') && $pengamal->kecamatan != $user->code) abort(403);
+        if ($user->hasRole('admin-desa') && $pengamal->desa != $user->code) abort(403);
+
         $validated = $request->validate([
-            'nik' => [
-                'required',
-                'string',
-                'size:16',
-                Rule::unique('pengamal', 'nik')->ignore($pengamal->id),
-            ],
-            'nama_lengkap' => 'required|string',
+            'nik' => ['nullable', 'digits:16', Rule::unique('pengamal', 'nik')->ignore($pengamal->id)],
+            'nama_lengkap' => 'required|string|max:255',
             'tanggal_lahir' => 'nullable|date',
-            'tempat_lahir' => 'nullable|string',
+            'tempat_lahir' => 'nullable|string|max:100',
             'jenis_kelamin' => 'nullable|in:L,P',
-            'agama' => 'nullable|string',
+            'agama' => 'nullable|string|max:50',
+
             'province_code' => 'required|string',
             'regency_code' => 'required|string',
             'district_code' => 'required|string',
-            'village_code' => 'required|string|filled',
-            'rt' => 'nullable|string',
-            'rw' => 'nullable|string',
-            'no_hp' => 'nullable|string',
-            'alamat' => 'nullable|string',
+            'village_code' => 'required|string',
+
+            'alamat' => 'nullable|string|max:500',
+            'no_hp' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'rt' => 'nullable|string|max:5',
+            'rw' => 'nullable|string|max:5',
+
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'email' => 'nullable|email',
-            'pekerjaan' => 'required|string',
-            'status_perkawinan' => 'required|string',
-        ], [
-            'nik.required' => 'NIK wajib diisi.',
-            'nik.string' => 'NIK harus berupa teks.',
-            'nik.size' => 'NIK harus terdiri dari 16 digit.',
-            'nik.unique' => 'NIK ini sudah terdaftar.',
-            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
-            'nama_lengkap.string' => 'Nama lengkap harus berupa teks.',
-            'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
-            'tempat_lahir.string' => 'Tempat lahir harus berupa teks.',
-            'jenis_kelamin.in' => 'Jenis kelamin harus L (Laki-laki) atau P (Perempuan).',
-            'agama.string' => 'Agama harus berupa teks.',
-            'province_code.required' => 'Provinsi wajib dipilih.',
-            'regency_code.required' => 'Kabupaten/Kota wajib dipilih.',
-            'district_code.required' => 'Kecamatan wajib dipilih.',
-            'village_code.required' => 'Desa/Kelurahan wajib dipilih.',
-            'village_code.filled'   => 'Kode desa tidak boleh kosong.',
-            'foto.image' => 'File harus berupa gambar.',
-            'foto.mimes' => 'Format gambar harus jpg, jpeg, atau png.',
-            'foto.max' => 'Ukuran gambar maksimal 2MB.',
-            'email.email' => 'Format email tidak valid.',
+            'pekerjaan' => 'nullable|string|max:100',
+            'status_perkawinan' => 'nullable|string|max:100',
         ]);
 
-        // Proses foto jika diunggah
-        $fotoPath = $pengamal->foto; // default tetap pakai foto lama
+        // FOTO
+        $fotoPath = $pengamal->foto;
+
         if ($request->hasFile('foto')) {
-            // Hapus foto lama jika ada
-            if ($pengamal->foto && Storage::disk('public')->exists($pengamal->foto)) {
-                Storage::disk('public')->delete($pengamal->foto);
+            if ($fotoPath && Storage::disk('public')->exists($fotoPath)) {
+                Storage::disk('public')->delete($fotoPath);
             }
 
-            // Simpan foto baru
             $fotoPath = $request->file('foto')->store('foto/pengamal', 'public');
         }
 
-        // Update data pengamal
+        // UPDATE
         $pengamal->update([
-            'nik' => $validated['nik'],
+            'nik' => $validated['nik'] ?? null,
             'nama_lengkap' => $validated['nama_lengkap'],
             'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
             'tempat_lahir' => $validated['tempat_lahir'] ?? null,
             'jenis_kelamin' => $validated['jenis_kelamin'] ?? null,
             'agama' => $validated['agama'] ?? null,
+
             'provinsi' => $validated['province_code'],
             'kabupaten' => $validated['regency_code'],
             'kecamatan' => $validated['district_code'],
             'desa' => $validated['village_code'],
+
+            'alamat' => $validated['alamat'] ?? null,
+            'no_hp' => $validated['no_hp'] ?? null,
+            'email' => $validated['email'] ?? null,
             'rt' => $validated['rt'] ?? null,
             'rw' => $validated['rw'] ?? null,
-            'no_hp' => $validated['no_hp'] ?? null,
-            'alamat' => $validated['alamat'] ?? null,
+
             'foto' => $fotoPath,
-            'email' => $validated['email'] ?? null,
+
             'pekerjaan' => $validated['pekerjaan'] ?? null,
             'status_perkawinan' => $validated['status_perkawinan'] ?? null,
         ]);
 
-        // Redirect dengan notifikasi sukses
-        return redirect()->back()->with('success', 'Pengamal berhasil diperbarui.');
+        return redirect()
+            ->route('pengamal.index')
+            ->with('success', 'Pengamal berhasil diperbarui.');
     }
 
     /**
