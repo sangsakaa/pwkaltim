@@ -79,6 +79,18 @@
             </div>
         </div>
 
+        {{-- NOTE FORM (TAMBAHAN BARU) --}}
+        <div class="rounded-lg bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 text-sm">
+            <p class="font-bold">⚠️ Perhatian Pengisian Form</p>
+
+            <ul class="list-disc ml-5 mt-2 space-y-1">
+                <li>Kolom dengan tanda <span class="text-red-600 font-bold">*</span> wajib diisi</li>
+                <li>Kolom tanpa tanda adalah <b>opsional (boleh dikosongkan)</b></li>
+                <li>Pastikan data sesuai KTP dan benar</li>
+
+            </ul>
+        </div>
+
         {{-- FORM --}}
         <form action="{{ route('pengamal.store') }}"
             method="POST"
@@ -100,43 +112,30 @@
                         <input hidden type="text"
                             name="nik"
                             maxlength="16"
-                            placeholder="NIK"
-                            value="{{ old('nik') }}"
-                            class="w-full rounded-lg border-gray-300 focus:border-green-600 focus:ring-green-600">
+                            value="{{ old('nik') }}">
 
                         <input type="text"
                             name="nama_lengkap"
-                            placeholder="Nama Lengkap sesui KTP"
+                            placeholder="Nama Lengkap sesuai KTP *"
                             value="{{ old('nama_lengkap') }}"
                             required
                             class="w-full rounded-lg border-gray-300 focus:border-green-600 focus:ring-green-600">
 
                         <div class="grid grid-cols-2 gap-3">
 
-                            <select name="jenis_kelamin"
+                            <select required name="jenis_kelamin"
                                 class="rounded-lg border-gray-300">
 
-                                <option value="">
-                                    Jenis Kelamin
-                                </option>
-
-                                <option value="L"
-                                    {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>
-                                    Laki-laki
-                                </option>
-
-                                <option value="P"
-                                    {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>
-                                    Perempuan
-                                </option>
+                                <option value="">Jenis Kelamin *</option>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
 
                             </select>
 
                             <select name="agama"
                                 class="rounded-lg border-gray-300">
-                                <option value="Islam">
-                                    Islam
-                                </option>
+
+                                <option value="Islam">Agama (opsional)</option>
 
                             </select>
 
@@ -146,11 +145,11 @@
 
                             <input type="text"
                                 name="tempat_lahir"
-                                placeholder="Tempat Lahir"
+                                placeholder="Tempat Lahir *"
                                 value="{{ old('tempat_lahir') }}"
                                 class="rounded-lg border-gray-300">
 
-                            <input required type="date"
+                            <input type="date"
                                 name="tanggal_lahir"
                                 value="{{ old('tanggal_lahir') }}"
                                 class="rounded-lg border-gray-300">
@@ -160,154 +159,87 @@
                         {{-- WILAYAH --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                            {{-- PROVINSI --}}
                             <div>
-                                <label class="text-sm text-gray-600">
-                                    Provinsi
-                                </label>
-
-                                <select id="province"
-                                    name="province_code"
-                                    class="w-full rounded-lg border-gray-300">
-
-                                    <option value="">
-                                        Pilih Provinsi
-                                    </option>
-
+                                <label>Provinsi *</label>
+                                <select id="province" name="province_code" required class="w-full rounded-lg border-gray-300">
+                                    <option value="">Pilih Provinsi</option>
                                     @foreach ($provinces as $province)
-                                    <option value="{{ $province->code }}">
-                                        {{ $province->name }}
-                                    </option>
+                                    <option value="{{ $province->code }}">{{ $province->name }}</option>
                                     @endforeach
-
                                 </select>
                             </div>
 
-                            {{-- KABUPATEN --}}
                             <div>
-                                <label class="text-sm text-gray-600">
-                                    Kabupaten
-                                </label>
-
-                                <select id="regency"
-                                    name="regency_code"
-                                    class="w-full rounded-lg border-gray-300">
-
-                                    <option value="">
-                                        Pilih Kabupaten
-                                    </option>
-
+                                <label>Kabupaten *</label>
+                                <select id="regency" name="regency_code" required class="w-full rounded-lg border-gray-300">
+                                    <option value="">Pilih Kabupaten</option>
                                 </select>
                             </div>
 
-                            {{-- KECAMATAN --}}
                             <div>
-                                <label class="text-sm text-gray-600">
-                                    Kecamatan
-                                </label>
-
-                                <select id="district"
-                                    name="district_code"
-                                    class="w-full rounded-lg border-gray-300">
-
-                                    <option value="">
-                                        Pilih Kecamatan
-                                    </option>
-
+                                <label>Kecamatan *</label>
+                                <select id="district" name="district_code" required class="w-full rounded-lg border-gray-300">
+                                    <option value="">Pilih Kecamatan</option>
                                 </select>
                             </div>
 
-                            {{-- DESA --}}
                             <div>
-                                <label class="text-sm text-gray-600">
-                                    Desa
-                                </label>
-
-                                <select id="village"
-                                    name="village_code"
-                                    class="w-full rounded-lg border-gray-300">
-
-                                    <option value="">
-                                        Pilih Desa
-                                    </option>
-
+                                <label>Desa *</label>
+                                <select id="village" name="village_code" required class="w-full rounded-lg border-gray-300">
+                                    <option value="">Pilih Desa</option>
                                 </select>
                             </div>
 
                         </div>
+
                     </div>
 
                     {{-- RIGHT --}}
-                    <div class="space-y-5 ">
+                    <div class="space-y-5">
 
                         <h3 class="font-semibold border-b pb-2">
                             Kontak & Tambahan
                         </h3>
 
-                        <input type="text"
+                        <input required type="text"
                             name="alamat"
-                            placeholder="Alamat Lengkap Domisili"
+                            placeholder="Alamat (opsional)"
                             value="{{ old('alamat') }}"
                             class="w-full rounded-lg border-gray-300">
 
-                        <div class="grid grid-cols-1 gap-3">
+                        <input type="text"
+                            name="no_hp"
+                            placeholder="No HP / WhatsApp (opsional)"
+                            value="{{ old('no_hp') }}"
+                            class="rounded-lg border-gray-300 w-full">
 
-                            <input type="text"
-                                name="no_hp"
-                                placeholder="No HP /whatapps yang aktif"
-                                value="{{ old('no_hp') }}"
-                                class="rounded-lg border-gray-300">
-                        </div>
-
-
-
-                        <div class="space-y-1">
-                            <label for="foto" class="block text-sm font-medium text-gray-700">
-                                Foto
-                            </label>
-
-                            <input
-                                type="file"
-                                id="foto"
+                        <div>
+                            <label>Foto (opsional)</label>
+                            <input type="file"
                                 name="foto"
-                                class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                class="w-full border border-gray-300 rounded-lg p-2">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
                             <select name="pekerjaan" class="rounded-lg border-gray-300">
-                                <option value="">Pilih Pekerjaan</option>
-
-                                <option value="PNS">PNS</option>
-
-                                <option value="Guru/Dosen">Guru / Dosen</option>
-                                <option value="Pelajar/Mahasiswa">Pelajar / Mahasiswa</option>
-                                <option value="Karyawan Swasta">Karyawan Swasta</option>
-
-                                <option value="Wiraswasta">Wiraswasta</option>
-                                <option value="Pedagang">Pedagang</option>
-                                <option value="Petani">Petani</option>
-                                <option value="Peternak">Peternak</option>
-                                <option value="Nelayan">Nelayan</option>
-                                <option value="Ibu Rumah Tangga">Ibu Rumah Tangga</option>
-                                <option value="Tidak Bekerja">Tidak Bekerja</option>
-                                <option value="Lainnya">Lainnya</option>
+                                <option value="">Pekerjaan (opsional)</option>
+                                <option>PNS</option>
+                                <option>Guru / Dosen</option>
+                                <option>Wiraswasta</option>
+                                <option>Lainnya</option>
                             </select>
 
-                            <select name="status_perkawinan"
-                                class="rounded-lg border-gray-300">
-
-                                <option value="">
-                                    Status
-                                </option>
-
+                            <select required name="status_perkawinan" class="rounded-lg border-gray-300">
+                                <option value="">Status *</option>
                                 <option>Belum Kawin</option>
                                 <option>Kawin</option>
-
                             </select>
 
                         </div>
+
                     </div>
+
                 </div>
 
                 {{-- ACTION --}}
@@ -315,42 +247,22 @@
 
                     <button type="submit"
                         class="bg-green-700 hover:bg-green-800 text-white px-6 py-2 rounded-lg">
-
                         Simpan
-
                     </button>
 
                     @if($isPublic)
-
-                    <a href="/"
-                        class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg">
-                        Beranda
-                    </a>
-
+                    <a href="/" class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg">Beranda</a>
                     @else
-
-                    @role('admin-provinsi')
-                    <a href="{{ route('pengamal.index') }}"
-                        class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg">
-                        Kembali
-                    </a>
-                    @endrole
-
-                    @role('admin-kabupaten')
-                    <a href="/dashboard"
-                        class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg">
-                        Dashboard
-                    </a>
-                    @endrole
-
+                    <a href="{{ route('pengamal.index') }}" class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg">Kembali</a>
                     @endif
 
                 </div>
+
             </div>
         </form>
     </div>
 
-    {{-- AJAX --}}
+    {{-- AJAX (JANGAN DIHAPUS / DIUBAH) --}}
     <script>
         function loadSelect(url, target, placeholder) {
             fetch(url)
@@ -358,8 +270,7 @@
                 .then(data => {
                     let el = document.getElementById(target);
 
-                    el.innerHTML =
-                        `<option value="">${placeholder}</option>`;
+                    el.innerHTML = `<option value="">${placeholder}</option>`;
 
                     data.forEach(i => {
                         el.innerHTML += `
@@ -371,41 +282,19 @@
                 });
         }
 
-        document.getElementById('province')
-            .addEventListener('change', function() {
+        document.getElementById('province').addEventListener('change', function() {
+            loadSelect(`/get-regencies/${this.value}`, 'regency', 'Pilih Kabupaten');
+            document.getElementById('district').innerHTML = '<option value="">Pilih Kecamatan</option>';
+            document.getElementById('village').innerHTML = '<option value="">Pilih Desa</option>';
+        });
 
-                loadSelect(
-                    `/get-regencies/${this.value}`,
-                    'regency',
-                    'Pilih Kabupaten'
-                );
+        document.getElementById('regency').addEventListener('change', function() {
+            loadSelect(`/get-districts/${this.value}`, 'district', 'Pilih Kecamatan');
+        });
 
-                document.getElementById('district').innerHTML =
-                    '<option value="">Pilih Kecamatan</option>';
-
-                document.getElementById('village').innerHTML =
-                    '<option value="">Pilih Desa</option>';
-            });
-
-        document.getElementById('regency')
-            .addEventListener('change', function() {
-
-                loadSelect(
-                    `/get-districts/${this.value}`,
-                    'district',
-                    'Pilih Kecamatan'
-                );
-            });
-
-        document.getElementById('district')
-            .addEventListener('change', function() {
-
-                loadSelect(
-                    `/get-villages/${this.value}`,
-                    'village',
-                    'Pilih Desa'
-                );
-            });
+        document.getElementById('district').addEventListener('change', function() {
+            loadSelect(`/get-villages/${this.value}`, 'village', 'Pilih Desa');
+        });
     </script>
 
 </x-app-layout>
