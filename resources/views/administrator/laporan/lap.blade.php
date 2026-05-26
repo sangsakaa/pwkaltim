@@ -114,6 +114,11 @@
       font-weight: bold;
     }
 
+    .text-blue {
+      color: #2563eb;
+      font-weight: bold;
+    }
+
     .page-break {
       page-break-after: always;
     }
@@ -216,16 +221,20 @@
       );
 
       $isDuplicate = ($duplicateMap[$key] ?? 0) > 1;
+
+      $isEmptyBirth = empty($d->tempat_lahir) || empty($d->tanggal_lahir);
       @endphp
 
       <tr>
         <td class="center">{{ $i + 1 }}</td>
 
+        {{-- NAMA (RED jika DUPLIKAT) --}}
         <td class="uppercase {{ $isDuplicate ? 'text-red' : '' }}">
           {{ $d->nama_lengkap }}
         </td>
 
-        <td>
+        {{-- TEMPAT & TANGGAL LAHIR (BLUE jika kosong) --}}
+        <td class="{{ $isEmptyBirth ? 'text-blue' : '' }}">
           {{ $d->tempat_lahir ?? '-' }},
           {{ $d->tanggal_lahir ? Carbon::parse($d->tanggal_lahir)->format('d-m-Y') : '-' }}
         </td>
