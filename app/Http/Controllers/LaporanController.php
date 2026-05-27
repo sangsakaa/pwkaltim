@@ -303,6 +303,6 @@ class LaporanController extends Controller
             $data
         )->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
-        return $pdf->download($namaFile);
+        return $pdf->stream($namaFile);
     }
 }
