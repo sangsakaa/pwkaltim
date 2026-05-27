@@ -70,6 +70,12 @@ Route::get('/get-regencies/{province}', [PengamalController::class, 'getRegencie
 Route::get('/get-districts/{regency}', [PengamalController::class, 'getDistricts']);
 Route::get('/get-villages/{district}', [PengamalController::class, 'getVillages']);
 
+
+Route::get(
+    '/pengamal/sync',
+    [PengamalController::class, 'sync']
+)->name('pengamal.sync');
+
 /*
 |--------------------------------------------------------------------------
 | PROFILE

@@ -17,9 +17,11 @@ class Pengamal extends Model
 
     protected $table = 'pengamal';
 
-    /**
-     * Mass assignment
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | MASS ASSIGNMENT
+    |--------------------------------------------------------------------------
+    */
     protected $fillable = [
         'nik',
         'nama_lengkap',
@@ -46,19 +48,23 @@ class Pengamal extends Model
         'foto',
     ];
 
-    /**
-     * Cast attributes
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | CASTS
+    |--------------------------------------------------------------------------
+    */
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
+        'deleted_at'    => 'datetime',
     ];
 
-    /**
-     * Activity log config
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | ACTIVITY LOG
+    |--------------------------------------------------------------------------
+    */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -70,10 +76,9 @@ class Pengamal extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | Relations
+    | RELATIONS
     |--------------------------------------------------------------------------
     */
-
     public function province(): BelongsTo
     {
         return $this->belongsTo(
@@ -112,18 +117,45 @@ class Pengamal extends Model
 
     /*
     |--------------------------------------------------------------------------
-    | Scopes
+    | DEFAULT RELATIONS
+    |--------------------------------------------------------------------------
+    */
+    public static function relations(): array
+    {
+        return [
+            'province',
+            'regency',
+            'district',
+            'village',
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
     |--------------------------------------------------------------------------
     */
 
     /**
-     * Filter data berdasarkan role user
+     * Auto eager load wilayah
+     */
+    public function scopeWithWilayah(
+        Builder $query
+    ): Builder {
+        return $query->with(
+            self::relations()
+        );
+    }
+
+    /**
+     * Filter berdasarkan role user
      */
     public function scopeByUserRole(
         Builder $query,
         $user
     ): Builder {
         return match (true) {
+
             $user->hasRole('superAdmin')
             => $query,
 
@@ -155,19 +187,58 @@ class Pengamal extends Model
         };
     }
 
+    /**
+     * Search reusable
+     */
+    public function scopeSearch(
+        Builder $query,
+        ?string $search
+    ): Builder {
+        return $query->when(
+            filled($search),
+            function ($q) use ($search) {
+
+                $q->where(function ($sub) use ($search) {
+
+                    $sub->where(
+                        'nama_lengkap',
+                        'like',
+                        "%{$search}%"
+                    )
+                        ->orWhere(
+                            'nik',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhere(
+                            'no_hp',
+                            'like',
+                            "%{$search}%"
+                        )
+                        ->orWhere(
+                            'alamat',
+                            'like',
+                            "%{$search}%"
+                        );
+                });
+            }
+        );
+    }
+
     /*
     |--------------------------------------------------------------------------
-    | Accessors
+    | ACCESSORS
     |--------------------------------------------------------------------------
     */
 
     /**
-     * Umur pengamal
+     * Umur otomatis
      */
     protected function umur(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->tanggal_lahir?->age
+            get: fn() =>
+            $this->tanggal_lahir?->age
         );
     }
 
@@ -182,26 +253,19 @@ class Pengamal extends Model
                 ?? $this->district?->name
                 ?? $this->regency?->name
                 ?? $this->province?->name
-                ?? null
+                ?? '-'
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers
-    |--------------------------------------------------------------------------
-    */
-
     /**
-     * Relasi eager loading default
+     * URL foto otomatis
      */
-    public static function relations(): array
+    protected function fotoUrl(): Attribute
     {
-        return [
-            'province',
-            'regency',
-            'district',
-            'village',
-        ];
+        return Attribute::make(
+            get: fn() => $this->foto
+                ? asset('storage/' . $this->foto)
+                : asset('image/default-user.png')
+        );
     }
 }

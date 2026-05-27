@@ -55,6 +55,16 @@ $wilayah = $user->province->name;
                     <a href="/pengamal/create" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
                         + Tambah Pengamal
                     </a>
+                    <div class="flex gap-2 mb-4">
+
+                        <a
+                            href="{{ route('pengamal.sync') }}"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                            onclick="return confirm('Sinkronkan data pengamal dari server?')">
+                            🔄 Sinkron Data
+                        </a>
+
+                    </div>
                     @endrole
 
                     @role('admin-kabupaten')
