@@ -84,7 +84,7 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
 
       <div class="p-6">
 
-        <form action="{{ route('laporan.download') }}" method="GET">
+        <form action="{{ route('laporan.download') }}" method="GET" target="_blank">
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
