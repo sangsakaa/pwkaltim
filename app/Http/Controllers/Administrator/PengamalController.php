@@ -498,40 +498,82 @@ class PengamalController extends Controller
                 );
             }
 
-            $items = $response->json();
+            $items = $response->json('data')
+                ?? $response->json();
+
+            if (!is_array($items)) {
+                return back()->with(
+                    'error',
+                    'Format API tidak valid.'
+                );
+            }
 
             $total = 0;
 
             foreach ($items as $item) {
 
+                if (!is_array($item)) {
+                    continue;
+                }
+
                 Pengamal::updateOrCreate(
                     [
-                        'nik' => $item['nik']
+                        'nik' => data_get($item, 'nik')
                     ],
                     [
-                        'nama_lengkap' => $item['nama_lengkap'],
-                        'tanggal_lahir' => $item['tanggal_lahir'],
-                        'tempat_lahir' => $item['tempat_lahir'],
-                        'jenis_kelamin' => $item['jenis_kelamin'],
-                        'agama' => $item['agama'],
+                        'nama_lengkap' =>
+                        data_get($item, 'nama_lengkap'),
 
-                        'provinsi' => $item['provinsi'],
-                        'kabupaten' => $item['kabupaten'],
-                        'kecamatan' => $item['kecamatan'],
-                        'desa' => $item['desa'],
+                        'tanggal_lahir' =>
+                        data_get($item, 'tanggal_lahir'),
 
-                        'alamat' => $item['alamat'],
-                        'rt' => $item['rt'],
-                        'rw' => $item['rw'],
+                        'tempat_lahir' =>
+                        data_get($item, 'tempat_lahir'),
 
-                        'no_hp' => $item['no_hp'],
-                        'email' => $item['email'],
+                        'jenis_kelamin' =>
+                        data_get($item, 'jenis_kelamin'),
 
-                        'pekerjaan' => $item['pekerjaan'],
-                        'status_perkawinan'
-                        => $item['status_perkawinan'],
+                        'agama' =>
+                        data_get($item, 'agama'),
 
-                        'foto' => $item['foto'],
+                        'provinsi' =>
+                        data_get($item, 'provinsi'),
+
+                        'kabupaten' =>
+                        data_get($item, 'kabupaten'),
+
+                        'kecamatan' =>
+                        data_get($item, 'kecamatan'),
+
+                        'desa' =>
+                        data_get($item, 'desa'),
+
+                        'alamat' =>
+                        data_get($item, 'alamat'),
+
+                        'rt' =>
+                        data_get($item, 'rt'),
+
+                        'rw' =>
+                        data_get($item, 'rw'),
+
+                        'no_hp' =>
+                        data_get($item, 'no_hp'),
+
+                        'email' =>
+                        data_get($item, 'email'),
+
+                        'pekerjaan' =>
+                        data_get($item, 'pekerjaan'),
+
+                        'status_perkawinan' =>
+                        data_get(
+                            $item,
+                            'status_perkawinan'
+                        ),
+
+                        'foto' =>
+                        data_get($item, 'foto'),
                     ]
                 );
 
@@ -540,13 +582,13 @@ class PengamalController extends Controller
 
             return back()->with(
                 'success',
-                "Sinkron berhasil ({$total} data)."
+                "Sinkron berhasil {$total} data."
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             return back()->with(
                 'error',
-                'Gagal sinkron: ' . $e->getMessage()
+                $e->getMessage()
             );
         }
     }
