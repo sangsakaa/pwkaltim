@@ -74,7 +74,9 @@ Route::get('/get-villages/{district}', [PengamalController::class, 'getVillages'
 Route::get(
     '/pengamal/sync',
     [PengamalController::class, 'sync']
-)->name('pengamal.sync');
+)
+    ->middleware('role:superAdmin|admin-provinsi')
+    ->name('pengamal.sync');
 
 /*
 |--------------------------------------------------------------------------
