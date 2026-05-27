@@ -482,6 +482,8 @@ class PengamalController extends Controller
             => 'Grafik Pengamal per Desa',
         };
     }
+    use Illuminate\Support\Facades\Http;
+
     public function sync()
     {
         try {
@@ -501,88 +503,60 @@ class PengamalController extends Controller
             $items = $response->json('data')
                 ?? $response->json();
 
-            if (!is_array($items)) {
-                return back()->with(
-                    'error',
-                    'Format API tidak valid.'
-                );
-            }
-
-            $total = 0;
+            $inserted = 0;
+            $updated = 0;
 
             foreach ($items as $item) {
 
-                if (!is_array($item)) {
-                    continue;
+                $data = [
+                    'nama_lengkap'       => data_get($item, 'nama_lengkap'),
+                    'tanggal_lahir'      => data_get($item, 'tanggal_lahir'),
+                    'tempat_lahir'       => data_get($item, 'tempat_lahir'),
+                    'jenis_kelamin'      => data_get($item, 'jenis_kelamin'),
+                    'agama'              => data_get($item, 'agama'),
+
+                    'provinsi'           => data_get($item, 'provinsi'),
+                    'kabupaten'          => data_get($item, 'kabupaten'),
+                    'kecamatan'          => data_get($item, 'kecamatan'),
+                    'desa'               => data_get($item, 'desa'),
+
+                    'alamat'             => data_get($item, 'alamat'),
+                    'rt'                 => data_get($item, 'rt'),
+                    'rw'                 => data_get($item, 'rw'),
+
+                    'no_hp'              => data_get($item, 'no_hp'),
+                    'email'              => data_get($item, 'email'),
+
+                    'pekerjaan'          => data_get($item, 'pekerjaan'),
+                    'status_perkawinan'  => data_get($item, 'status_perkawinan'),
+                    'foto'               => data_get($item, 'foto'),
+
+                    'nik'                => data_get($item, 'nik'),
+                ];
+
+                $nik = data_get($item, 'nik');
+
+                // kalau ada NIK → update/create
+                if (!empty($nik)) {
+
+                    $pengamal = Pengamal::updateOrCreate(
+                        ['nik' => $nik],
+                        $data
+                    );
+
+                    $pengamal->wasRecentlyCreated
+                        ? $inserted++
+                        : $updated++;
+                } else {
+                    // kalau nik kosong → langsung create
+                    Pengamal::create($data);
+                    $inserted++;
                 }
-
-                Pengamal::updateOrCreate(
-                    [
-                        'nik' => data_get($item, 'nik')
-                    ],
-                    [
-                        'nama_lengkap' =>
-                        data_get($item, 'nama_lengkap'),
-
-                        'tanggal_lahir' =>
-                        data_get($item, 'tanggal_lahir'),
-
-                        'tempat_lahir' =>
-                        data_get($item, 'tempat_lahir'),
-
-                        'jenis_kelamin' =>
-                        data_get($item, 'jenis_kelamin'),
-
-                        'agama' =>
-                        data_get($item, 'agama'),
-
-                        'provinsi' =>
-                        data_get($item, 'provinsi'),
-
-                        'kabupaten' =>
-                        data_get($item, 'kabupaten'),
-
-                        'kecamatan' =>
-                        data_get($item, 'kecamatan'),
-
-                        'desa' =>
-                        data_get($item, 'desa'),
-
-                        'alamat' =>
-                        data_get($item, 'alamat'),
-
-                        'rt' =>
-                        data_get($item, 'rt'),
-
-                        'rw' =>
-                        data_get($item, 'rw'),
-
-                        'no_hp' =>
-                        data_get($item, 'no_hp'),
-
-                        'email' =>
-                        data_get($item, 'email'),
-
-                        'pekerjaan' =>
-                        data_get($item, 'pekerjaan'),
-
-                        'status_perkawinan' =>
-                        data_get(
-                            $item,
-                            'status_perkawinan'
-                        ),
-
-                        'foto' =>
-                        data_get($item, 'foto'),
-                    ]
-                );
-
-                $total++;
             }
 
             return back()->with(
                 'success',
-                "Sinkron berhasil {$total} data."
+                "Sinkron selesai. Insert: {$inserted}, Update: {$updated}"
             );
         } catch (\Throwable $e) {
 
