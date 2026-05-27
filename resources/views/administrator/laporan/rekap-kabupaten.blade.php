@@ -1,5 +1,4 @@
 @php
-use Illuminate\Support\Str;
 
 $user = auth()->user();
 
@@ -30,12 +29,14 @@ $wilayah = $user->province->name;
   {{-- HEADER --}}
   <x-slot name="header">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+
       <h2 class="text-xl font-bold text-gray-800">
         Rekap Kabupaten -
         <span class="text-green-700">
           {{ $wilayah }}
         </span>
       </h2>
+
     </div>
   </x-slot>
 
@@ -49,6 +50,7 @@ $wilayah = $user->province->name;
         class="w-12 h-12 rounded-full p-1">
 
       <div>
+
         <h3 class="text-lg font-bold uppercase">
           {{ $wilayah }}
         </h3>
@@ -56,6 +58,7 @@ $wilayah = $user->province->name;
         <p class="text-sm text-green-100">
           Rekap Data Pengamal Berdasarkan Kabupaten
         </p>
+
       </div>
     </div>
 
@@ -83,12 +86,201 @@ $wilayah = $user->province->name;
         </div>
 
         <div>
+
           <span class="text-sm text-gray-500">
-            Total Kabupaten:
+
+            Total Kabupaten :
+
             <span class="font-semibold text-green-700">
               {{ $rekap->count() }}
             </span>
+
           </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {{-- INFORMASI KRITERIA --}}
+    <div class="bg-blue-50 border border-blue-200 rounded-xl shadow-sm p-5">
+
+      <div class="flex items-start gap-3">
+
+        <div class="text-2xl">
+          ℹ️
+        </div>
+
+        <div class="flex-1">
+
+          <h3 class="font-bold text-blue-900 text-lg">
+            Informasi Pemetaan Data Pengamal
+          </h3>
+
+          <p class="text-sm text-blue-700 mt-1 leading-relaxed">
+
+            Data rekap pengamal dikelompokkan berdasarkan
+            <strong>usia</strong> dan
+            <strong>jenis kelamin</strong>.
+
+            Data yang ditampilkan mengikuti wilayah akun
+            yang sedang login
+            (<strong>{{ $wilayah }}</strong>).
+
+          </p>
+
+          <div class="mt-4 overflow-x-auto">
+
+            <table class="min-w-full text-sm border border-blue-200 rounded-lg overflow-hidden">
+
+              <thead class="bg-blue-600 text-white">
+
+                <tr>
+
+                  <th class="px-4 py-3 text-left">
+                    Kriteria Usia
+                  </th>
+
+                  <th class="px-4 py-3 text-left">
+                    Jenis Kelamin
+                  </th>
+
+                  <th class="px-4 py-3 text-left">
+                    Kategori
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody class="bg-white divide-y divide-blue-100">
+
+                <tr>
+
+                  <td class="px-4 py-3">
+                    &lt; 11 Tahun
+                  </td>
+
+                  <td class="px-4 py-3">
+                    Semua
+                  </td>
+
+                  <td class="px-4 py-3 font-medium text-green-700">
+                    Kanak-kanak
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td class="px-4 py-3">
+                    11 - 35 Tahun
+                  </td>
+
+                  <td class="px-4 py-3">
+                    Semua
+                  </td>
+
+                  <td class="px-4 py-3 font-medium text-green-700">
+                    Remaja
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td class="px-4 py-3">
+                    &gt; 35 Tahun
+                  </td>
+
+                  <td class="px-4 py-3">
+                    Laki-laki (L)
+                  </td>
+
+                  <td class="px-4 py-3 font-medium text-green-700">
+                    Bapak-bapak
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td class="px-4 py-3">
+                    &gt; 35 Tahun
+                  </td>
+
+                  <td class="px-4 py-3">
+                    Perempuan (P)
+                  </td>
+
+                  <td class="px-4 py-3 font-medium text-green-700">
+                    Ibu-ibu
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td class="px-4 py-3">
+                    Tidak memiliki tanggal lahir
+                  </td>
+
+                  <td class="px-4 py-3">
+                    Semua
+                  </td>
+
+                  <td class="px-4 py-3 font-medium text-gray-600">
+                    Tidak diketahui
+                  </td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+          {{-- NOTE ROLE --}}
+          <div class="mt-4 text-sm text-blue-700">
+
+            @role('superAdmin')
+            <p>
+              Menampilkan seluruh data pengamal dari semua wilayah.
+            </p>
+            @endrole
+
+            @role('admin-provinsi')
+            <p>
+              Menampilkan data berdasarkan wilayah provinsi
+              <strong>{{ $wilayah }}</strong>.
+            </p>
+            @endrole
+
+            @role('admin-kabupaten')
+            <p>
+              Menampilkan data berdasarkan wilayah kabupaten
+              <strong>{{ $wilayah }}</strong>.
+            </p>
+            @endrole
+
+            @role('admin-kecamatan')
+            <p>
+              Menampilkan data berdasarkan wilayah kecamatan
+              <strong>{{ $wilayah }}</strong>.
+            </p>
+            @endrole
+
+            @role('admin-desa')
+            <p>
+              Menampilkan data berdasarkan wilayah desa
+              <strong>{{ $wilayah }}</strong>.
+            </p>
+            @endrole
+
+          </div>
+
         </div>
 
       </div>
@@ -197,6 +389,7 @@ $wilayah = $user->province->name;
             @empty
 
             <tr>
+
               <td
                 colspan="8"
                 class="text-center py-8 text-gray-500">
@@ -204,21 +397,18 @@ $wilayah = $user->province->name;
                 Tidak ada data
 
               </td>
+
             </tr>
 
             @endforelse
 
           </tbody>
 
-          {{-- FOOTER TOTAL --}}
           <tfoot class="bg-gray-100 font-bold border-t">
 
             <tr>
 
-              <td
-                colspan="2"
-                class="px-4 py-4 text-center">
-
+              <td colspan="2" class="px-4 py-4 text-center">
                 TOTAL
               </td>
 
