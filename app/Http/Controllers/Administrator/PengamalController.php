@@ -482,7 +482,7 @@ class PengamalController extends Controller
             => 'Grafik Pengamal per Desa',
         };
     }
-    use Illuminate\Support\Facades\Http;
+
 
     public function sync()
     {
