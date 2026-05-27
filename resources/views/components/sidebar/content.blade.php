@@ -35,6 +35,10 @@
             title="Data Pengamal"
             href="{{ route('pengamal.index') }}"
             :active="request()->routeIs('pengamal.*')" />
+        <x-sidebar.sublink
+            title="Laporan File"
+            href="{{ route('laporan-file.index') }}"
+            :active="request()->routeIs('laporan-file.*')" />
     </x-sidebar.dropdown>
 
     {{-- POSTING --}}

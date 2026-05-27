@@ -151,6 +151,12 @@ Route::get('/laporan', [LaporanController::class, 'laporan'])
     ->middleware(['auth', 'verified'])
     ->name('laporan.laporan');
 
+Route::get('/laporan-file', [LaporanController::class, 'index'])
+    ->name('laporan-file.index');
+
+Route::get('/laporan/download', [LaporanController::class, 'downloadLaporan'])
+    ->name('laporan.download');
+
 /*
 |--------------------------------------------------------------------------
 | SURAT

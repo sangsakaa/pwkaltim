@@ -24,4 +24,8 @@ class Regency extends Model
     {
         return $this->hasMany(User::class, 'province_code', 'code');
     }
+    public function pengamal()
+    {
+        return $this->hasMany(Pengamal::class, 'kabupaten', 'code');
+    }
 }

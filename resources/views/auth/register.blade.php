@@ -32,7 +32,7 @@
             <div class="mt-3">
                 <a href="{{ route('pengamal.public.create') }}"
                     class="inline-block text-green-700 font-semibold hover:underline">
-                    ➜ Klik di sini untuk Pendaftaran Pengamal
+                    ➜ Klik di sini untuk Pendataan Pengamal
                 </a>
             </div>
         </div>
