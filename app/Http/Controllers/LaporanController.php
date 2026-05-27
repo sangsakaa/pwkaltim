@@ -305,4 +305,91 @@ class LaporanController extends Controller
 
         return $pdf->stream($namaFile);
     }
+    public function rekapKabupaten()
+    {
+        $user = Auth::user();
+
+        if (!$user->hasAnyRole([
+            'admin-provinsi',
+            'admin-kabupaten',
+            'superAdmin'
+        ])) {
+            abort(403, 'Unauthorized');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | QUERY DASAR
+    |--------------------------------------------------------------------------
+    */
+        $query = Pengamal::query()
+            ->with('regency');
+
+        $this->filterWilayah($query, $user);
+
+        $pengamal = $query->get();
+
+        /*
+    |--------------------------------------------------------------------------
+    | REKAP PER KABUPATEN
+    |--------------------------------------------------------------------------
+    */
+        $rekap = [];
+
+        foreach ($pengamal as $item) {
+
+            $kabupaten = $item->regency->name ?? 'Tanpa Kabupaten';
+
+            if (!isset($rekap[$kabupaten])) {
+
+                $rekap[$kabupaten] = [
+                    'kabupaten'         => $kabupaten,
+                    'kanak_kanak'       => 0,
+                    'remaja'            => 0,
+                    'bapak_bapak'       => 0,
+                    'ibu_ibu'           => 0,
+                    'tidak_diketahui'   => 0,
+                    'total'             => 0,
+                ];
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | HITUNG KATEGORI
+        |--------------------------------------------------------------------------
+        */
+            $usia = $item->tanggal_lahir
+                ? Carbon::parse($item->tanggal_lahir)->age
+                : null;
+
+            $jk = strtolower(trim($item->jenis_kelamin ?? ''));
+
+            if (!$usia) {
+
+                $rekap[$kabupaten]['tidak_diketahui']++;
+            } elseif ($usia < 11) {
+
+                $rekap[$kabupaten]['kanak_kanak']++;
+            } elseif ($usia <= 35) {
+
+                $rekap[$kabupaten]['remaja']++;
+            } else {
+
+                if ($jk === 'l') {
+                    $rekap[$kabupaten]['bapak_bapak']++;
+                } else {
+                    $rekap[$kabupaten]['ibu_ibu']++;
+                }
+            }
+
+            $rekap[$kabupaten]['total']++;
+        }
+
+        return view(
+            'administrator.laporan.rekap-kabupaten',
+            [
+                'rekap' => collect($rekap)->sortKeys(),
+            ]
+        );
+    }
 }

@@ -39,6 +39,10 @@
             title="Laporan File"
             href="{{ route('laporan-file.index') }}"
             :active="request()->routeIs('laporan-file.*')" />
+        <x-sidebar.sublink
+            title="Laporan Per Kabupaten"
+            href="{{ route('laporan.rekap-kabupaten') }}"
+            :active="request()->routeIs('laporan.rekap-kabupaten.*')" />
     </x-sidebar.dropdown>
 
     {{-- POSTING --}}

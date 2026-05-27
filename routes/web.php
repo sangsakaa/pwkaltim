@@ -77,6 +77,10 @@ Route::get(
 )
     ->middleware('role:superAdmin|admin-provinsi')
     ->name('pengamal.sync');
+Route::get(
+    '/laporan/rekap-kabupaten',
+    [LaporanController::class, 'rekapKabupaten']
+)->name('laporan.rekap-kabupaten');
 
 /*
 |--------------------------------------------------------------------------
