@@ -8,8 +8,8 @@ Route::middleware([
   'role:superAdmin|admin-provinsi|admin-kabupaten|admin-kecamatan|admin-desa'
 ])->group(function () {
 
-  Route::get(
-    '/pengamal',
-    [PengamalApiController::class, 'index']
-  );
+  // Route::get(
+  //   '/pengamal',
+  //   [PengamalApiController::class, 'index']
+  // );
 });
