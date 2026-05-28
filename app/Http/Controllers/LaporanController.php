@@ -392,4 +392,119 @@ class LaporanController extends Controller
             ]
         );
     }
+    public function wilayahBelumAdaPengamal()
+    {
+        $user = Auth::user();
+
+        if (!$user->hasAnyRole([
+            'admin-provinsi',
+            'admin-kabupaten',
+            'superAdmin'
+        ])) {
+            abort(403, 'Unauthorized');
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | QUERY KABUPATEN SESUAI LOGIN
+    |--------------------------------------------------------------------------
+    */
+        $kabupatenQuery = Regency::query();
+
+        // admin kabupaten hanya wilayahnya
+        if ($user->hasRole('admin-kabupaten')) {
+            $kabupatenQuery->where('code', $user->code);
+        }
+
+        // admin provinsi / super admin
+        if ($user->hasRole('admin-provinsi')) {
+            $kabupatenQuery->where('code', 'like', '64.%');
+        }
+
+        $kabupatenList = $kabupatenQuery
+            ->orderBy('name')
+            ->get();
+
+        $wilayahKosong = [];
+
+        foreach ($kabupatenList as $kabupaten) {
+
+            /*
+        |--------------------------------------------------------------------------
+        | KECAMATAN BERDASARKAN regency_code
+        |--------------------------------------------------------------------------
+        */
+            $kecamatanList = District::where(
+                'regency_code',
+                $kabupaten->code
+            )
+                ->orderBy('name')
+                ->get();
+
+            $kecamatanKosong = [];
+
+            foreach ($kecamatanList as $kecamatan) {
+
+                /*
+            |--------------------------------------------------------------------------
+            | AMBIL DESA
+            |--------------------------------------------------------------------------
+            */
+                $desaList = Village::where(
+                    'district_code',
+                    $kecamatan->code
+                )->orderBy('name')->get();
+
+                $desaKosong = [];
+
+                foreach ($desaList as $desa) {
+
+                    /*
+                |--------------------------------------------------------------------------
+                | CEK ADA PENGAMAL ATAU TIDAK
+                |--------------------------------------------------------------------------
+                | tabel pengamal menyimpan kode desa di kolom "desa"
+                */
+                    $adaPengamal = Pengamal::where(
+                        'desa',
+                        $desa->code
+                    )->exists();
+
+                    if (!$adaPengamal) {
+                        $desaKosong[] = $desa->name;
+                    }
+                }
+
+                /*
+            |--------------------------------------------------------------------------
+            | HANYA KECAMATAN YANG ADA DESA KOSONG
+            |--------------------------------------------------------------------------
+            */
+                if (!empty($desaKosong)) {
+
+                    $kecamatanKosong[] = [
+                        'nama' => $kecamatan->name,
+                        'desa' => $desaKosong,
+                    ];
+                }
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | HANYA KABUPATEN YANG ADA DATA
+        |--------------------------------------------------------------------------
+        */
+            if (!empty($kecamatanKosong)) {
+
+                $wilayahKosong[$kabupaten->name] = [
+                    'kecamatan' => $kecamatanKosong
+                ];
+            }
+        }
+
+        return view(
+            'administrator.laporan.wilayah-kosong',
+            compact('wilayahKosong')
+        );
+    }
 }

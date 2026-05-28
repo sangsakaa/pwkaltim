@@ -43,6 +43,11 @@
             title="Laporan Per Kabupaten"
             href="{{ route('laporan.rekap-kabupaten') }}"
             :active="request()->routeIs('laporan.rekap-kabupaten.*')" />
+        <x-sidebar.sublink
+            title="Wilayah Belum Ada Pengamal"
+            href="{{ route('laporan.wilayah-kosong') }}"
+            :active="request()->routeIs('laporan.wilayah-kosong')" />
+
     </x-sidebar.dropdown>
 
     {{-- POSTING --}}

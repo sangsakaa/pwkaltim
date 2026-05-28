@@ -81,7 +81,10 @@ Route::get(
     '/laporan/rekap-kabupaten',
     [LaporanController::class, 'rekapKabupaten']
 )->name('laporan.rekap-kabupaten');
-
+Route::get(
+    '/laporan/wilayah-kosong',
+    [LaporanController::class, 'wilayahBelumAdaPengamal']
+)->name('laporan.wilayah-kosong');
 /*
 |--------------------------------------------------------------------------
 | PROFILE
