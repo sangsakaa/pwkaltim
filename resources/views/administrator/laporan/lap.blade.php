@@ -248,7 +248,9 @@
           <!-- {{ $d->regency->name ?? '-' }} -->
         </td>
 
-        <td class="center">{{ $d->no_hp ?? '-' }}</td>
+        <td class="center">
+          {{ $d->no_hp ? preg_replace('/^\+62/', '0', $d->no_hp) : '' }}
+        </td>
       </tr>
 
       @endforeach
