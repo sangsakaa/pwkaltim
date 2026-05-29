@@ -143,8 +143,11 @@ $wilayah = $user->province->name;
                             </td>
 
                             <td class="px-4 py-2">
-                                <a href="/pengamal/show/{{ $item->id }}" class="text-green-700">
+                                <a href="/pengamal/show/{{ $item->id }}"
+                                    class="{{ $item->tanggal_lahir ? 'text-green-700' : 'text-red-600 font-semibold' }}">
+
                                     {{ $item->nama_lengkap }}
+
                                 </a>
                             </td>
 
