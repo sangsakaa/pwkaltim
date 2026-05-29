@@ -229,8 +229,8 @@
         <td class="center">{{ $i + 1 }}</td>
 
         {{-- NAMA (RED jika DUPLIKAT) --}}
-        <td class="uppercase {{ $isDuplicate ? 'text-red' : '' }}">
-          {{ $d->nama_lengkap }}
+        <td class="{{ $isDuplicate ? 'text-red' : '' }}">
+          {{ ucwords(strtolower($d->nama_lengkap)) }}
         </td>
 
         {{-- TEMPAT & TANGGAL LAHIR (BLUE jika kosong) --}}
