@@ -249,7 +249,11 @@
         </td>
 
         <td class="center">
-          {{ $d->no_hp ? preg_replace('/^\+62/', '0', $d->no_hp) : '' }}
+          {{
+        $d->no_hp
+        ? preg_replace('/^\+62/', '0', str_replace([' ', '-'], '', trim($d->no_hp)))
+        : ''
+    }}
         </td>
       </tr>
 
