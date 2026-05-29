@@ -204,7 +204,7 @@
         <th>Nama</th>
         <th>Tempat, Tanggal Lahir</th>
         <th>JK</th>
-        <th>Agama</th>
+        <!-- <th>Agama</th> -->
         <th>Alamat</th>
         <th>HP</th>
       </tr>
@@ -240,7 +240,7 @@
         </td>
 
         <td class="center">{{ $d->jenis_kelamin ?? '-' }}</td>
-        <td class="center">{{ $d->agama ?? '-' }}</td>
+        <!-- <td class="center">{{ $d->agama ?? '-' }}</td> -->
 
         <td>
           {{ $d->village->name ?? '-' }},
