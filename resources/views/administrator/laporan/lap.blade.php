@@ -245,7 +245,7 @@
         <td>
           {{ $d->village->name ?? '-' }},
           {{ $d->district->name ?? '-' }},
-          {{ $d->regency->name ?? '-' }}
+          <!-- {{ $d->regency->name ?? '-' }} -->
         </td>
 
         <td class="center">{{ $d->no_hp ?? '-' }}</td>
