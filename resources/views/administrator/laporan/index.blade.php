@@ -38,59 +38,74 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
 
   {{-- HEADER --}}
   <x-slot name="header">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-      <h2 class="text-xl font-bold text-gray-800">
-        Download Laporan -
-        <span class="text-green-700">
+    <div class="flex flex-col gap-1">
+      <h2 class="text-2xl font-bold text-gray-800">
+        Download Laporan
+      </h2>
+
+      <p class="text-sm text-gray-500">
+        Wilayah:
+        <span class="font-semibold text-green-700">
           {{ $wilayah }}
         </span>
-      </h2>
+      </p>
     </div>
   </x-slot>
 
-  <div class="space-y-5">
+  <div class="space-y-6">
 
-    {{-- HERO CARD --}}
-    <div
-      class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-2xl shadow-lg p-5 flex items-center gap-4">
+    {{-- HERO --}}
+    <div class="rounded-3xl bg-gradient-to-r from-green-800 to-green-600 shadow-lg overflow-hidden">
 
-      <img
-        src="{{ asset('image/logo.png') }}"
-        class="w-14 h-14  p-2 shadow">
+      <div class="flex flex-col sm:flex-row items-center gap-5 p-6 text-white">
 
-      <div>
-        <h3 class="text-xl font-bold uppercase">
-          {{ $wilayah }}
-        </h3>
+        <div class="shrink-0">
+          <img
+            src="{{ asset('image/logo.png') }}"
+            alt="Logo"
+            class="w-16 h-16 rounded-2xl bg-white p-2 shadow-md">
+        </div>
 
-        <p class="text-green-100 text-sm">
-          Download laporan pengamal berdasarkan wilayah
-        </p>
+        <div class="text-center sm:text-left">
+          <h3 class="text-xl md:text-2xl font-bold uppercase">
+            {{ $wilayah }}
+          </h3>
+
+          <p class="text-green-100 text-sm mt-1">
+            Download laporan pengamal berdasarkan wilayah
+          </p>
+        </div>
+
       </div>
     </div>
 
     {{-- FILTER CARD --}}
-    <div class="bg-white rounded-2xl shadow border border-gray-100">
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
 
-      <div class="border-b px-6 py-4">
+      <div class="border-b px-6 py-5">
         <h3 class="text-lg font-bold text-gray-800">
           Filter Wilayah Laporan
         </h3>
 
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-gray-500 mt-1">
           Pilih wilayah untuk mengunduh laporan PDF
         </p>
       </div>
 
       <div class="p-6">
 
-        <form action="{{ route('laporan.download') }}" method="GET" target="_blank">
+        <form
+          action="{{ route('laporan.download') }}"
+          method="GET"
+          target="_blank">
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
             {{-- KABUPATEN --}}
             <div>
-              <label class="block mb-2 text-sm font-semibold text-gray-700">
+              <label
+                for="kabupaten"
+                class="block mb-2 text-sm font-semibold text-gray-700">
                 Kabupaten
               </label>
 
@@ -108,7 +123,6 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
                 <option
                   value="{{ $item->code }}"
                   @selected($selectedKabupaten==$item->code)>
-
                   {{ $item->name }}
                 </option>
                 @endforeach
@@ -124,7 +138,9 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
 
             {{-- KECAMATAN --}}
             <div>
-              <label class="block mb-2 text-sm font-semibold text-gray-700">
+              <label
+                for="kecamatan"
+                class="block mb-2 text-sm font-semibold text-gray-700">
                 Kecamatan
               </label>
 
@@ -143,7 +159,6 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
                   value="{{ $item->code }}"
                   data-kabupaten="{{ substr($item->code, 0, 5) }}"
                   @selected($selectedKecamatan==$item->code)>
-
                   {{ $item->name }}
                 </option>
                 @endforeach
@@ -159,7 +174,9 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
 
             {{-- DESA --}}
             <div>
-              <label class="block mb-2 text-sm font-semibold text-gray-700">
+              <label
+                for="desa"
+                class="block mb-2 text-sm font-semibold text-gray-700">
                 Desa
               </label>
 
@@ -178,7 +195,6 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
                   value="{{ $item->code }}"
                   data-kecamatan="{{ substr($item->code, 0, 8) }}"
                   @selected($selectedDesa==$item->code)>
-
                   {{ $item->name }}
                 </option>
                 @endforeach
@@ -194,26 +210,69 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
 
           </div>
 
-          {{-- BUTTON --}}
+          {{-- ACTION BUTTON --}}
           <div class="flex flex-wrap gap-3 mt-8">
 
             <button
               type="submit"
-              class="inline-flex items-center px-5 py-3 rounded-xl bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition">
-
+              class="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-red-600 text-white text-sm font-semibold shadow hover:bg-red-700 transition">
               Download PDF
             </button>
 
             <a
               href="{{ route('laporan-file.index') }}"
-              class="inline-flex items-center px-5 py-3 rounded-xl bg-gray-600 text-white text-sm font-semibold shadow hover:bg-gray-700 transition">
-
+              class="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-gray-600 text-white text-sm font-semibold shadow hover:bg-gray-700 transition">
               Reset Filter
             </a>
 
           </div>
 
         </form>
+      </div>
+    </div>
+
+    {{-- EXPORT KATEGORI --}}
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
+
+      <div class="mb-5">
+        <h3 class="text-lg font-bold text-gray-800">
+          Export Berdasarkan Kategori
+        </h3>
+
+        <p class="text-sm text-gray-500">
+          Download laporan kategori pengamal
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+
+        <a
+          href="{{ route('laporan.export-kategori', 'kanak-kanak') }}"
+          target="_blank"
+          class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:opacity-90 transition">
+          Export Kanak-kanak
+        </a>
+
+        <a
+          href="{{ route('laporan.export-kategori', 'remaja') }}"
+          target="_blank"
+          class="px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-medium hover:opacity-90 transition">
+          Export Remaja
+        </a>
+
+        <a
+          href="{{ route('laporan.export-kategori', 'bapak-bapak') }}"
+          target="_blank"
+          class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:opacity-90 transition">
+          Export Bapak-bapak
+        </a>
+
+        <a
+          href="{{ route('laporan.export-kategori', 'ibu-ibu') }}"
+          target="_blank"
+          class="px-4 py-2 rounded-xl bg-pink-600 text-white text-sm font-medium hover:opacity-90 transition">
+          Export Ibu-ibu
+        </a>
 
       </div>
     </div>
@@ -230,15 +289,13 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
 
       function filterKecamatan(reset = false) {
 
-        const selectedKabupaten =
-          kabupaten?.value || '';
+        const selectedKabupaten = kabupaten?.value || '';
 
         [...kecamatan.options].forEach(option => {
 
           if (!option.value) return;
 
-          const parentCode =
-            option.dataset.kabupaten;
+          const parentCode = option.dataset.kabupaten;
 
           option.hidden =
             selectedKabupaten &&
@@ -255,15 +312,13 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
 
       function filterDesa(reset = false) {
 
-        const selectedKecamatan =
-          kecamatan?.value || '';
+        const selectedKecamatan = kecamatan?.value || '';
 
         [...desa.options].forEach(option => {
 
           if (!option.value) return;
 
-          const parentCode =
-            option.dataset.kecamatan;
+          const parentCode = option.dataset.kecamatan;
 
           option.hidden =
             selectedKecamatan &&

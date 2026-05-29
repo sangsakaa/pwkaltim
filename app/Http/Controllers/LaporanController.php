@@ -507,4 +507,38 @@ class LaporanController extends Controller
             compact('wilayahKosong')
         );
     }
+    public function exportKategoriPdf($kategori)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->hasAnyRole(['admin-provinsi', 'admin-kabupaten', 'admin-kecamatan', 'admin-desa', 'superAdmin'])) {
+            abort(403, 'Unauthorized');
+        } /* |-------------------------------------------------------------------------- | VALIDASI KATEGORI |-------------------------------------------------------------------------- */
+        $allowedKategori = ['kanak-kanak', 'remaja', 'bapak-bapak', 'ibu-ibu',];
+        if (!in_array($kategori, $allowedKategori)) {
+            abort(404);
+        } /* |-------------------------------------------------------------------------- | QUERY |-------------------------------------------------------------------------- */
+        $query = Pengamal::query()->with(['province', 'regency', 'district', 'village']);
+        $this->filterWilayah($query, $user);
+        $pengamal = $query->orderBy('nama_lengkap')->get(); /* |-------------------------------------------------------------------------- | FILTER KATEGORI |-------------------------------------------------------------------------- */
+        $pengamal = $pengamal->filter(function ($item) use ($kategori) {
+            $usia = $item->tanggal_lahir ? Carbon::parse($item->tanggal_lahir)->age : null;
+            $jk = strtolower(trim($item->jenis_kelamin ?? ''));
+            if (!$usia) {
+                $hasil = 'tidak diketahui';
+            } elseif ($usia < 11) {
+                $hasil = 'kanak-kanak';
+            } elseif ($usia <= 35) {
+                $hasil = 'remaja';
+            } else {
+                $hasil = $jk === 'l' ? 'bapak-bapak' : 'ibu-ibu';
+            }
+            $item->usia = $usia;
+            $item->kategori = $hasil;
+            return $hasil === $kategori;
+        }); /* |-------------------------------------------------------------------------- | PDF |-------------------------------------------------------------------------- */
+        $pdf = Pdf::loadView('administrator.laporan.kategori-pdf', ['pengamal' => $pengamal, 'kategori' => ucfirst($kategori)])->setPaper('a4', 'portrait');
+        $tanggal = now()->format('Y-m-d');
+        $fileName = "laporan-{$kategori}-{$tanggal}.pdf";
+        return $pdf->stream($fileName);
+    }
 }

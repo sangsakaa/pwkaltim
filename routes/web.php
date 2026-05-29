@@ -85,6 +85,7 @@ Route::get(
     '/laporan/wilayah-kosong',
     [LaporanController::class, 'wilayahBelumAdaPengamal']
 )->name('laporan.wilayah-kosong');
+Route::get('/laporan/export-kategori/{kategori}', [LaporanController::class, 'exportKategoriPdf'])->name('laporan.export-kategori');
 /*
 |--------------------------------------------------------------------------
 | PROFILE
