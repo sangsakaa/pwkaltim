@@ -80,7 +80,6 @@
                                 </select>
 
                             </div>
-
                             <div class="grid grid-cols-2 gap-3">
 
                                 <input type="text" name="tempat_lahir"
@@ -89,8 +88,9 @@
                                     placeholder="Tempat Lahir">
 
                                 <input type="date" name="tanggal_lahir"
-                                    value="{{ old('tanggal_lahir', $pengamal->tanggal_lahir ?? '') }}"
+                                    value="{{ old('tanggal_lahir', isset($pengamal->tanggal_lahir) ? \Carbon\Carbon::parse($pengamal->tanggal_lahir)->format('Y-m-d') : '') }}"
                                     class="rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500">
+
 
                             </div>
 

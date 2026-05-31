@@ -48,11 +48,6 @@ class PengamalController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        /*
-        |--------------------------------------------------------------------------
-        | CHART
-        |--------------------------------------------------------------------------
-        */
         $chartConfig = match (true) {
             $user->hasRole('admin-provinsi') => [
                 'label' => 'regencies.name',
@@ -96,31 +91,19 @@ class PengamalController extends Controller
             )
             ->when(
                 $user->hasRole('admin-provinsi'),
-                fn($q) => $q->where(
-                    'pengamal.provinsi',
-                    $user->code
-                )
+            fn($q) => $q->where('pengamal.provinsi', $user->code)
             )
             ->when(
                 $user->hasRole('admin-kabupaten'),
-                fn($q) => $q->where(
-                    'pengamal.kabupaten',
-                    $user->code
-                )
+            fn($q) => $q->where('pengamal.kabupaten', $user->code)
             )
             ->when(
                 $user->hasRole('admin-kecamatan'),
-                fn($q) => $q->where(
-                    'pengamal.kecamatan',
-                    $user->code
-                )
+            fn($q) => $q->where('pengamal.kecamatan', $user->code)
             )
             ->when(
                 $user->hasRole('admin-desa'),
-                fn($q) => $q->where(
-                    'pengamal.desa',
-                    $user->code
-                )
+            fn($q) => $q->where('pengamal.desa', $user->code)
             )
             ->groupBy(
                 $chartConfig['key'],
@@ -176,13 +159,13 @@ class PengamalController extends Controller
     {
         $validated = $this->validatePengamal($request);
 
-        $validated['foto'] =
-            $request->hasFile('foto')
-            ? $request->file('foto')
-            ->store('foto/pengamal', 'public')
+        $validated['foto'] = $request->hasFile('foto')
+            ? $request->file('foto')->store('foto/pengamal', 'public')
             : null;
 
-        Pengamal::create($this->mapPengamalData($validated));
+        Pengamal::create(
+            $this->mapPengamalData($validated)
+        );
 
         if (!auth()->check()) {
             return back()->with(
@@ -211,17 +194,17 @@ class PengamalController extends Controller
         return view(
             'administrator.pengamal.edit',
             [
-                'pengamal'   => $pengamal,
-                'provinces'  => Province::where('code', 64)->get(),
-                'regencies'  => Regency::where(
+                'pengamal'  => $pengamal,
+                'provinces' => Province::where('code', 64)->get(),
+                'regencies' => Regency::where(
                     'province_code',
                     $pengamal->provinsi
                 )->get(),
-                'districts'  => District::where(
+                'districts' => District::where(
                     'regency_code',
                     $pengamal->kabupaten
                 )->get(),
-                'villages'   => Village::where(
+                'villages' => Village::where(
                     'district_code',
                     $pengamal->kecamatan
                 )->get(),
@@ -234,8 +217,10 @@ class PengamalController extends Controller
     | UPDATE
     |--------------------------------------------------------------------------
     */
-    public function update(Request $request, Pengamal $pengamal)
-    {
+    public function update(
+        Request $request,
+        Pengamal $pengamal
+    ) {
         $this->authorizePengamal($pengamal);
 
         $validated = $this->validatePengamal(
@@ -246,6 +231,7 @@ class PengamalController extends Controller
         $foto = $pengamal->foto;
 
         if ($request->hasFile('foto')) {
+
             if (
                 $foto &&
                 Storage::disk('public')->exists($foto)
@@ -333,8 +319,7 @@ class PengamalController extends Controller
         return view(
             'administrator.pengamal.create',
             [
-                'provinces' =>
-                Province::where('code', 64)->get(),
+                'provinces' => Province::where('code', 64)->get(),
                 'isPublic' => $isPublic,
             ]
         );
@@ -378,53 +363,26 @@ class PengamalController extends Controller
             'nik' => [
                 'nullable',
                 'digits:16',
-                Rule::unique(
-                    'pengamal',
-                    'nik'
-                )->ignore($id)
+                Rule::unique('pengamal', 'nik')
+                    ->ignore($id)
             ],
 
-            'nama_lengkap' =>
-            'required|string|max:255',
+            'nama_lengkap' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'tempat_lahir' => 'required|string|max:100',
+            'jenis_kelamin' => 'required|in:L,P',
+            'agama' => 'nullable|string|max:50',
 
-            'tanggal_lahir' =>
-            'nullable|date',
+            'province_code' => 'required|string',
+            'regency_code' => 'required|string',
+            'district_code' => 'required|string',
+            'village_code' => 'required|string',
 
-            'tempat_lahir' =>
-            'nullable|string|max:100',
-
-            'jenis_kelamin' =>
-            'nullable|in:L,P',
-
-            'agama' =>
-            'nullable|string|max:50',
-
-            'province_code' =>
-            'required|string',
-
-            'regency_code' =>
-            'required|string',
-
-            'district_code' =>
-            'required|string',
-
-            'village_code' =>
-            'required|string',
-
-            'alamat' =>
-            'nullable|string|max:500',
-
-            'no_hp' =>
-            'nullable|string|max:20',
-
-            'email' =>
-            'nullable|email|max:255',
-
-            'rt' =>
-            'nullable|string|max:5',
-
-            'rw' =>
-            'nullable|string|max:5',
+            'alamat' => 'nullable|string|max:500',
+            'no_hp' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'rt' => 'nullable|string|max:5',
+            'rw' => 'nullable|string|max:5',
 
             'foto' =>
             'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -433,7 +391,53 @@ class PengamalController extends Controller
             'nullable|string|max:100',
 
             'status_perkawinan' =>
-            'nullable|string|max:100',
+            'required|string|max:100',
+
+        ], [
+            'nama_lengkap.required' =>
+            'Nama lengkap wajib diisi.',
+
+            'jenis_kelamin.required' =>
+            'Jenis kelamin wajib dipilih.',
+
+            'tempat_lahir.required' =>
+            'Tempat lahir wajib diisi.',
+
+            'tanggal_lahir.required' =>
+            'Tanggal lahir wajib diisi.',
+
+            'province_code.required' =>
+            'Provinsi wajib dipilih.',
+
+            'regency_code.required' =>
+            'Kabupaten wajib dipilih.',
+
+            'district_code.required' =>
+            'Kecamatan wajib dipilih.',
+
+            'village_code.required' =>
+            'Desa wajib dipilih.',
+
+            'status_perkawinan.required' =>
+            'Status perkawinan wajib dipilih.',
+
+            'foto.image' =>
+            'File foto harus berupa gambar.',
+
+            'foto.mimes' =>
+            'Foto harus JPG, JPEG, atau PNG.',
+
+            'foto.max' =>
+            'Ukuran foto maksimal 2MB.',
+
+            'email.email' =>
+            'Format email tidak valid.',
+
+            'nik.digits' =>
+            'NIK harus 16 digit.',
+
+            'nik.unique' =>
+            'NIK sudah terdaftar.',
         ]);
     }
 
@@ -460,10 +464,7 @@ class PengamalController extends Controller
             'rw' => $validated['rw'] ?? null,
 
             'foto' => $validated['foto'] ?? null,
-
-            'pekerjaan' =>
-            $validated['pekerjaan'] ?? null,
-
+            'pekerjaan' => $validated['pekerjaan'] ?? null,
             'status_perkawinan' =>
             $validated['status_perkawinan'] ?? null,
         ];
@@ -481,89 +482,5 @@ class PengamalController extends Controller
             default
             => 'Grafik Pengamal per Desa',
         };
-    }
-
-
-    public function sync()
-    {
-        try {
-
-            $response = Http::timeout(60)
-                ->get(
-                    'https://pendataan.ypwkalimantantimur.my.id/api/pengamal'
-                );
-
-            if (!$response->successful()) {
-                return back()->with(
-                    'error',
-                    'Gagal mengambil data API.'
-                );
-            }
-
-            $items = $response->json('data')
-                ?? $response->json();
-
-            $inserted = 0;
-            $updated = 0;
-
-            foreach ($items as $item) {
-
-                $data = [
-                    'nama_lengkap'       => data_get($item, 'nama_lengkap'),
-                    'tanggal_lahir'      => data_get($item, 'tanggal_lahir'),
-                    'tempat_lahir'       => data_get($item, 'tempat_lahir'),
-                    'jenis_kelamin'      => data_get($item, 'jenis_kelamin'),
-                    'agama'              => data_get($item, 'agama'),
-
-                    'provinsi'           => data_get($item, 'provinsi'),
-                    'kabupaten'          => data_get($item, 'kabupaten'),
-                    'kecamatan'          => data_get($item, 'kecamatan'),
-                    'desa'               => data_get($item, 'desa'),
-
-                    'alamat'             => data_get($item, 'alamat'),
-                    'rt'                 => data_get($item, 'rt'),
-                    'rw'                 => data_get($item, 'rw'),
-
-                    'no_hp'              => data_get($item, 'no_hp'),
-                    'email'              => data_get($item, 'email'),
-
-                    'pekerjaan'          => data_get($item, 'pekerjaan'),
-                    'status_perkawinan'  => data_get($item, 'status_perkawinan'),
-                    'foto'               => data_get($item, 'foto'),
-
-                    'nik'                => data_get($item, 'nik'),
-                ];
-
-                $nik = data_get($item, 'nik');
-
-                // kalau ada NIK → update/create
-                if (!empty($nik)) {
-
-                    $pengamal = Pengamal::updateOrCreate(
-                        ['nik' => $nik],
-                        $data
-                    );
-
-                    $pengamal->wasRecentlyCreated
-                        ? $inserted++
-                        : $updated++;
-                } else {
-                    // kalau nik kosong → langsung create
-                    Pengamal::create($data);
-                    $inserted++;
-                }
-            }
-
-            return back()->with(
-                'success',
-                "Sinkron selesai. Insert: {$inserted}, Update: {$updated}"
-            );
-        } catch (\Throwable $e) {
-
-            return back()->with(
-                'error',
-                $e->getMessage()
-            );
-        }
     }
 }

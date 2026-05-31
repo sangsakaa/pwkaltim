@@ -1,300 +1,473 @@
 <x-app-layout>
 
     @php
+
+
     $user = auth()->user();
+    $isPublic = $isPublic ?? false;
 
-    $wilayah = 'Pendaftaran Pengamal';
+    $wilayah = match (true) {
+    $user?->village?->name =>
+    $user->village->name,
 
-    if ($user) {
-    if ($user->regency?->name) {
-    $wilayah = \Illuminate\Support\Str::startsWith($user->regency->name, 'Kab.')
-    ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
-    : $user->regency->name;
+    $user?->district?->name =>
+    'Kecamatan ' . $user->district->name,
 
-    } elseif ($user->district?->name) {
-    $wilayah = 'Kecamatan ' . $user->district->name;
+    $user?->regency?->name =>
+    Str::startsWith(
+    $user->regency->name,
+    'Kab.'
+    )
+    ? 'Kabupaten ' .
+    trim(substr(
+    $user->regency->name,
+    4
+    ))
+    : $user->regency->name,
 
-    } elseif ($user->village?->name) {
-    $wilayah = $user->village->name;
+    $user?->province?->name =>
+    $user->province->name,
 
-    } elseif ($user->province?->name) {
-    $wilayah = $user->province->name;
-    }
-    }
+    default =>
+    'Pendataan Pengamal',
+    };
+
+    $inputClass =
+    'w-full rounded-xl border-gray-300 shadow-sm
+    focus:border-green-600 focus:ring-green-600';
+
+    $errorClass =
+    'border-red-500 ring-2 ring-red-100';
     @endphp
 
-    @section('title', $isPublic ? 'Pendaftaran Pengamal' : 'PW ' . $wilayah)
+    @section(
+    'title',
+    $isPublic
+    ? 'Pendataan Pengamal'
+    : $wilayah
+    )
 
-    {{-- HEADER --}}
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-800">
-                @if($isPublic)
-                Pendataan Pengamal
-                @else
-                Tambah Pengamal -
-                <span class="text-green-700">{{ $wilayah }}</span>
-                @endif
-            </h2>
-        </div>
+        <h2 class="text-xl font-bold text-gray-800">
+            {{ $isPublic
+                ? 'Pendataan Pengamal'
+                : 'Tambah Pengamal - ' . $wilayah }}
+        </h2>
     </x-slot>
 
     <div class="space-y-6">
 
-        {{-- FLASH MESSAGE --}}
+        {{-- SUCCESS --}}
         @if(session('success'))
-        <div class="rounded-lg bg-green-100 border border-green-200 text-green-700 p-4">
+        <div class="rounded-xl border border-green-200 bg-green-50 p-4 text-green-700">
             {{ session('success') }}
         </div>
         @endif
 
-        {{-- MODE INFO --}}
-        @if($isPublic)
-        <div class="rounded-lg bg-blue-100 text-blue-700 p-4">
-            Form Pendataan Pengamal (Publik)
-        </div>
-        @else
-        <div class="rounded-lg bg-green-100 text-green-700 p-4">
-            Mode Admin
-        </div>
-        @endif
+        {{-- HEADER --}}
+        <div class="overflow-hidden rounded-2xl bg-gradient-to-r from-green-800 to-green-600 text-white shadow-lg">
+            <div class="flex items-center gap-4 p-5">
 
-        {{-- HEADER CARD --}}
-        <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow flex overflow-hidden">
+                <div class=" ">
+                    <img
+                        src="{{ asset('image/logo.png') }}"
+                        class="h-14 w-14"
+                        alt="Logo">
+                </div>
 
-            <div class="bg-green-900 flex items-center justify-center p-4">
-                <img src="{{ asset('image/logo.png') }}"
-                    class="w-12 h-12"
-                    alt="logo">
-            </div>
+                <div>
+                    <h3 class="text-lg font-bold uppercase">
+                        {{ $isPublic
+                            ? 'Pendataan Pengamal'
+                            :  $wilayah }}
+                    </h3>
 
-            <div class="p-4">
-                <h3 class="text-lg font-bold uppercase">
-                    {{ $isPublic ? 'Pendataan Pengamal' : 'PW ' . $wilayah }}
-                </h3>
-
-                <p class="text-sm text-green-100">
-                    Form input data pengamal
-                </p>
+                    <p class="text-sm text-green-100">
+                        Silakan isi data pengamal dengan benar
+                    </p>
+                </div>
             </div>
         </div>
 
-        {{-- NOTE FORM (TAMBAHAN BARU) --}}
-        <div class="rounded-lg bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 text-sm">
-            <p class="font-bold">⚠️ Perhatian Pengisian Form</p>
+        {{-- NOTE --}}
+        <div class="rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
+            <p class="font-semibold">
+                ⚠️ Informasi Pengisian
+            </p>
 
-            <ul class="list-disc ml-5 mt-2 space-y-1">
-                <li>Kolom dengan tanda <span class="text-red-600 font-bold">*</span> wajib diisi</li>
-                <li>Kolom tanpa tanda adalah <b>opsional (boleh dikosongkan)</b></li>
-                <li>Pastikan data sesuai KTP dan benar</li>
-
+            <ul class="ml-5 mt-2 list-disc space-y-1">
+                <li>
+                    Kolom bertanda
+                    <span class="font-bold text-red-500">*</span>
+                    wajib diisi
+                </li>
+                <li>
+                    Pesan kesalahan akan tampil di bawah kolom
+                </li>
+                <li>
+                    Pastikan data sesuai identitas
+                </li>
             </ul>
         </div>
 
-        {{-- FORM --}}
-        <form action="{{ route('pengamal.store') }}"
+        @php
+        $inputClass =
+        'w-full rounded-xl border-gray-300 bg-white shadow-sm
+        focus:border-green-600 focus:ring-green-600';
+
+        $errorClass =
+        'border-red-500 ring-2 ring-red-100';
+        @endphp
+
+        <form
+            action="{{ route('pengamal.store') }}"
             method="POST"
-            enctype="multipart/form-data">
+            enctype="multipart/form-data"
+            novalidate>
 
             @csrf
 
-            <div class="bg-white rounded-xl shadow p-6">
+            <div class="rounded-2xl bg-white p-6 shadow-lg">
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid gap-10 lg:grid-cols-2">
 
                     {{-- LEFT --}}
                     <div class="space-y-5">
 
-                        <h3 class="font-semibold border-b pb-2">
+                        <h3 class="border-b pb-2 text-lg font-semibold">
                             Data Pribadi
                         </h3>
 
-                        <input hidden type="text"
-                            name="nik"
-                            maxlength="16"
-                            value="{{ old('nik') }}">
+                        {{-- Nama --}}
+                        <div>
+                            <label class="mb-2 block text-sm font-medium">
+                                Nama Lengkap
+                                <span class="text-red-500">*</span>
+                            </label>
 
-                        <input type="text"
-                            name="nama_lengkap"
-                            placeholder="Nama Lengkap sesuai KTP *"
-                            value="{{ old('nama_lengkap') }}"
-                            required
-                            class="w-full rounded-lg border-gray-300 focus:border-green-600 focus:ring-green-600">
+                            <input
+                                type="text"
+                                name="nama_lengkap"
+                                value="{{ old('nama_lengkap') }}"
+                                placeholder="Masukkan nama lengkap"
+                                class="{{ $inputClass }}
+                        @error('nama_lengkap')
+                            {{ $errorClass }}
+                        @enderror">
 
-                        <div class="grid grid-cols-2 gap-3">
-
-                            <select required name="jenis_kelamin"
-                                class="rounded-lg border-gray-300">
-
-                                <option value="">Jenis Kelamin *</option>
-                                <option value="L">Laki-laki</option>
-                                <option value="P">Perempuan</option>
-
-                            </select>
-
-                            <select name="agama"
-                                class="rounded-lg border-gray-300">
-
-                                <option value="Islam">Agama (opsional)</option>
-
-                            </select>
-
+                            @error('nama_lengkap')
+                            <p class="mt-1 text-sm text-red-500">
+                                {{ $message }}
+                            </p>
+                            @enderror
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
+                        {{-- JK + Agama --}}
+                        <div class="grid gap-4 sm:grid-cols-2">
 
-                            <input required type="text"
-                                name="tempat_lahir"
-                                placeholder="Tempat Lahir *"
-                                value="{{ old('tempat_lahir') }}"
-                                class="rounded-lg border-gray-300">
-
-                            <input required type="date"
-                                name="tanggal_lahir"
-                                value="{{ old('tanggal_lahir') }}"
-                                class="rounded-lg border-gray-300">
-
-                        </div>
-
-                        {{-- WILAYAH --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+                            {{-- Jenis Kelamin --}}
                             <div>
-                                <label>Provinsi *</label>
-                                <select id="province" name="province_code" required class="w-full rounded-lg border-gray-300">
-                                    <option value="">Pilih Provinsi</option>
-                                    @foreach ($provinces as $province)
-                                    <option value="{{ $province->code }}">{{ $province->name }}</option>
+                                <label class="mb-2 block text-sm font-medium">
+                                    Jenis Kelamin
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <select
+                                    name="jenis_kelamin"
+                                    class="{{ $inputClass }}
+                            @error('jenis_kelamin')
+                                {{ $errorClass }}
+                            @enderror">
+
+                                    <option value="">
+                                        Pilih Jenis Kelamin
+                                    </option>
+
+                                    <option
+                                        value="L"
+                                        @selected(old('jenis_kelamin')==='L' )>
+                                        Laki-laki
+                                    </option>
+
+                                    <option
+                                        value="P"
+                                        @selected(old('jenis_kelamin')==='P' )>
+                                        Perempuan
+                                    </option>
+                                </select>
+
+                                @error('jenis_kelamin')
+                                <p class="mt-1 text-sm text-red-500">
+                                    {{ $message }}
+                                </p>
+                                @enderror
+                            </div>
+
+                            {{-- Agama --}}
+                            <div>
+                                <label class="mb-2 block text-sm font-medium">
+                                    Agama
+                                </label>
+
+                                <select
+                                    name="agama"
+                                    class="{{ $inputClass }}">
+
+                                    @foreach([
+                                    'Islam',
+                                    'Kristen',
+                                    'Katolik',
+                                    'Hindu',
+                                    'Buddha',
+                                    'Konghucu'
+                                    ] as $agama)
+
+                                    <option
+                                        value="{{ $agama }}"
+                                        @selected(old('agama', 'Islam' )==$agama)>
+                                        {{ $agama }}
+                                    </option>
+
                                     @endforeach
                                 </select>
-                            </div>
 
-                            <div>
-                                <label>Kabupaten *</label>
-                                <select id="regency" name="regency_code" required class="w-full rounded-lg border-gray-300">
-                                    <option value="">Pilih Kabupaten</option>
-                                </select>
+                                <p class="mt-1 text-xs text-gray-400">
+                                    Default agama: Islam
+                                </p>
                             </div>
-
-                            <div>
-                                <label>Kecamatan *</label>
-                                <select id="district" name="district_code" required class="w-full rounded-lg border-gray-300">
-                                    <option value="">Pilih Kecamatan</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label>Desa *</label>
-                                <select id="village" name="village_code" required class="w-full rounded-lg border-gray-300">
-                                    <option value="">Pilih Desa</option>
-                                </select>
-                            </div>
-
                         </div>
 
+                        {{-- TTL --}}
+                        <div class="grid gap-4 sm:grid-cols-2">
+
+                            <div>
+                                <label class="mb-2 block text-sm font-medium">
+                                    Tempat Lahir
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="tempat_lahir"
+                                    value="{{ old('tempat_lahir') }}"
+                                    placeholder="Masukkan tempat lahir"
+                                    class="{{ $inputClass }}
+                            @error('tempat_lahir')
+                                {{ $errorClass }}
+                            @enderror">
+
+                                @error('tempat_lahir')
+                                <p class="mt-1 text-sm text-red-500">
+                                    {{ $message }}
+                                </p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="mb-2 block text-sm font-medium">
+                                    Tanggal Lahir
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="tanggal_lahir"
+                                    value="{{ old('tanggal_lahir') }}"
+                                    class="{{ $inputClass }}
+                            @error('tanggal_lahir')
+                                {{ $errorClass }}
+                            @enderror">
+
+                                @error('tanggal_lahir')
+                                <p class="mt-1 text-sm text-red-500">
+                                    {{ $message }}
+                                </p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Wilayah --}}
+                        <div class="grid gap-4 md:grid-cols-2">
+
+                            @foreach([
+                            [
+                            'id'=>'province',
+                            'name'=>'province_code',
+                            'label'=>'Provinsi'
+                            ],
+                            [
+                            'id'=>'regency',
+                            'name'=>'regency_code',
+                            'label'=>'Kabupaten'
+                            ],
+                            [
+                            'id'=>'district',
+                            'name'=>'district_code',
+                            'label'=>'Kecamatan'
+                            ],
+                            [
+                            'id'=>'village',
+                            'name'=>'village_code',
+                            'label'=>'Desa'
+                            ],
+                            ] as $select)
+
+                            <div>
+                                <label class="mb-2 block text-sm font-medium">
+                                    {{ $select['label'] }}
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                <select
+                                    id="{{ $select['id'] }}"
+                                    name="{{ $select['name'] }}"
+                                    class="{{ $inputClass }}
+                                @error($select['name'])
+                                    {{ $errorClass }}
+                                @enderror">
+
+                                    <option value="">
+                                        Pilih {{ $select['label'] }}
+                                    </option>
+
+                                    @if($select['id'] === 'province')
+                                    @foreach($provinces as $province)
+                                    <option
+                                        value="{{ $province->code }}"
+                                        @selected(old('province_code')==$province->code)>
+                                        {{ $province->name }}
+                                    </option>
+                                    @endforeach
+                                    @endif
+                                </select>
+
+                                @error($select['name'])
+                                <p class="mt-1 text-sm text-red-500">
+                                    {{ $message }}
+                                </p>
+                                @enderror
+                            </div>
+
+                            @endforeach
+                        </div>
                     </div>
 
                     {{-- RIGHT --}}
                     <div class="space-y-5">
 
-                        <h3 class="font-semibold border-b pb-2">
+                        <h3 class="border-b pb-2 text-lg font-semibold">
                             Kontak & Tambahan
                         </h3>
 
-                        <input required type="text"
+                        {{-- OPSIONAL --}}
+                        <input
+                            type="text"
                             name="alamat"
-                            placeholder="Alamat (opsional)"
                             value="{{ old('alamat') }}"
-                            class="w-full rounded-lg border-gray-300">
+                            placeholder="Alamat (Opsional)"
+                            class="{{ $inputClass }}">
 
-                        <input type="text"
+                        <input
+                            type="text"
                             name="no_hp"
-                            placeholder="No HP / WhatsApp (opsional)"
                             value="{{ old('no_hp') }}"
-                            class="rounded-lg border-gray-300 w-full">
+                            placeholder="Nomor HP / WhatsApp"
+                            class="{{ $inputClass }}">
 
-                        <div>
-                            <label>Foto (opsional)</label>
-                            <input type="file"
-                                name="foto"
-                                class="w-full border border-gray-300 rounded-lg p-2">
-                        </div>
+                        <input
+                            type="email"
+                            name="email"
+                            value="{{ old('email') }}"
+                            placeholder="Alamat Email"
+                            class="{{ $inputClass }}">
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input
+                            type="file"
+                            name="foto"
+                            class="{{ $inputClass }}">
 
-                            <select name="pekerjaan" class="rounded-lg border-gray-300">
-                                <option value="">Pekerjaan (opsional)</option>
-                                <option>PNS</option>
-                                <option>Guru / Dosen</option>
-                                <option>Wiraswasta</option>
-                                <option>Lainnya</option>
+                        <div class="grid gap-4 sm:grid-cols-2">
+
+                            {{-- Pekerjaan --}}
+                            <select
+                                name="pekerjaan"
+                                class="{{ $inputClass }}">
+
+                                <option value="">
+                                    Pilih Pekerjaan
+                                </option>
+
+                                @foreach([
+                                'PNS',
+                                'Guru / Dosen',
+                                'Wiraswasta',
+                                'Lainnya'
+                                ] as $job)
+
+                                <option
+                                    value="{{ $job }}"
+                                    @selected(old('pekerjaan')==$job)>
+                                    {{ $job }}
+                                </option>
+
+                                @endforeach
                             </select>
 
-                            <select required name="status_perkawinan" class="rounded-lg border-gray-300">
-                                <option value="">Status *</option>
-                                <option>Belum Kawin</option>
-                                <option>Kawin</option>
-                            </select>
+                            {{-- Status --}}
+                            <div>
+                                <select
+                                    name="status_perkawinan"
+                                    class="{{ $inputClass }}
+                            @error('status_perkawinan')
+                                {{ $errorClass }}
+                            @enderror">
 
+                                    <option value="">
+                                        Status Perkawinan
+                                    </option>
+
+                                    <option
+                                        value="Belum Kawin"
+                                        @selected(old('status_perkawinan')=='Belum Kawin' )>
+                                        Belum Kawin
+                                    </option>
+
+                                    <option
+                                        value="Kawin"
+                                        @selected(old('status_perkawinan')=='Kawin' )>
+                                        Kawin
+                                    </option>
+                                </select>
+
+                                @error('status_perkawinan')
+                                <p class="mt-1 text-sm text-red-500">
+                                    {{ $message }}
+                                </p>
+                                @enderror
+                            </div>
                         </div>
-
                     </div>
-
                 </div>
 
-                {{-- ACTION --}}
-                <div class="flex gap-3 mt-6">
+                {{-- BUTTON --}}
+                <div class="mt-8 flex gap-3 border-t pt-6">
 
-                    <button type="submit"
-                        class="bg-green-700 hover:bg-green-800 text-white px-6 py-2 rounded-lg">
-                        Simpan
+                    <button
+                        type="submit"
+                        class="rounded-xl bg-green-700 px-6 py-3 font-medium text-white transition hover:bg-green-800">
+
+                        Simpan Data
                     </button>
 
-                    @if($isPublic)
-                    <a href="/" class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg">Beranda</a>
-                    @else
-                    <a href="{{ route('pengamal.index') }}" class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg">Kembali</a>
-                    @endif
+                    <a
+                        href="{{ $isPublic ? '/' : route('pengamal.index') }}"
+                        class="rounded-xl bg-gray-200 px-6 py-3 transition hover:bg-gray-300">
 
+                        Kembali
+                    </a>
                 </div>
-
             </div>
         </form>
     </div>
-
-    {{-- AJAX (JANGAN DIHAPUS / DIUBAH) --}}
-    <script>
-        function loadSelect(url, target, placeholder) {
-            fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                    let el = document.getElementById(target);
-
-                    el.innerHTML = `<option value="">${placeholder}</option>`;
-
-                    data.forEach(i => {
-                        el.innerHTML += `
-                            <option value="${i.code}">
-                                ${i.name}
-                            </option>
-                        `;
-                    });
-                });
-        }
-
-        document.getElementById('province').addEventListener('change', function() {
-            loadSelect(`/get-regencies/${this.value}`, 'regency', 'Pilih Kabupaten');
-            document.getElementById('district').innerHTML = '<option value="">Pilih Kecamatan</option>';
-            document.getElementById('village').innerHTML = '<option value="">Pilih Desa</option>';
-        });
-
-        document.getElementById('regency').addEventListener('change', function() {
-            loadSelect(`/get-districts/${this.value}`, 'district', 'Pilih Kecamatan');
-        });
-
-        document.getElementById('district').addEventListener('change', function() {
-            loadSelect(`/get-villages/${this.value}`, 'village', 'Pilih Desa');
-        });
-    </script>
 
 </x-app-layout>

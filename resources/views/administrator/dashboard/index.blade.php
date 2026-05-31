@@ -20,23 +20,23 @@
 
     {{-- HEADER --}}
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
             <div>
                 <h1 class="text-2xl font-bold">Dashboard</h1>
                 <p class="text-sm text-gray-500">Sistem Informasi Pengamal Kaltim</p>
             </div>
 
-            <div class="text-right">
+            <div class="text-left sm:text-right">
                 <p class="font-semibold">{{ $user->name }}</p>
                 <p class="text-xs text-gray-400">{{ now()->translatedFormat('d M Y') }}</p>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-6 space-y-6">
+    <div class="py-4 sm:py-6 space-y-6">
 
         {{-- KPI CARDS --}}
-        <section class="grid grid-cols-3 gap-4">
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @php
             $cards = [
             ['label' => 'Total', 'val' => $totalPengamal],
@@ -46,7 +46,7 @@
             @endphp
 
             @foreach ($cards as $c)
-            <div class="rounded-xl border bg-white p-4">
+            <div class="rounded-xl border bg-white p-4 shadow-sm">
                 <p class="text-xs text-gray-500">{{ $c['label'] }}</p>
                 <h2 class="text-2xl font-bold text-emerald-600">
                     {{ number_format($c['val']) }}
@@ -56,20 +56,20 @@
         </section>
 
         {{-- CHART ROW 1 --}}
-        <section class="grid grid-cols-3 gap-4">
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-            {{-- WILAYAH (BAR HORIZONTAL) --}}
-            <div class="col-span-2 rounded-xl border bg-white p-4">
+            {{-- WILAYAH (FULL WIDTH) --}}
+            <div class="lg:col-span-2 rounded-xl border bg-white p-4 shadow-sm">
                 <h2 class="text-sm font-semibold mb-2">Statistik Wilayah</h2>
-                <div class="h-[300px]">
+                <div class="h-[260px] sm:h-[300px] md:h-[350px]">
                     <canvas id="wilayahChart"></canvas>
                 </div>
             </div>
 
-            {{-- KABUPATEN (DOUGHNUT) --}}
-            <div class="rounded-xl border bg-white p-4">
+            {{-- KABUPATEN --}}
+            <div class="rounded-xl border bg-white p-4 shadow-sm">
                 <h2 class="text-sm font-semibold mb-2">Kabupaten</h2>
-                <div class="h-[300px]">
+                <div class="h-[260px] sm:h-[300px] md:h-[350px]">
                     <canvas id="kabupatenChart"></canvas>
                 </div>
             </div>
@@ -77,9 +77,9 @@
         </section>
 
         {{-- CHART ROW 2 --}}
-        <section class="rounded-xl border bg-white p-4">
+        <section class="rounded-xl border bg-white p-4 shadow-sm">
             <h2 class="text-sm font-semibold mb-2">Kategori Usia</h2>
-            <div class="h-[280px]">
+            <div class="h-[260px] sm:h-[320px] md:h-[380px]">
                 <canvas id="kategoriChart"></canvas>
             </div>
         </section>
@@ -101,7 +101,7 @@
 
             const baseColor = '#16a34a';
 
-            // ================= WILAYAH (HORIZONTAL BAR) =================
+            // ================= WILAYAH =================
             new Chart(document.getElementById('wilayahChart'), {
                 type: 'bar',
                 data: {
@@ -114,7 +114,7 @@
                     }]
                 },
                 options: {
-                    indexAxis: 'y', // 🔥 horizontal
+                    indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
@@ -135,7 +135,7 @@
                 }
             });
 
-            // ================= KABUPATEN (DOUGHNUT CLEAN) =================
+            // ================= KABUPATEN =================
             new Chart(document.getElementById('kabupatenChart'), {
                 type: 'doughnut',
                 data: {
@@ -157,7 +157,7 @@
                     cutout: '70%',
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: window.innerWidth < 640 ? 'bottom' : 'right'
                         }
                     }
                 }
