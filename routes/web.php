@@ -236,6 +236,7 @@ Route::get('/reservasi/create', [ReservationController::class, 'create'])
     ->name('reservations.create');
 Route::get('/reservasi/{id}', [ReservationController::class, 'show'])
     ->name('reservations.show');
-
+Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])
+    ->name('reservations.edit');
 
 require __DIR__ . '/auth.php';
