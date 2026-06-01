@@ -325,9 +325,8 @@ class PengamalController extends Controller
         );
     }
 
-    private function authorizePengamal(
-        Pengamal $pengamal
-    ): void {
+    private function authorizePengamal(Pengamal $pengamal): void
+    {
         $user = auth()->user();
 
         abort_if(
@@ -354,7 +353,6 @@ class PengamalController extends Controller
             403
         );
     }
-
     private function validatePengamal(
         Request $request,
         ?int $id = null

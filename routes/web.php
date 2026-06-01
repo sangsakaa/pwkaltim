@@ -52,17 +52,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 */
 
 // public
-Route::get('/daftar-pengamal', [PengamalController::class, 'createPublic'])
-    ->name('pengamal.public.create');
-
-// admin
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::resource('pengamal', PengamalController::class)->except(['store']);
+    // CRUD utama (pakai resource biar otomatis lengkap)
+    Route::resource('pengamal', PengamalController::class);
 
+    // store tetap manual kalau kamu mau pisah dari resource
     Route::post('/pengamal/store', [PengamalController::class, 'store'])
         ->name('pengamal.store');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -141,10 +140,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/post/approved', [PostController::class, 'approvedList'])->name('post.approved');
     Route::delete('/post/{id}', [PostController::class, 'destroy'])->name('post.destroy');
+    Route::get('/post-detail/{id}', [PostController::class, 'showPublic'])
+        ->name('post.public.show');
 });
 
-Route::get('/post-detail/{id}', [PostController::class, 'showPublic'])
-    ->name('post.public.show');
+
 
 /*
 |--------------------------------------------------------------------------
