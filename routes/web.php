@@ -50,6 +50,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | PENGAMAL
 |--------------------------------------------------------------------------
 */
+Route::get('/daftar-pengamal', [PengamalController::class, 'createPublic'])
+    ->name('pengamal.public.create');
 
 // public
 Route::middleware(['auth', 'verified'])->group(function () {
