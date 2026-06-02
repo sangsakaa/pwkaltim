@@ -1,24 +1,33 @@
-<x-perfect-scrollbar as="nav" class="flex flex-col flex-1 gap-4 px-3">
+<x-perfect-scrollbar
+    as="nav"
+    class="flex flex-col flex-1 gap-3 px-3 py-4 bg-white">
 
-    {{-- ================= DASHBOARD (HANYA USER BERLOGIN + PUNYA ROLE) ================= --}}
+    {{-- =======================================================
+    DASHBOARD
+    ======================================================== --}}
     @auth
     @if(auth()->user()->roles->isNotEmpty())
+
     <x-sidebar.link
         title="Dashboard"
         href="{{ route('admin.dashboard') }}"
         :isActive="request()->routeIs('admin.dashboard')">
 
         <x-slot name="icon">
-            <x-icons.dashboard class="w-6 h-6" />
+            <x-icons.dashboard class="w-5 h-5" />
         </x-slot>
     </x-sidebar.link>
+
     @endif
     @endauth
 
 
-    {{-- ================= GUEST / USER PUBLIK ================= --}}
+    {{-- =======================================================
+    GUEST / PENGGUNA PUBLIK
+    ======================================================== --}}
     @guest
-    <div class="px-3 pt-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+
+    <div class="px-3 pt-3 text-xs font-bold tracking-wider text-green-700 uppercase">
         Menu Pengguna
     </div>
 
@@ -28,7 +37,7 @@
         :isActive="request()->routeIs('reservations.*')">
 
         <x-slot name="icon">
-            <x-heroicon-o-qr-code class="w-6 h-6" />
+            <x-heroicon-o-qr-code class="w-5 h-5" />
         </x-slot>
     </x-sidebar.link>
 
@@ -38,80 +47,205 @@
         :isActive="request()->routeIs('reservasi.*')">
 
         <x-slot name="icon">
-            <x-heroicon-o-magnifying-glass class="w-6 h-6" />
+            <x-heroicon-o-magnifying-glass class="w-5 h-5" />
         </x-slot>
     </x-sidebar.link>
+
     @endguest
 
 
-    {{-- ================= ADMIN PROVINSI ================= --}}
+    {{-- =======================================================
+    ADMIN PROVINSI / SUPER ADMIN
+    ======================================================== --}}
     @hasanyrole('admin-provinsi|superAdmin')
 
-    <div class="px-3 pt-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+    <div class="px-3 pt-4 text-xs font-bold tracking-wider text-green-700 uppercase">
         Admin Provinsi
     </div>
 
-    <x-sidebar.dropdown title="Data Pengamal" :active="request()->routeIs('pengamal.*')">
+
+    {{-- DATA PENGAMAL --}}
+    <x-sidebar.dropdown
+        title="Data Pengamal"
+        :active="
+            request()->routeIs('pengamal.*') ||
+            request()->routeIs('laporan-file.*') ||
+            request()->routeIs('laporan.*')
+        ">
+
         <x-slot name="icon">
-            <x-heroicon-o-users class="w-6 h-6" />
+            <x-heroicon-o-users class="w-5 h-5" />
         </x-slot>
 
-        <x-sidebar.sublink title="Data Pengamal" href="{{ route('pengamal.index') }}" />
-        <x-sidebar.sublink title="Laporan File" href="{{ route('laporan-file.index') }}" />
-        <x-sidebar.sublink title="Rekap Kabupaten" href="{{ route('laporan.rekap-kabupaten') }}" />
-        <x-sidebar.sublink title="Wilayah Kosong" href="{{ route('laporan.wilayah-kosong') }}" />
+        <x-sidebar.sublink
+            title="Data Pengamal"
+            href="{{ route('pengamal.index') }}"
+            :active="request()->routeIs('pengamal.*')" />
+
+        <x-sidebar.sublink
+            title="Laporan File"
+            href="{{ route('laporan-file.index') }}"
+            :active="request()->routeIs('laporan-file.*')" />
+
+        <x-sidebar.sublink
+            title="Rekap Kabupaten"
+            href="{{ route('laporan.rekap-kabupaten') }}"
+            :active="request()->routeIs('laporan.rekap-kabupaten')" />
+
+        <x-sidebar.sublink
+            title="Wilayah Kosong"
+            href="{{ route('laporan.wilayah-kosong') }}"
+            :active="request()->routeIs('laporan.wilayah-kosong')" />
+
     </x-sidebar.dropdown>
 
-    <x-sidebar.dropdown title="Reservasi (Admin)" :active="request()->routeIs('admin.reservasi.*')">
+
+    {{-- MANAJEMEN USER --}}
+    <x-sidebar.dropdown
+        title="Manajemen User"
+        :active="
+            request()->routeIs('users.*') ||
+            request()->routeIs('roles.*')
+        ">
+
         <x-slot name="icon">
-            <x-heroicon-o-qr-code class="w-6 h-6" />
+            <x-heroicon-o-user-group class="w-5 h-5" />
         </x-slot>
 
-        <x-sidebar.sublink title="Dashboard" href="{{ route('admin.reservasi.dashboard') }}" />
-        <x-sidebar.sublink title="Data Semua" href="{{ route('admin.reservasi.data') }}" />
-        <x-sidebar.sublink title="Sudah Check-in" href="{{ route('admin.reservasi.checked-in') }}" />
-        <x-sidebar.sublink title="Belum Check-in" href="{{ route('admin.reservasi.pending') }}" />
+        <x-sidebar.sublink
+            title="Data User"
+            href="{{ route('users.assign-role-index') }}"
+            :active="request()->routeIs('users.assign-role-index')" />
+
+        <x-sidebar.sublink
+            title="Tambah User"
+            href="{{ route('users.create') }}"
+            :active="request()->routeIs('users.create')" />
+
+        <x-sidebar.sublink
+            title="Role & Permission"
+            href="{{ route('roles.index') }}"
+            :active="request()->routeIs('roles.*')" />
+
+    </x-sidebar.dropdown>
+
+
+    {{-- RESERVASI ADMIN --}}
+    <x-sidebar.dropdown
+        title="Reservasi (Admin)"
+        :active="request()->routeIs('admin.reservasi.*')">
+
+        <x-slot name="icon">
+            <x-heroicon-o-qr-code class="w-5 h-5" />
+        </x-slot>
+
+        <x-sidebar.sublink
+            title="Dashboard"
+            href="{{ route('admin.reservasi.dashboard') }}"
+            :active="request()->routeIs('admin.reservasi.dashboard')" />
+
+        <x-sidebar.sublink
+            title="Data Semua"
+            href="{{ route('admin.reservasi.data') }}"
+            :active="request()->routeIs('admin.reservasi.data')" />
+
+        <x-sidebar.sublink
+            title="Sudah Check-in"
+            href="{{ route('admin.reservasi.checked-in') }}"
+            :active="request()->routeIs('admin.reservasi.checked-in')" />
+
+        <x-sidebar.sublink
+            title="Belum Check-in"
+            href="{{ route('admin.reservasi.pending') }}"
+            :active="request()->routeIs('admin.reservasi.pending')" />
+
     </x-sidebar.dropdown>
 
     @endhasanyrole
 
 
-    {{-- ================= ADMIN WILAYAH ================= --}}
+    {{-- =======================================================
+    ADMIN WILAYAH
+    ======================================================== --}}
     @hasanyrole('admin-kabupaten|admin-kecamatan|admin-desa')
 
-    <x-sidebar.dropdown title="Pengamal Wilayah" :active="request()->routeIs('pengamal.*')">
+    <div class="px-3 pt-4 text-xs font-bold tracking-wider text-green-700 uppercase">
+        Pengamal Wilayah
+    </div>
+
+    <x-sidebar.dropdown
+        title="Pengamal Wilayah"
+        :active="
+            request()->routeIs('pengamal.*') ||
+            request()->routeIs('post.*')
+        ">
+
         <x-slot name="icon">
-            <x-heroicon-o-users class="w-6 h-6" />
+            <x-heroicon-o-users class="w-5 h-5" />
         </x-slot>
 
-        <x-sidebar.sublink title="Data Pengamal" href="{{ route('pengamal.index') }}" />
-        <x-sidebar.sublink title="Posting" href="{{ route('post.create') }}" />
+        <x-sidebar.sublink
+            title="Data Pengamal"
+            href="{{ route('pengamal.index') }}"
+            :active="request()->routeIs('pengamal.*')" />
+
+        <x-sidebar.sublink
+            title="Posting"
+            href="{{ route('post.create') }}"
+            :active="request()->routeIs('post.*')" />
+
     </x-sidebar.dropdown>
 
     @endhasanyrole
 
 
-    {{-- ================= SEKRETARIS ================= --}}
+    {{-- =======================================================
+    SEKRETARIS DPRW
+    ======================================================== --}}
     @role('Sekretaris-DPRW')
 
-    <div class="px-3 pt-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+    <div class="px-3 pt-4 text-xs font-bold tracking-wider text-green-700 uppercase">
         Administrasi Surat
     </div>
 
-    <x-sidebar.link title="Surat Masuk" href="{{ route('surat-masuk.index') }}">
-        <x-slot name="icon"><x-heroicon-o-inbox class="w-5 h-5" /></x-slot>
+    <x-sidebar.link
+        title="Surat Masuk"
+        href="{{ route('surat-masuk.index') }}"
+        :isActive="request()->routeIs('surat-masuk.*')">
+
+        <x-slot name="icon">
+            <x-heroicon-o-inbox class="w-5 h-5" />
+        </x-slot>
     </x-sidebar.link>
 
-    <x-sidebar.link title="Surat Keluar" href="{{ route('surat.index') }}">
-        <x-slot name="icon"><x-heroicon-o-paper-airplane class="w-5 h-5" /></x-slot>
+    <x-sidebar.link
+        title="Surat Keluar"
+        href="{{ route('surat.index') }}"
+        :isActive="request()->routeIs('surat.*')">
+
+        <x-slot name="icon">
+            <x-heroicon-o-paper-airplane class="w-5 h-5" />
+        </x-slot>
     </x-sidebar.link>
 
-    <x-sidebar.link title="Surat Tugas" href="{{ route('surat-tugas.index') }}">
-        <x-slot name="icon"><x-heroicon-o-clipboard-document-check class="w-5 h-5" /></x-slot>
+    <x-sidebar.link
+        title="Surat Tugas"
+        href="{{ route('surat-tugas.index') }}"
+        :isActive="request()->routeIs('surat-tugas.*')">
+
+        <x-slot name="icon">
+            <x-heroicon-o-clipboard-document-check class="w-5 h-5" />
+        </x-slot>
     </x-sidebar.link>
 
-    <x-sidebar.link title="Program Kerja" href="{{ route('program-kerja.index') }}">
-        <x-slot name="icon"><x-heroicon-o-briefcase class="w-5 h-5" /></x-slot>
+    <x-sidebar.link
+        title="Program Kerja"
+        href="{{ route('program-kerja.index') }}"
+        :isActive="request()->routeIs('program-kerja.*')">
+
+        <x-slot name="icon">
+            <x-heroicon-o-briefcase class="w-5 h-5" />
+        </x-slot>
     </x-sidebar.link>
 
     @endrole

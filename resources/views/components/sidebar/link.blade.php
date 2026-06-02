@@ -1,61 +1,96 @@
 @props([
-    'isActive' => false,
-    'title' => '',
-    'collapsible' => false
+'isActive' => false,
+'title' => '',
+'collapsible' => false
 ])
 
 @php
-    $isActiveClasses =  $isActive ? 'text-white bg-purple-500 shadow-lg hover:bg-purple-600' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-dark-eval-2';
+$isActiveClasses = $isActive
+? 'bg-green-600 text-white shadow-lg border-l-4 border-green-300'
+: 'text-gray-600 hover:bg-green-50 hover:text-green-700 dark:text-gray-300 dark:hover:bg-green-900/20 dark:hover:text-green-400';
 
-    $classes = 'flex-shrink-0 flex items-center gap-2 p-2 transition-colors rounded-md overflow-hidden ' . $isActiveClasses;
+$classes = '
+flex-shrink-0
+flex items-center gap-3
+px-3 py-3
+rounded-xl
+overflow-hidden
+transition-all duration-300 ease-in-out
+group
+' . $isActiveClasses;
 
-    if($collapsible) $classes .= ' w-full';
+if ($collapsible) {
+$classes .= ' w-full';
+}
 @endphp
 
 @if ($collapsible)
-    <button type="button" {{ $attributes->merge(['class' => $classes]) }} >
-        @if ($icon ?? false)
-            {{ $icon }}
-        @else
-            <x-icons.empty-circle class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
-        @endif
+
+<button
+    type="button"
+    {{ $attributes->merge(['class' => $classes]) }}>
+
+    {{-- ICON --}}
+    @if ($icon ?? false)
+    <span class="flex-shrink-0 transition duration-200">
+        {{ $icon }}
+    </span>
+    @else
+    <x-icons.empty-circle
+        class="flex-shrink-0 w-5 h-5"
+        aria-hidden="true" />
+    @endif
+
+    {{-- TITLE --}}
+    <span
+        class="text-sm font-semibold whitespace-nowrap"
+        x-show="isSidebarOpen || isSidebarHovered">
+
+        {{ $title }}
+    </span>
+
+    {{-- COLLAPSE ICON --}}
+    <span
+        x-show="isSidebarOpen || isSidebarHovered"
+        aria-hidden="true"
+        class="relative block ml-auto w-5 h-5">
 
         <span
-            class="text-base font-medium whitespace-nowrap"
-            x-show="isSidebarOpen || isSidebarHovered"
-        >
-            {{ $title }}
+            :class="open ? '-rotate-45' : 'rotate-45'"
+            class="absolute right-[8px] top-1/2 -translate-y-1/2 bg-current h-2.5 w-[2px] transition-all duration-200">
         </span>
 
         <span
-            x-show="isSidebarOpen || isSidebarHovered"
-            aria-hidden="true"
-            class="relative block ml-auto w-6 h-6"
-        >
-            <span
-                :class="open ? '-rotate-45' : 'rotate-45'"
-                class="absolute right-[9px] bg-gray-400 mt-[-5px] h-2 w-[2px] top-1/2 transition-all duration-200"
-            ></span>
-
-            <span
-                :class="open ? 'rotate-45' : '-rotate-45'"
-                class="absolute left-[9px] bg-gray-400 mt-[-5px] h-2 w-[2px] top-1/2 transition-all duration-200"
-            ></span>
+            :class="open ? 'rotate-45' : '-rotate-45'"
+            class="absolute left-[8px] top-1/2 -translate-y-1/2 bg-current h-2.5 w-[2px] transition-all duration-200">
         </span>
-    </button>
+    </span>
+
+</button>
+
 @else
-    <a {{ $attributes->merge(['class' => $classes]) }}>
-        @if ($icon ?? false)
-            {{ $icon }}
-        @else
-            <x-icons.empty-circle class="flex-shrink-0 w-6 h-6" aria-hidden="true" />
-        @endif
 
-        <span
-            class="text-base font-medium"
-            x-show="isSidebarOpen || isSidebarHovered"
-        >
-            {{ $title }}
-        </span>
-    </a>
+<a {{ $attributes->merge(['class' => $classes]) }}>
+
+    {{-- ICON --}}
+    @if ($icon ?? false)
+    <span class="flex-shrink-0 transition duration-200">
+        {{ $icon }}
+    </span>
+    @else
+    <x-icons.empty-circle
+        class="flex-shrink-0 w-5 h-5"
+        aria-hidden="true" />
+    @endif
+
+    {{-- TITLE --}}
+    <span
+        class="text-sm font-semibold whitespace-nowrap"
+        x-show="isSidebarOpen || isSidebarHovered">
+
+        {{ $title }}
+    </span>
+
+</a>
+
 @endif

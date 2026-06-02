@@ -1,20 +1,39 @@
 @props([
-    'title' => '',
-    'active' => false
+'title' => '',
+'active' => false,
+'isActive' => false,
 ])
 
 @php
+$active = $active || $isActive;
 
-$classes = 'transition-colors hover:text-gray-900 dark:hover:text-gray-100';
+$classes = $active
+? 'bg-green-100 text-green-700 font-semibold border-l-4 border-green-600 shadow-sm dark:bg-green-900/30 dark:text-green-400'
+: 'text-gray-500 hover:bg-green-50 hover:text-green-700 dark:text-gray-400 dark:hover:bg-green-900/20 dark:hover:text-green-400';
 
-$active
-    ? $classes .= ' text-gray-900 dark:text-gray-200'
-    : $classes .= ' text-gray-500 dark:text-gray-400';
-
+$classes .= '
+flex items-center
+w-full
+px-4 py-2.5
+rounded-xl
+transition-all duration-200 ease-in-out
+text-sm
+overflow-hidden
+';
 @endphp
 
-<li class="relative leading-8 m-0 pl-6 last:before:bg-white last:before:h-auto last:before:top-4 last:before:bottom-0 dark:last:before:bg-dark-eval-1 before:block before:w-4 before:h-0 before:absolute before:left-0 before:top-4 before:border-t-2 before:border-t-gray-200 before:-mt-0.5 dark:before:border-t-gray-600">
+<li class="list-none my-1">
     <a {{ $attributes->merge(['class' => $classes]) }}>
-        {{ $title }}
+
+        {{-- Dot Indicator --}}
+        <span class="
+            w-2 h-2 rounded-full mr-3 flex-shrink-0
+            {{ $active ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600' }}
+        ">
+        </span>
+
+        <span class="truncate">
+            {{ $title }}
+        </span>
     </a>
 </li>

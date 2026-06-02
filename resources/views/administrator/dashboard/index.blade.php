@@ -1,85 +1,92 @@
 <x-app-layout>
-    @section('title', 'Dashboard')
 
     @php
     $male = (int) ($genderStat['L'] ?? 0);
     $female = (int) ($genderStat['P'] ?? 0);
     $totalPengamal = $male + $female;
 
-    $wilayahLabels = collect($wilayahStat['labels'] ?? [])->filter()->values()->toArray();
+    $wilayahLabels = collect($wilayahStat['labels'] ?? [])->values()->toArray();
     $wilayahTotals = collect($wilayahStat['values'] ?? [])->map(fn($v) => (int)$v)->values()->toArray();
-
-    $kabupatenCollection = collect($kabupatenStats ?? [])->map(fn($i) => (array) $i)->values();
-    $kabupatenLabels = $kabupatenCollection->pluck('label')->toArray();
-    $kabupatenTotals = $kabupatenCollection->pluck('total')->map(fn($v) => (int)$v)->toArray();
 
     $kategoriData = $kategoriStat ?? [];
 
-    $roles = $user->roles->pluck('name')->implode(', ') ?: 'Tidak ada role';
+    /**
+    * KABUPATEN DETAIL (USIA)
+    */
+    $kabupatenStats = collect($kabupatenStats ?? []);
+
+    $kabupatenLabels = $kabupatenStats->pluck('label')->toArray();
+
+    $bapakData = $kabupatenStats->pluck('bapak')->map(fn($v) => (int)$v)->toArray();
+    $ibuData = $kabupatenStats->pluck('ibu')->map(fn($v) => (int)$v)->toArray();
+    $remajaData = $kabupatenStats->pluck('remaja')->map(fn($v) => (int)$v)->toArray();
+    $anakData = $kabupatenStats->pluck('anak')->map(fn($v) => (int)$v)->toArray();
     @endphp
 
-    {{-- HEADER --}}
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-                <h1 class="text-2xl font-bold">Dashboard</h1>
-                <p class="text-sm text-gray-500">Sistem Informasi Pengamal Kaltim</p>
-            </div>
-
-            <div class="text-left sm:text-right">
-                <p class="font-semibold">{{ $user->name }}</p>
-                <p class="text-xs text-gray-400">{{ now()->translatedFormat('d M Y') }}</p>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-800">
+                    Dashboard
+                </h1>
+                <p class="text-sm text-slate-500">
+                    Sistem Informasi Pengamal Kaltim
+                </p>
             </div>
         </div>
     </x-slot>
 
-    <div class="py-4 sm:py-6 space-y-6">
+    <div class="max-w-7xl mx-auto py-6 space-y-6">
 
-        {{-- KPI CARDS --}}
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            @php
-            $cards = [
-            ['label' => 'Total', 'val' => $totalPengamal],
-            ['label' => 'Laki-laki', 'val' => $male],
-            ['label' => 'Perempuan', 'val' => $female],
-            ];
-            @endphp
+        {{-- KPI --}}
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-            @foreach ($cards as $c)
-            <div class="rounded-xl border bg-white p-4 shadow-sm">
-                <p class="text-xs text-gray-500">{{ $c['label'] }}</p>
+            @foreach([
+            ['Total Pengamal', $totalPengamal],
+            ['Laki-laki', $male],
+            ['Perempuan', $female],
+            ] as $c)
+
+            <div class="rounded-2xl border bg-white p-5 shadow-sm">
+                <p class="text-xs text-slate-500">{{ $c[0] }}</p>
                 <h2 class="text-2xl font-bold text-emerald-600">
-                    {{ number_format($c['val']) }}
+                    {{ number_format($c[1]) }}
                 </h2>
             </div>
+
             @endforeach
-        </section>
-
-        {{-- CHART ROW 1 --}}
-        <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-            {{-- WILAYAH (FULL WIDTH) --}}
-            <div class="lg:col-span-2 rounded-xl border bg-white p-4 shadow-sm">
-                <h2 class="text-sm font-semibold mb-2">Statistik Wilayah</h2>
-                <div class="h-[260px] sm:h-[300px] md:h-[350px]">
-                    <canvas id="wilayahChart"></canvas>
-                </div>
-            </div>
-
-            {{-- KABUPATEN --}}
-            <div class="rounded-xl border bg-white p-4 shadow-sm">
-                <h2 class="text-sm font-semibold mb-2">Kabupaten</h2>
-                <div class="h-[260px] sm:h-[300px] md:h-[350px]">
-                    <canvas id="kabupatenChart"></canvas>
-                </div>
-            </div>
 
         </section>
 
-        {{-- CHART ROW 2 --}}
-        <section class="rounded-xl border bg-white p-4 shadow-sm">
-            <h2 class="text-sm font-semibold mb-2">Kategori Usia</h2>
-            <div class="h-[260px] sm:h-[320px] md:h-[380px]">
+        {{-- WILAYAH --}}
+        <section class="rounded-2xl border bg-white p-5 shadow-sm">
+            <h2 class="text-sm font-semibold mb-4 text-slate-700">
+                Statistik Wilayah
+            </h2>
+
+            <div class="h-[320px]">
+                <canvas id="wilayahChart"></canvas>
+            </div>
+        </section>
+
+        {{-- KABUPATEN (GROUPED - FIX HERE) --}}
+        <section class="rounded-2xl border bg-white p-5 shadow-sm">
+            <h2 class="text-sm font-semibold mb-4 text-slate-700">
+                Statistik Kabupaten Berdasarkan Usia
+            </h2>
+
+            <div class="h-[420px]">
+                <canvas id="kabupatenChart"></canvas>
+            </div>
+        </section>
+
+        {{-- KATEGORI --}}
+        <section class="rounded-2xl border bg-white p-5 shadow-sm">
+            <h2 class="text-sm font-semibold mb-4 text-slate-700">
+                Kategori Usia
+            </h2>
+
+            <div class="h-[340px]">
                 <canvas id="kategoriChart"></canvas>
             </div>
         </section>
@@ -95,99 +102,96 @@
             const wilayahTotals = @json($wilayahTotals);
 
             const kabupatenLabels = @json($kabupatenLabels);
-            const kabupatenTotals = @json($kabupatenTotals);
+
+            const bapak = @json($bapakData);
+            const ibu = @json($ibuData);
+            const remaja = @json($remajaData);
+            const anak = @json($anakData);
 
             const kategoriData = @json($kategoriData);
 
-            const baseColor = '#16a34a';
+            const base = '#16a34a';
 
-            // ================= WILAYAH =================
+            /* ================= WILAYAH ================= */
             new Chart(document.getElementById('wilayahChart'), {
                 type: 'bar',
                 data: {
                     labels: wilayahLabels,
                     datasets: [{
-                        label: 'Jumlah',
+                        label: 'Total',
                         data: wilayahTotals,
-                        backgroundColor: baseColor + 'cc',
+                        backgroundColor: base + 'cc',
                         borderRadius: 6
                     }]
                 },
                 options: {
                     indexAxis: 'y',
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true
-                        },
-                        y: {
-                            ticks: {
-                                autoSkip: false
-                            }
-                        }
-                    }
+                    maintainAspectRatio: false
                 }
             });
 
-            // ================= KABUPATEN =================
+            /* ================= KABUPATEN (GROUPED BAR - FIX) ================= */
             new Chart(document.getElementById('kabupatenChart'), {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
                     labels: kabupatenLabels,
                     datasets: [{
-                        data: kabupatenTotals,
-                        backgroundColor: [
-                            baseColor,
-                            '#22c55e',
-                            '#4ade80',
-                            '#86efac',
-                            '#bbf7d0'
-                        ]
-                    }]
+                            label: 'Bapak',
+                            data: bapak,
+                            backgroundColor: '#16a34a'
+                        },
+                        {
+                            label: 'Ibu',
+                            data: ibu,
+                            backgroundColor: '#22c55e'
+                        },
+                        {
+                            label: 'Remaja',
+                            data: remaja,
+                            backgroundColor: '#4ade80'
+                        },
+                        {
+                            label: 'Anak',
+                            data: anak,
+                            backgroundColor: '#86efac'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '70%',
                     plugins: {
                         legend: {
-                            position: window.innerWidth < 640 ? 'bottom' : 'right'
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: false // 🔥 IMPORTANT FIX
+                        },
+                        y: {
+                            stacked: false, // 🔥 IMPORTANT FIX
+                            beginAtZero: true
                         }
                     }
                 }
             });
 
-            // ================= KATEGORI USIA =================
+            /* ================= KATEGORI ================= */
             new Chart(document.getElementById('kategoriChart'), {
                 type: 'bar',
                 data: {
                     labels: Object.keys(kategoriData),
                     datasets: [{
-                        label: 'Jumlah',
                         data: Object.values(kategoriData),
-                        backgroundColor: baseColor + 'cc',
+                        backgroundColor: base + 'cc',
                         borderRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
+                    maintainAspectRatio: false
                 }
             });
 

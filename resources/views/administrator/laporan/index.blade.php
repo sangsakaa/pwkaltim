@@ -63,7 +63,7 @@ $selectedDesa = old('desa', request('desa') ?? $user->desa);
           <img
             src="{{ asset('image/logo.png') }}"
             alt="Logo"
-            class="w-16 h-16 rounded-2xl bg-white p-2 shadow-md">
+            class="w-16 h-16 rounded-2xl p-2 shadow-md">
         </div>
 
         <div class="text-center sm:text-left">

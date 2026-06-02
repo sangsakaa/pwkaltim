@@ -62,6 +62,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // store tetap manual kalau kamu mau pisah dari resource
     Route::post('/pengamal/store', [PengamalController::class, 'store'])
         ->name('pengamal.store');
+    Route::delete('/pengamal/show/{pengamal}', [PengamalController::class, 'destroy'])->name('pengamal.destroy');
+    Route::get('/pengamal/{pengamal}/edit', [PengamalController::class, 'edit'])->name('pengamal.edit');
+    Route::put('/pengamal/{pengamal}', [PengamalController::class, 'update'])->name('pengamal.update');
 });
 
 
@@ -178,10 +181,12 @@ Route::prefix('reservasi')->name('reservasi.')->group(function () {
 
     Route::get('/', [ReservationController::class, 'create'])->name('create');
     Route::post('/store', [ReservationController::class, 'store'])->name('store');
+
     Route::get('/show/{id}', [ReservationController::class, 'show'])->name('show');
 
     Route::get('/edit', [ReservationController::class, 'lookup'])->name('lookup');
-    Route::post('/find', [ReservationController::class, 'find'])->name('find');
+
+    Route::post('/find', [ReservationController::class, 'find'])->name('find'); // ✅ FIX
 
     Route::put('/update/{reservation}', [ReservationController::class, 'update'])->name('update');
 });

@@ -143,7 +143,7 @@
                     <div class="flex flex-wrap gap-3 pt-4 border-t">
 
                         @auth
-                        <a href="/pengamal/edit/{{ $pengamal->id }}"
+                        <a href="/pengamal/{{ $pengamal->id }}/edit"
                             class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
                             Edit
                         </a>

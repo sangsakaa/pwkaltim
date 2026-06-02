@@ -396,59 +396,83 @@
 
   {{-- AJAX --}}
   <script>
-    function loadSelect(url, target, placeholder) {
-      fetch(url)
-        .then(res => res.json())
-        .then(data => {
-          let el = document.getElementById(target);
+    document.addEventListener('DOMContentLoaded', () => {
 
-          el.innerHTML =
-            `<option value="">${placeholder}</option>`;
+      const input = document.getElementById('ketua_rombongan');
+
+      if (!input) return;
+
+      // =========================
+      // SMART FOCUS (ANTI HILANG)
+      // =========================
+
+      function safeFocus() {
+        // hanya fokus jika user tidak sedang di field lain
+        const active = document.activeElement;
+
+        const ignoreTags = ['SELECT', 'TEXTAREA', 'INPUT'];
+
+        if (!active || !ignoreTags.includes(active.tagName)) {
+          input.focus({
+            preventScroll: true
+          });
+        }
+      }
+
+      // fokus awal setelah render stabil
+      requestAnimationFrame(() => {
+        input.focus({
+          preventScroll: true
+        });
+      });
+
+      // backup sekali saja (bukan spam interval)
+      setTimeout(safeFocus, 800);
+
+      // =========================
+      // AJAX SELECT FIX (NO BLUR EFFECT)
+      // =========================
+
+      async function loadSelect(url, target, placeholder) {
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+
+          const el = document.getElementById(target);
+
+          // simpan fokus sebelum update DOM
+          const active = document.activeElement;
+
+          el.innerHTML = `<option value="">${placeholder}</option>`;
 
           data.forEach(i => {
-            el.innerHTML +=
-              `<option value="${i.code}">${i.name}</option>`;
+            el.innerHTML += `<option value="${i.code}">${i.name}</option>`;
           });
-        });
-    }
 
-    document.getElementById('province')
-      .addEventListener('change', function() {
+          // restore focus kalau terganggu
+          if (active) active.focus();
 
-        loadSelect(
-          `/get-regencies/${this.value}`,
-          'regency',
-          'Pilih Kabupaten'
-        );
+        } catch (err) {
+          console.error(err);
+        }
+      }
 
-        document.getElementById('district')
-          .innerHTML =
-          '<option value="">Pilih Kecamatan</option>';
+      document.getElementById('province')?.addEventListener('change', function() {
+        loadSelect(`/get-regencies/${this.value}`, 'regency', 'Pilih Kabupaten');
 
-        document.getElementById('village')
-          .innerHTML =
-          '<option value="">Pilih Desa</option>';
+        document.getElementById('district').innerHTML = '<option value="">Pilih Kecamatan</option>';
+        document.getElementById('village').innerHTML = '<option value="">Pilih Desa</option>';
       });
 
-    document.getElementById('regency')
-      .addEventListener('change', function() {
-
-        loadSelect(
-          `/get-districts/${this.value}`,
-          'district',
-          'Pilih Kecamatan'
-        );
+      document.getElementById('regency')?.addEventListener('change', function() {
+        loadSelect(`/get-districts/${this.value}`, 'district', 'Pilih Kecamatan');
       });
 
-    document.getElementById('district')
-      .addEventListener('change', function() {
-
-        loadSelect(
-          `/get-villages/${this.value}`,
-          'village',
-          'Pilih Desa'
-        );
+      document.getElementById('district')?.addEventListener('change', function() {
+        loadSelect(`/get-villages/${this.value}`, 'village', 'Pilih Desa');
       });
+
+    });
   </script>
 
 </x-app-layout>

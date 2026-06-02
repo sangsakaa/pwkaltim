@@ -1,123 +1,133 @@
-@php
-use Illuminate\Support\Str;
-
-$user = auth()->user();
-
-$wilayah = 'Tidak diketahui';
-
-if ($user->regency?->name) {
-$wilayah = Str::startsWith($user->regency->name, 'Kab.')
-? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
-: $user->regency->name;
-
-} elseif ($user->district?->name) {
-$wilayah = 'Kecamatan ' . $user->district->name;
-
-} elseif ($user->village?->name) {
-$wilayah = $user->village->name;
-
-} elseif ($user->province?->name) {
-$wilayah = $user->province->name;
-}
-@endphp
-
 <x-app-layout>
+
+    @php
+
+
+    $user = auth()->user();
+
+    $wilayah = 'Tidak diketahui';
+
+    if ($user->regency?->name) {
+    $wilayah = Str::startsWith($user->regency->name, 'Kab.')
+    ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
+    : $user->regency->name;
+
+    } elseif ($user->district?->name) {
+    $wilayah = 'Kecamatan ' . $user->district->name;
+
+    } elseif ($user->village?->name) {
+    $wilayah = $user->village->name;
+
+    } elseif ($user->province?->name) {
+    $wilayah = $user->province->name;
+    }
+    @endphp
 
     {{-- HEADER --}}
     <x-slot name="header">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-            <h2 class="text-xl font-bold text-gray-800">
-                Dashboard - <span class="text-green-700">PW {{ $wilayah }}</span>
-            </h2>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+
+            <div>
+                <h1 class="text-lg sm:text-2xl font-bold text-slate-800">
+                    Dashboard
+                </h1>
+                <p class="text-sm text-slate-500">
+                    <span class="text-green-700 font-semibold">{{ $wilayah }}</span>
+                </p>
+            </div>
+
         </div>
     </x-slot>
 
-    <div class="space-y-4">
+    <div class="max-w-7xl mx-auto py-6 space-y-6">
 
-        {{-- HEADER CARD --}}
-        <div class="bg-gradient-to-r from-green-800 to-green-600 text-white rounded-xl shadow-lg p-4 flex items-center gap-4">
-            <img src="{{ asset('image/logo.png') }}" class="w-12 h-12 rounded-full p-1">
+        {{-- HERO CARD --}}
+        <div class="rounded-2xl bg-gradient-to-r from-green-800 to-green-600 text-white p-5 sm:p-6 flex items-center gap-4 shadow">
+
+            <img src="{{ asset('image/logo.png') }}" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/10 p-1">
 
             <div>
-                <h3 class="text-lg font-bold uppercase">{{ $wilayah }}</h3>
-                <p class="text-sm text-green-100">Sistem Data Pengamal Terintegrasi</p>
+                <h2 class="text-lg sm:text-xl font-bold uppercase">
+                    {{ $wilayah }}
+                </h2>
+                <p class="text-sm text-green-100">
+                    Sistem Data Pengamal Terintegrasi
+                </p>
             </div>
+
         </div>
 
         {{-- TOOLBAR --}}
-        <div class="bg-white rounded-xl shadow p-4 border border-gray-100">
+        <div class="bg-white rounded-2xl shadow border p-4 space-y-3">
 
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            {{-- ACTION BUTTONS --}}
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
                 <div class="flex flex-wrap gap-2">
 
                     @role('admin-provinsi')
-                    <a href="/pengamal/create" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
-                        + Tambah Pengamal
+                    <a href="/pengamal/create"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm transition">
+                        + Tambah
                     </a>
-                    <!-- <div class="flex gap-2 mb-4">
-
-                        <a
-                            href="{{ route('pengamal.sync') }}"
-                            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                            onclick="return confirm('Sinkronkan data pengamal dari server?')">
-                            🔄 Sinkron Data
-                        </a>
-
-                    </div> -->
                     @endrole
 
                     @role('admin-kabupaten')
-                    <a href="/pengamal/create" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
-                        + Tambah Pengamal
+                    <a href="/pengamal/create"
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-sm transition">
+                        + Tambah
                     </a>
                     @endrole
 
                     @role('admin-kecamatan')
-                    <a href="/pengamal/create" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm">
-                        + Tambah Pengamal
+                    <a href="/pengamal/create"
+                        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-xl text-sm transition">
+                        + Tambah
                     </a>
                     @endrole
 
-                    <a href="/laporan" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm">
+                    <a href="/laporan" target="_blank"
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm transition">
                         Export PDF
                     </a>
 
                 </div>
 
                 {{-- SEARCH --}}
-                <form action="{{ route('pengamal.index') }}" method="GET" class="flex items-center gap-2">
+                <form action="{{ route('pengamal.index') }}" method="GET"
+                    class="flex w-full sm:w-auto items-center gap-2">
 
                     <input type="text"
                         name="search"
                         value="{{ request('search') }}"
                         placeholder="Cari nama / NIK..."
-                        class="w-64 px-4 py-2 rounded-lg border">
+                        class="w-full sm:w-64 px-4 py-2 rounded-xl border focus:ring-2 focus:ring-green-500">
 
-                    <button class="bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
+                    <button class="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-xl text-sm">
                         Cari
                     </button>
 
                 </form>
 
             </div>
+
         </div>
 
         {{-- CHART --}}
-        <div class="bg-white rounded-xl shadow p-4 border border-gray-100">
+        <!-- <div class="bg-white rounded-2xl shadow border p-5">
 
-            <h3 class="text-lg font-bold text-gray-700 mb-4">
+            <h3 class="text-sm font-semibold text-slate-700 mb-3">
                 {{ $chartTitle ?? 'Grafik Pengamal' }}
             </h3>
 
-            <div style="height: 300px;">
+            <div class="h-[260px] sm:h-[320px]">
                 <canvas id="chartKabupaten"></canvas>
             </div>
 
-        </div>
+        </div> -->
 
         {{-- TABLE --}}
-        <div class="bg-white rounded-xl shadow overflow-hidden border border-gray-100">
+        <div class="bg-white rounded-2xl shadow border overflow-hidden">
 
             <div class="overflow-x-auto">
 
@@ -127,9 +137,9 @@ $wilayah = $user->province->name;
                         <tr>
                             <th class="px-4 py-3">No</th>
                             <th class="px-4 py-3 text-left">Nama</th>
-                            <th class="px-4 py-3 text-left">Kabupaten</th>
-                            <th class="px-4 py-3 text-left">Kecamatan</th>
-                            <th class="px-4 py-3 text-left">Desa</th>
+                            <th class="px-4 py-3 text-left hidden sm:table-cell">Kabupaten</th>
+                            <th class="px-4 py-3 text-left hidden md:table-cell">Kecamatan</th>
+                            <th class="px-4 py-3 text-left hidden lg:table-cell">Desa</th>
                         </tr>
                     </thead>
 
@@ -144,16 +154,22 @@ $wilayah = $user->province->name;
 
                             <td class="px-4 py-2">
                                 <a href="/pengamal/{{ $item->id }}"
-                                    class="{{ $item->tanggal_lahir ? 'text-green-700' : 'text-red-600 font-semibold' }}">
-
+                                    class="font-medium {{ $item->tanggal_lahir ? 'text-green-700' : 'text-red-600' }}">
                                     {{ $item->nama_lengkap }}
-
                                 </a>
                             </td>
 
-                            <td class="px-4 py-2">{{ $item->regency->name ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $item->district->name ?? '-' }}</td>
-                            <td class="px-4 py-2">{{ $item->village->name ?? '-' }}</td>
+                            <td class="px-4 py-2 hidden sm:table-cell">
+                                {{ $item->regency->name ?? '-' }}
+                            </td>
+
+                            <td class="px-4 py-2 hidden md:table-cell">
+                                {{ $item->district->name ?? '-' }}
+                            </td>
+
+                            <td class="px-4 py-2 hidden lg:table-cell">
+                                {{ $item->village->name ?? '-' }}
+                            </td>
 
                         </tr>
                         @empty
@@ -187,9 +203,12 @@ $wilayah = $user->province->name;
             timeOut: "4000",
         };
 
-        @if(Session::has('success')) toastr.success("{{ Session::get('success') }}");
+        @if(Session::has('success'))
+        toastr.success("{{ Session::get('success') }}");
         @endif
-        @if(Session::has('error')) toastr.error("{{ Session::get('error') }}");
+
+        @if(Session::has('error'))
+        toastr.error("{{ Session::get('error') }}");
         @endif
     </script>
 
@@ -210,12 +229,12 @@ $wilayah = $user->province->name;
             new Chart(canvas, {
                 type: 'bar',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [{
                         label: 'Jumlah Pengamal',
                         data: values,
                         backgroundColor: 'rgba(34, 197, 94, 0.7)',
-                        borderWidth: 1
+                        borderRadius: 6
                     }]
                 },
                 options: {

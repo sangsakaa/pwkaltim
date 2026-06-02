@@ -13,27 +13,27 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+
     public function index(Request $request)
     {
         $user = Auth::user();
         $code = $user->code;
 
         /*
-        |--------------------------------------------------------------------------
-        | WILAYAH NAME
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | WILAYAH NAME
+    |--------------------------------------------------------------------------
+    */
         $wilayah = $this->getWilayahName($code);
 
         /*
-        |--------------------------------------------------------------------------
-        | BASE QUERY
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | BASE QUERY (FILTER WILAYAH)
+    |--------------------------------------------------------------------------
+    */
         $query = Pengamal::query();
 
         if ($code) {
-
             if (preg_match('/^\d{2}$/', $code)) {
                 $query->where('provinsi', $code);
             } elseif (preg_match('/^\d{2}\.\d{2}$/', $code)) {
@@ -46,100 +46,71 @@ class DashboardController extends Controller
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | GENDER STAT
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | GENDER STAT
+    |--------------------------------------------------------------------------
+    */
         $genderStat = (clone $query)
             ->selectRaw('jenis_kelamin, COUNT(*) as total')
             ->groupBy('jenis_kelamin')
             ->pluck('total', 'jenis_kelamin');
 
         /*
-        |--------------------------------------------------------------------------
-        | MAP REFERENCE (FIX PERFORMANCE - NO LOOP QUERY)
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | MAP (OPTIMIZED)
+    |--------------------------------------------------------------------------
+    */
         $regencyMap = Regency::pluck('name', 'code');
         $districtMap = District::pluck('name', 'code');
         $villageMap = Village::pluck('name', 'code');
 
         /*
-        |--------------------------------------------------------------------------
-        | WILAYAH STAT (BAR CHART)
-        |--------------------------------------------------------------------------
-        */
+    |--------------------------------------------------------------------------
+    | WILAYAH STAT
+    |--------------------------------------------------------------------------
+    */
         $wilayahStat = ['labels' => [], 'values' => []];
 
         if (preg_match('/^\d{2}$/', $code)) {
 
-            $data = Pengamal::query()
+            $data = Pengamal::where('provinsi', $code)
                 ->selectRaw('kabupaten, COUNT(*) as total')
-                ->where('provinsi', $code)
                 ->groupBy('kabupaten')
                 ->get();
 
             $wilayahStat = [
                 'labels' => $data->map(fn($i) => $regencyMap[$i->kabupaten] ?? $i->kabupaten)->values()->toArray(),
-                'values' => $data->pluck('total')->map(fn($v) => (int)$v)->values()->toArray(),
+                'values' => $data->pluck('total')->toArray(),
             ];
         } elseif (preg_match('/^\d{2}\.\d{2}$/', $code)) {
 
-            $data = Pengamal::query()
+            $data = Pengamal::where('kabupaten', $code)
                 ->selectRaw('kecamatan, COUNT(*) as total')
-                ->where('kabupaten', $code)
                 ->groupBy('kecamatan')
                 ->get();
 
             $wilayahStat = [
                 'labels' => $data->map(fn($i) => $districtMap[$i->kecamatan] ?? $i->kecamatan)->values()->toArray(),
-                'values' => $data->pluck('total')->map(fn($v) => (int)$v)->values()->toArray(),
+                'values' => $data->pluck('total')->toArray(),
             ];
         } elseif (preg_match('/^\d{2}\.\d{2}\.\d{2}$/', $code)) {
 
-            $data = Pengamal::query()
+            $data = Pengamal::where('kecamatan', $code)
                 ->selectRaw('desa, COUNT(*) as total')
-                ->where('kecamatan', $code)
                 ->groupBy('desa')
                 ->get();
 
             $wilayahStat = [
                 'labels' => $data->map(fn($i) => $villageMap[$i->desa] ?? $i->desa)->values()->toArray(),
-                'values' => $data->pluck('total')->map(fn($v) => (int)$v)->values()->toArray(),
+                'values' => $data->pluck('total')->toArray(),
             ];
         }
 
         /*
-        |--------------------------------------------------------------------------
-        | KABUPATEN (DOUGHNUT FIXED)
-        |--------------------------------------------------------------------------
-        */
-        $provinceCode = substr($code, 0, 2);
-
-        $kabupatenStats = Pengamal::query()
-            ->selectRaw('kabupaten, COUNT(*) as total')
-            ->when($code, fn($q) => $q->where('provinsi', $provinceCode))
-            ->groupBy('kabupaten')
-            ->get()
-            ->map(function ($item) use ($regencyMap) {
-                return [
-                'label' => $regencyMap[$item->kabupaten] ?? $item->kabupaten,
-                'total' => (int) $item->total,
-            ];
-            })
-            ->values();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | RETURN
-        |--------------------------------------------------------------------------
-        */
-        /*
-|--------------------------------------------------------------------------
-| KATEGORI USIA (KANAK-KANAK / REMAJA / BAPAK / IBU)
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | KATEGORI USIA (GLOBAL)
+    |--------------------------------------------------------------------------
+    */
         $kategoriStat = (clone $query)
             ->get()
             ->map(function ($item) {
@@ -148,22 +119,50 @@ class DashboardController extends Controller
                     ? \Carbon\Carbon::parse($item->tanggal_lahir)->age
                     : null;
 
-                $jk = strtolower(trim($item->jenis_kelamin ?? ''));
+                $jk = strtolower($item->jenis_kelamin ?? '');
 
-                if (!$usia) {
-                    $kategori = 'Tidak diketahui';
-                } elseif ($usia < 11) {
-                    $kategori = 'Kanak-kanak';
-                } elseif ($usia <= 35) {
-                    $kategori = 'Remaja';
-                } else {
-                    $kategori = $jk === 'l' ? 'Bapak-bapak' : 'Ibu-ibu';
-                }
+                if (!$usia) return 'Tidak diketahui';
 
-                return $kategori;
+                if ($usia <= 10) return 'Kanak-kanak';
+                if ($usia <= 35) return 'Remaja';
+
+                return $jk === 'l' ? 'Bapak-bapak' : 'Ibu-ibu';
             })
             ->countBy()
             ->toArray();
+
+        /*
+    |--------------------------------------------------------------------------
+    | 🔥 KABUPATEN + USIA (STACKED CHART READY)
+    |--------------------------------------------------------------------------
+    */
+        $kabupatenStats = Pengamal::query()
+            ->selectRaw("
+            kabupaten,
+            SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) <= 10 THEN 1 ELSE 0 END) AS anak,
+            SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) BETWEEN 11 AND 35 THEN 1 ELSE 0 END) AS remaja,
+            SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) > 35 AND jenis_kelamin = 'L' THEN 1 ELSE 0 END) AS bapak,
+            SUM(CASE WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, CURDATE()) > 35 AND jenis_kelamin = 'P' THEN 1 ELSE 0 END) AS ibu
+        ")
+            ->when($code, fn($q) => $q->where('provinsi', substr($code, 0, 2)))
+            ->groupBy('kabupaten')
+            ->get()
+            ->map(function ($item) use ($regencyMap) {
+                return [
+                'label'   => $regencyMap[$item->kabupaten] ?? $item->kabupaten,
+                'anak'    => (int) $item->anak,
+                'remaja'  => (int) $item->remaja,
+                'bapak'   => (int) $item->bapak,
+                'ibu'     => (int) $item->ibu,
+            ];
+            })
+            ->values();
+
+        /*
+    |--------------------------------------------------------------------------
+    | RETURN
+    |--------------------------------------------------------------------------
+    */
         return view('administrator.dashboard.index', [
             'user' => $user,
             'wilayah' => $wilayah,
@@ -173,7 +172,6 @@ class DashboardController extends Controller
             'kategoriStat' => $kategoriStat,
         ]);
     }
-
     /*
     |--------------------------------------------------------------------------
     | WILAYAH NAME
