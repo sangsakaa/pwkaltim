@@ -14,6 +14,50 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>PW KALTIM</title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon"
+    href="https://pendataan.ypwkalimantantimur.my.id/image/logo.png">
+
+  <!-- SEO -->
+  <meta name="description"
+    content="SINTAK - Sistem Informasi Terpadu Pengamal Kalimantan Timur PW KALTIM">
+
+  <!-- OPEN GRAPH (WA / Facebook / Telegram) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PW KALTIM - SINTAK">
+  <meta property="og:description"
+    content="Sistem Informasi Terpadu Pengamal Kalimantan Timur (SINTAK)">
+  <meta property="og:url"
+    content="https://pendataan.ypwkalimantantimur.my.id">
+
+  <!-- Gambar Preview WhatsApp -->
+  <meta property="og:image"
+    content="https://pendataan.ypwkalimantantimur.my.id/image/logo.png">
+  <meta property="og:image:secure_url"
+    content="https://pendataan.ypwkalimantantimur.my.id/image/logo.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PW KALTIM - SINTAK">
+  <meta name="twitter:description"
+    content="Sistem Informasi Terpadu Pengamal Kalimantan Timur">
+  <meta name="twitter:image"
+    content="https://pendataan.ypwkalimantantimur.my.id/image/logo.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Toastr -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+    rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
   <style>
     html {
