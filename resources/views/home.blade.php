@@ -10,13 +10,56 @@
   <meta name="description"
     content="SINTAK - Sistem Informasi Terpadu Pengamal Kalimantan Timur">
 
+  <!-- Open Graph (WhatsApp, Facebook, Telegram) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PW KALTIM - SINTAK">
+  <meta property="og:description"
+    content="Sistem Informasi Terpadu Pengamal Kalimantan Timur">
+
+  <meta property="og:url"
+    content="{{ url()->current() }}">
+
+  <meta property="og:site_name"
+    content="PW KALTIM">
+
+  <meta property="og:image"
+    content="{{ url(asset('image/logo.png')) }}">
+
+  <meta property="og:image:secure_url"
+    content="{{ url(asset('image/logo.png')) }}">
+
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta name="twitter:title"
+    content="PW KALTIM - SINTAK">
+
+  <meta name="twitter:description"
+    content="Sistem Informasi Terpadu Pengamal Kalimantan Timur">
+
+  <meta name="twitter:image"
+    content="{{ url(asset('image/logo.png')) }}">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>PW KALTIM - SINTAK</title>
+
+  <meta name="description"
+    content="SINTAK - Sistem Informasi Terpadu Pengamal Kalimantan Timur">
+
   <meta property="og:title" content="PW KALTIM - SINTAK">
   <meta property="og:description"
     content="Sistem Informasi Terpadu Pengamal Kalimantan Timur">
 
   <meta property="og:image"
     content="{{ asset('image/logo.png') }}">
-
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -48,7 +91,8 @@
 
   <!-- NAVBAR -->
   <nav
-    class="fixed top-0 z-50 w-full glass border-b border-green-700/20 text-white">
+    x-data="{ open:false }"
+    class="fixed top-0 z-50 w-full glass border-b border-green-700/20 text-white backdrop-blur-xl">
 
     <div
       class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
@@ -71,29 +115,127 @@
         </div>
       </div>
 
-      <!-- Menu -->
-      <div
-        class="flex items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base font-medium">
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center gap-6 text-sm md:text-base font-medium">
 
-        <a href="#home"
-          class="hover:text-green-300 transition">
+        <a href="#home" class="hover:text-green-300 transition">
           Home
         </a>
 
-        <a href="#profil"
-          class="hover:text-green-300 transition">
+        <a href="#profil" class="hover:text-green-300 transition">
           Profil
         </a>
 
-        <a href="#informasi"
-          class="hover:text-green-300 transition">
+        <a href="#informasi" class="hover:text-green-300 transition">
           Informasi
         </a>
 
-        <a href="#publik"
-          class="hover:text-green-300 transition">
+        <a href="#publik" class="hover:text-green-300 transition">
           Publik
         </a>
+
+        @guest
+        <a href="{{ route('login') }}"
+          class="bg-white text-green-700 px-5 py-2 rounded-full hover:bg-green-100 transition shadow-lg">
+          Login
+        </a>
+        @endguest
+
+        @auth
+        <a href="/dashboard"
+          class="hover:text-green-300 transition">
+          Dashboard
+        </a>
+
+        <form method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit"
+            class="bg-red-500 px-4 py-2 rounded-full hover:bg-red-600 transition shadow-lg">
+            Logout
+          </button>
+        </form>
+        @endauth
+      </div>
+
+      <!-- Hamburger Mobile -->
+      <button
+        @click="open = !open"
+        class="md:hidden relative w-11 h-11 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
+
+        <div class="relative w-6 h-6">
+
+          <span
+            class="absolute left-0 top-1 block h-0.5 w-6 bg-white rounded transition-all duration-300"
+            :class="open ? 'rotate-45 top-3' : ''">
+          </span>
+
+          <span
+            class="absolute left-0 top-3 block h-0.5 w-6 bg-white rounded transition-all duration-300"
+            :class="open ? 'opacity-0' : ''">
+          </span>
+
+          <span
+            class="absolute left-0 top-5 block h-0.5 w-6 bg-white rounded transition-all duration-300"
+            :class="open ? '-rotate-45 top-3' : ''">
+          </span>
+
+        </div>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div
+      x-show="open"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 -translate-y-4"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0 -translate-y-4"
+      class="md:hidden px-4 pb-5">
+
+      <div
+        class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-5 flex flex-col gap-4 shadow-2xl">
+
+        <a href="#home" class="hover:text-green-300 transition">
+          Home
+        </a>
+
+        <a href="#profil" class="hover:text-green-300 transition">
+          Profil
+        </a>
+
+        <a href="#informasi" class="hover:text-green-300 transition">
+          Informasi
+        </a>
+
+        <a href="#publik" class="hover:text-green-300 transition">
+          Publik
+        </a>
+
+        @guest
+        <a href="{{ route('login') }}"
+          class="bg-white text-center text-green-700 py-3 rounded-2xl font-semibold hover:bg-green-100 transition">
+          Login
+        </a>
+        @endguest
+
+        @auth
+        <a href="/dashboard"
+          class="bg-green-600 text-center py-3 rounded-2xl hover:bg-green-700 transition">
+          Dashboard
+        </a>
+
+        <form method="POST" action="{{ route('logout') }}">
+          @csrf
+
+          <button type="submit"
+            class="w-full bg-red-500 py-3 rounded-2xl hover:bg-red-600 transition">
+            Logout
+          </button>
+        </form>
+        @endauth
+
       </div>
     </div>
   </nav>
