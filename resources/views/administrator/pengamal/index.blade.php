@@ -90,6 +90,10 @@
                         class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm transition">
                         Export PDF
                     </a>
+                    <a href="{{ route('pengamal.export.excel') }}"
+                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        Export Excel
+                    </a>
 
                 </div>
 

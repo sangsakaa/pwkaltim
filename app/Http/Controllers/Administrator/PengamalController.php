@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Administrator;
 
+
 use App\Http\Controllers\Controller;
 use App\Models\{District, Pengamal, Province, Regency, Village};
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use App\Exports\PengamalExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PengamalController extends Controller
 {
@@ -363,5 +364,23 @@ class PengamalController extends Controller
             $this->isRole('admin-kabupaten') => 'Grafik Pengamal per Kecamatan',
             default => 'Grafik Pengamal per Desa',
         };
+    }
+    public function exportExcel()
+    {
+        abort_unless(
+            $this->isAnyRole([
+                'superAdmin',
+                'admin-provinsi',
+                'admin-kabupaten',
+                'admin-kecamatan',
+                'admin-desa'
+            ]),
+            403
+        );
+
+        return Excel::download(
+            new PengamalExport($this->user()),
+            'data-pengamal.xlsx'
+        );
     }
 }

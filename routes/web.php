@@ -65,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('/pengamal/{pengamal}', [PengamalController::class, 'update'])
         ->name('pengamal.update');
+    Route::get('/pengamal/export/excel', [PengamalController::class, 'exportExcel'])->name('pengamal.export.excel');
 });
 
 /*
@@ -180,6 +181,7 @@ Route::resource('surat', SuratKeluarController::class);
 Route::resource('surat-masuk', SuratMasukController::class);
 Route::resource('surat-tugas', SuratTugasController::class);
 Route::resource('program-kerja', ProgramKerjaController::class);
+
 
 /*
 |--------------------------------------------------------------------------
