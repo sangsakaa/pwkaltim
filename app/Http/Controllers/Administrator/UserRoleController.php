@@ -17,7 +17,7 @@ class UserRoleController extends Controller
     {
         $users = User::with(['roles', 'province', 'regency'])
             ->latest()
-            ->paginate(10);
+            ->get();
 
         return view('administrator.users.index', compact('users'));
     }
@@ -67,7 +67,14 @@ class UserRoleController extends Controller
             'email' => ['required', 'email']
         ]);
 
-        $user = User::where('email', $request->email)->firstOrFail();
+        $user = User::with([
+            'province',
+            'regency',
+            'district',
+            'village'
+        ])
+            ->where('email', $request->email)
+            ->firstOrFail();
 
         $newPassword = Str::random(8);
 
@@ -75,10 +82,32 @@ class UserRoleController extends Controller
             'password' => Hash::make($newPassword),
         ]);
 
-        return back()->with('reset_password_success', [
-            'email' => $user->email,
-            'password' => $newPassword,
-        ]);
+        // Tentukan wilayah user yang di-reset
+        $wilayah = 'Tidak diketahui';
+
+        if ($user->regency?->name) {
+            $wilayah = Str::startsWith(
+                $user->regency->name,
+                'Kab.'
+            )
+                ? 'Kabupaten ' . substr($user->regency->name, 4)
+                : $user->regency->name;
+        } elseif ($user->district?->name) {
+            $wilayah = 'Kec. ' . $user->district->name;
+        } elseif ($user->village?->name) {
+            $wilayah = $user->village->name;
+        } elseif ($user->province?->name) {
+            $wilayah = $user->province->name;
+        }
+
+        return back()->with(
+            'reset_password_success',
+            [
+                'email' => $user->email,
+                'password' => $newPassword,
+                'wilayah' => $wilayah,
+            ]
+        );
     }
 
     public function destroy(User $user)

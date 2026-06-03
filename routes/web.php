@@ -86,6 +86,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get(
+        '/users/{user}/edit-profile',
+        [ProfileController::class, 'editUser']
+    )->name('users.profile.edit');
+
+    Route::patch(
+        '/users/{user}/edit-profile',
+        [ProfileController::class, 'updateUser']
+    )->name('users.profile.update');
 });
 
 /*
@@ -117,6 +126,10 @@ Route::middleware(['auth', 'verified', 'role:admin-provinsi|superAdmin'])->group
 
     Route::delete('/users/{user}', [UserRoleController::class, 'destroy'])
         ->name('users.destroy');
+    Route::post(
+        '/users/reset-password',
+        [UserRoleController::class, 'resetPassword']
+    )->name('users.reset-password');
 });
 
 /*

@@ -1,6 +1,8 @@
 <x-app-layout>
 
     @php
+
+
     $auth = auth()->user();
 
     $wilayah = 'Tidak diketahui';
@@ -16,129 +18,209 @@
     } elseif ($auth->province?->name) {
     $wilayah = $auth->province->name;
     }
+
+    $isAdmin = $auth->hasAnyRole([
+    'admin-provinsi',
+    'superAdmin',
+    ]);
+
+    $totalUsers = $users->count();
+
+    $adminProvinsi = $users->filter(
+    fn($u) => $u->hasRole('admin-provinsi')
+    )->count();
+
+    $adminKabupaten = $users->filter(
+    fn($u) => $u->hasRole('admin-kabupaten')
+    )->count();
+
+    $adminKecamatan = $users->filter(
+    fn($u) => $u->hasRole('admin-kecamatan')
+    )->count();
+
+    $noRole = $users->filter(
+    fn($u) => $u->roles->count() === 0
+    )->count();
+
+    $tabs = [
+    'all' => 'Semua User',
+    'superAdmin' => 'Super Admin',
+    'admin-provinsi' => 'Admin Provinsi',
+    'admin-kabupaten' => 'Admin Kabupaten',
+    'admin-kecamatan' => 'Admin Kecamatan',
+    'Sekretaris-DPRW' => 'Sekretaris DPRW',
+    'no-role' => 'Tanpa Role',
+    ];
     @endphp
 
-    {{-- HEADER --}}
-    <x-slot name="header">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+    <div
+        x-data="{
+            tab: 'all',
+            showModal: false,
+            resetEmail: '',
+            resetPassword: '',
+            waMessage: '',
 
+            copyPassword() {
+                navigator.clipboard.writeText(this.resetPassword)
+                alert('Password berhasil dicopy')
+            },
+
+            copyWA() {
+                navigator.clipboard.writeText(this.waMessage)
+                alert('Pesan WhatsApp berhasil dicopy')
+            }
+        }"
+
+        @if(session('reset_password_success'))
+        x-init="
+                showModal = true;
+                resetEmail = '{{ session('reset_password_success.email') }}';
+                resetPassword = '{{ session('reset_password_success.password') }}';
+
+                waMessage =
+`Assalamu'alaikum Wr. Wb.
+Berikut akun login Anda untuk aplikasi {{$wilayah}}
+untuk wilayah *{{ session('reset_password_success.wilayah') }}*.
+Email: ${resetEmail}
+Password Baru: ${resetPassword}
+=============================
+*Silakan login dan segera ganti password Anda demi keamanan akun.*
+Terima kasih.
+Wassalamu'alaikum Wr. Wb.`;
+            "
+        @endif>
+
+        <x-slot name="header">
             <div>
-                <h2 class="text-xl font-bold text-gray-800">
+                <h2 class="text-2xl font-bold text-slate-800">
                     User Management
                 </h2>
-                <p class="text-sm text-gray-500">
-                    Wilayah: <span class="font-semibold text-green-700">{{ $wilayah }}</span>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Wilayah aktif:
+                    <span class="font-semibold text-emerald-700">
+                        {{ $wilayah }}
+                    </span>
                 </p>
             </div>
+        </x-slot>
 
-        </div>
-    </x-slot>
+        <div class="p-6 space-y-6">
 
-    <div class="p-6 space-y-6">
+            {{-- HERO --}}
+            <div class="rounded-[2rem] bg-gradient-to-r from-emerald-700 via-green-700 to-teal-700 p-8 shadow-xl text-white">
+                <div class="flex justify-between items-center">
 
-        {{-- HERO CARD --}}
-        <div class="bg-gradient-to-r from-green-700 to-emerald-600 text-white rounded-xl shadow p-5">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm opacity-80">Wilayah Aktif</p>
-                    <h3 class="text-lg font-bold uppercase">
-                        PW {{ $wilayah }}
+                    <div>
+                        <p class="uppercase tracking-[4px] text-xs opacity-80">
+                            Dashboard User
+                        </p>
+
+                        <h1 class="text-3xl font-bold mt-2 uppercase">
+                            PW {{ $wilayah }}
+                        </h1>
+
+                        <p class="mt-3 text-sm text-white/80">
+                            Kelola akun pengguna wilayah secara terpusat.
+                        </p>
+                    </div>
+
+                    <img
+                        src="{{ asset('image/logo.png') }}"
+                        alt="logo"
+                        class="hidden lg:block w-24 h-24 object-contain">
+                </div>
+            </div>
+
+            {{-- STATS --}}
+            <div class="grid grid-cols-2 xl:grid-cols-5 gap-4">
+
+                <div class="bg-white rounded-3xl border p-5 shadow-sm">
+                    <p class="text-xs text-slate-500">Total User</p>
+                    <h3 class="text-2xl font-bold mt-1">
+                        {{ $totalUsers }}
                     </h3>
                 </div>
 
-                <img src="{{ asset('image/logo.png') }}" class="w-12 h-12">
+                <div class="bg-white rounded-3xl border p-5 shadow-sm">
+                    <p class="text-xs text-slate-500">Admin Provinsi</p>
+                    <h3 class="text-2xl font-bold mt-1 text-green-700">
+                        {{ $adminProvinsi }}
+                    </h3>
+                </div>
+
+                <div class="bg-white rounded-3xl border p-5 shadow-sm">
+                    <p class="text-xs text-slate-500">Admin Kabupaten</p>
+                    <h3 class="text-2xl font-bold mt-1 text-blue-700">
+                        {{ $adminKabupaten }}
+                    </h3>
+                </div>
+
+                <div class="bg-white rounded-3xl border p-5 shadow-sm">
+                    <p class="text-xs text-slate-500">Admin Kecamatan</p>
+                    <h3 class="text-2xl font-bold mt-1 text-amber-600">
+                        {{ $adminKecamatan }}
+                    </h3>
+                </div>
+
+                <div class="bg-white rounded-3xl border p-5 shadow-sm">
+                    <p class="text-xs text-slate-500">Tanpa Role</p>
+                    <h3 class="text-2xl font-bold mt-1 text-red-600">
+                        {{ $noRole }}
+                    </h3>
+                </div>
             </div>
-        </div>
 
-        {{-- ACTION BAR --}}
-        <div class="bg-white rounded-xl shadow-sm border p-4 flex justify-between items-center">
+            {{-- CONTENT --}}
+            <div class="bg-white rounded-[2rem] border shadow-sm overflow-hidden">
 
-            <div class="font-semibold text-gray-700">
-                Daftar User
-            </div>
+                <div class="p-5 border-b flex justify-between items-center">
 
-            @php
-            $isAdmin = auth()->user()->hasAnyRole(['admin-provinsi','superAdmin']);
-            @endphp
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">
+                            Daftar User
+                        </h3>
 
-            <a href="{{ $isAdmin ? '/users/create' : '#' }}"
-                class="px-4 py-2 rounded-lg text-sm font-semibold transition
-               {{ $isAdmin ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}"
-                @if(!$isAdmin) onclick="event.preventDefault();" @endif>
-                + Tambah User
-            </a>
+                        <p class="text-xs text-slate-500">
+                            Kelola user berdasarkan role dan wilayah
+                        </p>
+                    </div>
 
-        </div>
+                    @if($isAdmin)
+                    <a
+                        href="{{ route('users.create') }}"
+                        class="px-4 py-2 rounded-2xl bg-green-600 hover:bg-green-700 text-white text-sm font-semibold">
+                        + Tambah User
+                    </a>
+                    @endif
+                </div>
 
-        {{-- TABLE --}}
-        <div class="bg-white rounded-xl shadow-sm border overflow-x-auto">
-
-            {{-- USER ROLE TABS --}}
-            <div
-                x-data="{ tab: 'all' }"
-                class="bg-white rounded-xl shadow-sm border overflow-hidden">
-
-                {{-- HEADER TABS --}}
-                <div class="border-b bg-gray-50 p-4 flex flex-wrap gap-2">
-
+                {{-- FILTER --}}
+                <div class="p-4 border-b bg-slate-50 flex flex-wrap gap-2">
+                    @foreach($tabs as $key => $label)
                     <button
-                        @click="tab='all'"
-                        :class="tab==='all'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700'"
-                        class="px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Semua User
-                    </button>
+                        @click="tab = '{{ $key }}'"
+                        :class="tab === '{{ $key }}'
+                                ? 'bg-green-600 text-white'
+                                : 'bg-white border text-slate-700'"
+                        class="px-4 py-2 rounded-xl text-xs font-medium">
 
-                    <button
-                        @click="tab='admin-kabupaten'"
-                        :class="tab==='admin-kabupaten'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700'"
-                        class="px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Admin Kabupaten
+                        {{ $label }}
                     </button>
-
-                    <button
-                        @click="tab='admin-kecamatan'"
-                        :class="tab==='admin-kecamatan'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700'"
-                        class="px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Admin Kecamatan
-                    </button>
-
-                    <button
-                        @click="tab='Sekretaris-DPRW'"
-                        :class="tab==='Sekretaris-DPRW'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700'"
-                        class="px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Sekretaris DPRW
-                    </button>
-
-                    <button
-                        @click="tab='no-role'"
-                        :class="tab==='no-role'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700'"
-                        class="px-4 py-2 rounded-lg text-sm font-semibold transition">
-                        Tanpa Role
-                    </button>
-
+                    @endforeach
                 </div>
 
                 {{-- TABLE --}}
                 <div class="overflow-x-auto">
 
-                    <table class="w-full text-sm">
-                        <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+                    <table class="w-full min-w-[900px]">
+
+                        <thead class="bg-slate-50 border-b text-[11px] uppercase text-slate-500">
                             <tr>
-                                <th class="p-3 text-left">Nama</th>
-                                <th class="p-3 text-left">Email</th>
-                                <th class="p-3 text-left">Role</th>
-                                <th class="p-3 text-left">Wilayah</th>
-                                <th class="p-3 text-center">Aksi</th>
+                                <th class="px-5 py-4 text-left">Nama</th>
+                                <th class="px-5 py-4 text-left">Informasi</th>
+                                <th class="px-5 py-4 text-center">Aksi</th>
                             </tr>
                         </thead>
 
@@ -148,104 +230,89 @@
 
                             @php
                             $roles = $u->roles->pluck('name')->toArray();
-
                             $showRole = count($roles)
                             ? $roles[0]
                             : 'no-role';
 
                             $wil = $u->regency?->name
-                            ? (Str::startsWith($u->regency->name,'Kab.')
-                            ? 'Kabupaten '.substr($u->regency->name,4)
-                            : $u->regency->name)
-                            : ($u->district?->name
-                            ? 'Kec. '.$u->district->name
-                            : ($u->village?->name
-                            ?? ($u->province?->name ?? '-')));
+                            ? (
+                            Str::startsWith($u->regency->name, 'Kab.')
+                            ? 'Kabupaten ' . substr($u->regency->name, 4)
+                            : $u->regency->name
+                            )
+                            : (
+                            $u->district?->name
+                            ? 'Kec. ' . $u->district->name
+                            : ($u->village?->name ?? ($u->province?->name ?? '-'))
+                            );
                             @endphp
 
                             <tr
                                 x-show="tab === 'all' || tab === '{{ $showRole }}'"
-                                class="hover:bg-gray-50 transition">
+                                class="hover:bg-slate-50">
 
-                                {{-- Nama --}}
-                                <td class="p-3 font-medium text-gray-800">
-                                    {{ $u->name }}
-                                </td>
-
-                                {{-- Email --}}
-                                <td class="p-3 text-gray-600">
-                                    {{ $u->email }}
-                                </td>
-
-                                {{-- Role --}}
-                                <td class="p-3">
-                                    <div class="flex flex-wrap gap-1">
-                                        @forelse($u->roles as $role)
-                                        <span class="px-2 py-1 text-xs rounded bg-green-100 text-green-700">
-                                            {{ $role->name }}
-                                        </span>
-                                        @empty
-                                        <span class="text-xs text-gray-400">
-                                            No Role
-                                        </span>
-                                        @endforelse
+                                <td class="px-5 py-4">
+                                    <div class="font-semibold text-sm text-slate-800">
+                                        {{ $u->name }}
                                     </div>
                                 </td>
 
-                                {{-- Wilayah --}}
-                                <td class="p-3 text-gray-600">
-                                    {{ $wil }}
+                                <td class="px-5 py-4 text-xs text-slate-600">
+
+                                    {{ $u->email }}
+
+                                    <br>
+
+                                    @forelse($u->roles as $role)
+                                    <span class="inline-block mt-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-[10px]">
+                                        {{ $role->name }}
+                                    </span>
+                                    @empty
+                                    <span class="inline-block mt-1 px-2 py-1 rounded-full bg-red-100 text-red-600 text-[10px]">
+                                        No Role
+                                    </span>
+                                    @endforelse
+
+                                    <div class="text-[11px] text-slate-400 mt-1">
+                                        {{ $wil }}
+                                    </div>
                                 </td>
 
-                                {{-- Aksi --}}
-                                <td class="p-3">
+                                <td class="px-5 py-4">
                                     <div class="flex justify-center gap-2 flex-wrap">
 
-                                        <a href="{{ route('users.assign-role',$u) }}"
-                                            class="px-2 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-xs">
+                                        <a
+                                            href="{{ route('users.profile.edit', $u->id) }}"
+                                            class="px-3 py-2 rounded-xl bg-blue-600 text-white text-[11px]">
+                                            Profil
+                                        </a>
+
+                                        <a
+                                            href="{{ route('users.assign-role', $u) }}"
+                                            class="px-3 py-2 rounded-xl bg-yellow-500 text-white text-[11px]">
                                             Role
                                         </a>
 
-                                        <form method="POST" action="/users/reset-password">
+                                        <form
+                                            method="POST"
+                                            action="{{ route('users.reset-password') }}">
+
                                             @csrf
+
                                             <input
                                                 type="hidden"
                                                 name="email"
                                                 value="{{ $u->email }}">
 
                                             <button
-                                                class="px-2 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded text-xs">
+                                                type="submit"
+                                                class="px-3 py-2 rounded-xl bg-slate-700 text-white text-[11px]">
                                                 Reset
-                                            </button>
-                                        </form>
-
-                                        @php
-                                        $canDelete = auth()->user()
-                                        ->hasAnyRole([
-                                        'superAdmin',
-                                        'admin-provinsi'
-                                        ]);
-                                        @endphp
-
-                                        <form
-                                            method="POST"
-                                            action="{{ route('users.destroy',$u->id) }}">
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button
-                                                class="px-2 py-1 text-xs text-white rounded
-                                    {{ $canDelete
-                                        ? 'bg-red-500 hover:bg-red-600'
-                                        : 'bg-gray-400 cursor-not-allowed' }}"
-                                                {{ $canDelete ? '' : 'disabled' }}>
-                                                Hapus
                                             </button>
                                         </form>
 
                                     </div>
                                 </td>
-
                             </tr>
 
                             @endforeach
@@ -255,50 +322,83 @@
 
                 </div>
             </div>
+        </div>
 
-            {{-- TOAST --}}
-            <script>
-                toastr.options = {
-                    closeButton: true,
-                    progressBar: true,
-                    positionClass: "toast-top-right",
-                    timeOut: 4000,
-                };
-            </script>
+        {{-- MODAL RESET PASSWORD --}}
+        <div
+            x-show="showModal"
+            x-transition
+            class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-5">
 
-            {{-- RESET PASSWORD POPUP --}}
-            @if(session('reset_password_success'))
-            <script>
-                const data = @json(session('reset_password_success'));
+            <div
+                @click.outside="showModal = false"
+                class="bg-white w-full max-w-lg rounded-[2rem] p-6 shadow-2xl">
 
-                toastr.success(
-                    `Email: ${data.email}<br>Password: <b>${data.password}</b><br><small>Disarankan segera dicatat</small>`,
-                    "Password Baru", {
-                        escapeHtml: false,
-                        timeOut: 8000
-                    }
-                );
-            </script>
-            @endif
-            @if(session('reset_password_success'))
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const data = @json(session('reset_password_success'));
+                <h2 class="text-xl font-bold text-slate-800">
+                    Password Berhasil Direset
+                </h2>
 
-                    setTimeout(() => {
-                        toastr.success(
-                            `Email: ${data.email}<br>Password: <b>${data.password}</b>`,
-                            "Password Baru", {
-                                escapeHtml: false,
-                                timeOut: 8000
-                            }
-                        );
-                    }, 300);
-                });
-            </script>
-            @endif
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+                <div class="mt-5 space-y-4">
+
+                    <div>
+                        <label class="text-sm font-medium">
+                            Email
+                        </label>
+
+                        <input
+                            type="text"
+                            x-model="resetEmail"
+                            readonly
+                            class="w-full mt-1 rounded-xl border text-sm">
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium">
+                            Password Baru
+                        </label>
+
+                        <div class="flex gap-2 mt-1">
+                            <input
+                                type="text"
+                                x-model="resetPassword"
+                                readonly
+                                class="flex-1 rounded-xl border text-sm">
+
+                            <button
+                                @click="copyPassword()"
+                                class="px-4 rounded-xl bg-blue-600 text-white text-sm">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium">
+                            Pesan WhatsApp
+                        </label>
+
+                        <textarea
+                            x-model="waMessage"
+                            rows="10"
+                            class="w-full rounded-xl border text-sm"></textarea>
+
+                        <button
+                            @click="copyWA()"
+                            class="mt-3 w-full py-3 rounded-xl bg-green-600 text-white font-semibold">
+                            Copy Pesan WhatsApp
+                        </button>
+                    </div>
+
+                    <button
+                        @click="showModal = false"
+                        class="w-full py-3 rounded-xl bg-slate-700 text-white">
+                        Tutup
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 </x-app-layout>

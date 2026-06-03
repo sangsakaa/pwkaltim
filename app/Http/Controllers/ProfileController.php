@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -56,5 +57,51 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+    /**
+     * Edit profile user lain
+     */
+    public function editUser(User $user): View
+    {
+        abort_unless(
+            auth()->user()->hasAnyRole([
+                'superAdmin',
+                'admin-provinsi'
+            ]),
+            403
+        );
+
+        return view('profile.edit', [
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * Update profile user lain
+     */
+    public function updateUser(
+        Request $request,
+        User $user
+    ): RedirectResponse {
+
+        abort_unless(
+            auth()->user()->hasAnyRole([
+                'superAdmin',
+                'admin-provinsi'
+            ]),
+            403
+        );
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email'],
+        ]);
+
+        $user->update($validated);
+
+        return back()->with(
+            'success',
+            'Data user berhasil diperbarui'
+        );
     }
 }
