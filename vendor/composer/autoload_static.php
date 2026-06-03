@@ -736,6 +736,7 @@ class ComposerStaticInite6ddd7555ed4af5a57b7c52fb456bf1d
 
     public static $classMap = array (
         'App\\Enums\\Role' => __DIR__ . '/../..' . '/app/Enums/Role.php',
+        'App\\Exports\\PengamalExport' => __DIR__ . '/../..' . '/app/Exports/PengamalExport.php',
         'App\\Http\\Controllers\\ActivityLogController' => __DIR__ . '/../..' . '/app/Http/Controllers/ActivityLogController.php',
         'App\\Http\\Controllers\\Administrator\\DashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/Administrator/DashboardController.php',
         'App\\Http\\Controllers\\Administrator\\PengamalController' => __DIR__ . '/../..' . '/app/Http/Controllers/Administrator/PengamalController.php',

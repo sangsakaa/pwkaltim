@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Enums\\Role' => $baseDir . '/app/Enums/Role.php',
+    'App\\Exports\\PengamalExport' => $baseDir . '/app/Exports/PengamalExport.php',
     'App\\Http\\Controllers\\ActivityLogController' => $baseDir . '/app/Http/Controllers/ActivityLogController.php',
     'App\\Http\\Controllers\\Administrator\\DashboardController' => $baseDir . '/app/Http/Controllers/Administrator/DashboardController.php',
     'App\\Http\\Controllers\\Administrator\\PengamalController' => $baseDir . '/app/Http/Controllers/Administrator/PengamalController.php',
