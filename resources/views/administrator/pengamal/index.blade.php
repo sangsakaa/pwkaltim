@@ -153,10 +153,25 @@
                             </td>
 
                             <td class="px-4 py-2">
-                                <a href="/pengamal/{{ $item->id }}"
+
+                                @php
+                                $canViewDetail = auth()->user()?->hasAnyRole([
+                                'superAdmin',
+                                'admin-provinsi',
+                                ]);
+                                @endphp
+
+                                @if($canViewDetail)
+                                <a href="{{ route('pengamal.show', $item->id) }}"
                                     class="font-medium {{ $item->tanggal_lahir ? 'text-green-700' : 'text-red-600' }}">
                                     {{ $item->nama_lengkap }}
                                 </a>
+                                @else
+                                <span class="font-medium {{ $item->tanggal_lahir ? 'text-green-700' : 'text-red-600' }}">
+                                    {{ $item->nama_lengkap }}
+                                </span>
+                                @endif
+
                             </td>
 
                             <td class="px-4 py-2 hidden sm:table-cell">

@@ -142,43 +142,53 @@
                     {{-- ACTION --}}
                     <div class="flex flex-wrap gap-3 pt-4 border-t">
 
+                        {{-- Kembali (semua user login) --}}
                         @auth
-                        <a href="/pengamal/{{ $pengamal->id }}/edit"
-                            class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
-                            Edit
-                        </a>
-
-                        <a href="/pengamal"
+                        <a href="{{ route('pengamal.index') }}"
                             class="px-4 py-2 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 transition">
                             Kembali
                         </a>
+                        @endauth
 
+
+                        @auth
                         @php
-                        $canDelete = auth()->user()?->hasAnyRole([
+                        $canManage = auth()->user()?->hasAnyRole([
                         'superAdmin',
                         'admin-provinsi',
-                        'admin-kabupaten',
                         ]);
                         @endphp
 
-                        <form action="/pengamal/show/{{ $pengamal->id }}"
-                            method="POST">
+                        {{-- EDIT --}}
+                        @if($canManage)
+                        <a href="{{ route('pengamal.edit', $pengamal->id) }}"
+                            class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                            Edit
+                        </a>
+                        @endif
+
+                        {{-- DELETE --}}
+                        @if($canManage)
+                        <form action="{{ route('pengamal.destroy', $pengamal->id) }}"
+                            method="POST"
+                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
 
                             @csrf
                             @method('DELETE')
 
                             <button type="submit"
-                                class="px-4 py-2 rounded-lg text-white transition
-                                {{ $canDelete ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-400 cursor-not-allowed' }}"
-                                {{ $canDelete ? '' : 'disabled' }}>
+                                class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
                                 Hapus
                             </button>
 
                         </form>
+                        @endif
                         @endauth
 
+
+                        {{-- WhatsApp (tanpa role, hanya jika nomor ada) --}}
                         @if($pengamal->no_hp)
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/','',$pengamal->no_hp) }}"
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/','', $pengamal->no_hp) }}"
                             target="_blank"
                             class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">
                             WhatsApp

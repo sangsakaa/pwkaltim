@@ -133,6 +133,22 @@
 
   $user = auth()->user();
 
+  /*
+  |--------------------------------------------------------------------------
+  | ROLE PRIVACY CONTROL
+  |--------------------------------------------------------------------------
+  */
+  $hideSensitive = $user->hasAnyRole([
+  'admin-kabupaten',
+  'admin-kecamatan',
+  'admin-desa',
+  ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | WILAYAH
+  |--------------------------------------------------------------------------
+  */
   if ($user->regency?->name) {
   $wilayah = Str::startsWith($user->regency->name, 'Kab.')
   ? 'Kabupaten ' . ltrim(substr($user->regency->name, 4))
@@ -204,7 +220,6 @@
         <th>Nama</th>
         <th>Tempat, Tanggal Lahir</th>
         <th>JK</th>
-        <!-- <th>Agama</th> -->
         <th>Alamat</th>
         <th>HP</th>
       </tr>
@@ -221,46 +236,53 @@
       );
 
       $isDuplicate = ($duplicateMap[$key] ?? 0) > 1;
-
       $isEmptyBirth = empty($d->tempat_lahir) || empty($d->tanggal_lahir);
       @endphp
 
       <tr>
         <td class="center">{{ $i + 1 }}</td>
 
-        {{-- NAMA (RED jika DUPLIKAT) --}}
         <td class="{{ $isDuplicate ? 'text-red' : '' }}">
           {{ ucwords(strtolower($d->nama_lengkap)) }}
         </td>
 
-        {{-- TEMPAT & TANGGAL LAHIR (BLUE jika kosong) --}}
+        {{-- TTL (HIDE BY ROLE) --}}
         <td class="{{ $isEmptyBirth ? 'text-blue' : '' }}">
+          @if($hideSensitive)
+          -
+          @else
           {{ $d->tempat_lahir ?? '-' }},
           {{ $d->tanggal_lahir ? Carbon::parse($d->tanggal_lahir)->format('d-m-Y') : '-' }}
+          @endif
         </td>
 
         <td class="center">{{ $d->jenis_kelamin ?? '-' }}</td>
-        <!-- <td class="center">{{ $d->agama ?? '-' }}</td> -->
 
         <td>
           {{ $d->village->name ?? '-' }},
-          {{ $d->district->name ?? '-' }},
-          <!-- {{ $d->regency->name ?? '-' }} -->
+          {{ $d->district->name ?? '-' }}
         </td>
 
+        {{-- HP (HIDE BY ROLE) --}}
         <td class="center">
+          @if($hideSensitive)
+          -
+          @else
           {{
-        $d->no_hp
-        ? preg_replace('/^\+62/', '0', str_replace([' ', '-'], '', trim($d->no_hp)))
-        : ''
-    }}
+            $d->no_hp
+              ? preg_replace('/^\+62/', '0', str_replace([' ', '-'], '', trim($d->no_hp)))
+              : '-'
+          }}
+          @endif
         </td>
+
       </tr>
 
       @endforeach
     </tbody>
   </table>
 
+  {{-- REKAP TETAP NORMAL --}}
   <h3>Rekap Usia - {{ $kabupaten }}</h3>
 
   <table>

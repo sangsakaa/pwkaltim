@@ -115,4 +115,21 @@ class User extends Authenticatable
 
         return 'Tidak diketahui';
     }
+    public function getRolePermissions()
+    {
+        return $this->roles->load('permissions')
+            ->pluck('permissions')
+            ->flatten()
+            ->pluck('name')
+            ->unique()
+            ->values();
+    }
+
+    /**
+     * Cek permission berbasis role saja (bukan direct permission)
+     */
+    public function hasRolePermission(string $permission): bool
+    {
+        return $this->getRolePermissions()->contains($permission);
+    }
 }

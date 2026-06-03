@@ -30,16 +30,13 @@ use App\Http\Controllers\Administrator\{
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', fn() => view('home'))->name('home');
 
 /*
 |--------------------------------------------------------------------------
 | ADMIN DASHBOARD
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('admin.dashboard');
@@ -53,27 +50,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/daftar-pengamal', [PengamalController::class, 'createPublic'])
     ->name('pengamal.public.create');
 
-// public
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // CRUD utama (pakai resource biar otomatis lengkap)
     Route::resource('pengamal', PengamalController::class);
 
-    // store tetap manual kalau kamu mau pisah dari resource
     Route::post('/pengamal/store', [PengamalController::class, 'store'])
         ->name('pengamal.store');
-    Route::delete('/pengamal/show/{pengamal}', [PengamalController::class, 'destroy'])->name('pengamal.destroy');
-    Route::get('/pengamal/{pengamal}/edit', [PengamalController::class, 'edit'])->name('pengamal.edit');
-    Route::put('/pengamal/{pengamal}', [PengamalController::class, 'update'])->name('pengamal.update');
-});
 
+    Route::delete('/pengamal/show/{pengamal}', [PengamalController::class, 'destroy'])
+        ->name('pengamal.destroy');
+
+    Route::get('/pengamal/{pengamal}/edit', [PengamalController::class, 'edit'])
+        ->name('pengamal.edit');
+
+    Route::put('/pengamal/{pengamal}', [PengamalController::class, 'update'])
+        ->name('pengamal.update');
+});
 
 /*
 |--------------------------------------------------------------------------
 | WILAYAH API
 |--------------------------------------------------------------------------
 */
-
 Route::get('/get-regencies/{province}', [PengamalController::class, 'getRegencies']);
 Route::get('/get-districts/{regency}', [PengamalController::class, 'getDistricts']);
 Route::get('/get-villages/{district}', [PengamalController::class, 'getVillages']);
@@ -83,7 +81,6 @@ Route::get('/get-villages/{district}', [PengamalController::class, 'getVillages'
 | PROFILE
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -95,18 +92,30 @@ Route::middleware('auth')->group(function () {
 | ROLES & USERS
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'verified', 'role:admin-provinsi|superAdmin'])->group(function () {
 
     Route::resource('roles', RoleController::class);
 
-    Route::get('/users/assign-role', [UserRoleController::class, 'index'])->name('users.assign-role-index');
-    Route::get('/users/create', [UserRoleController::class, 'create'])->name('users.create');
-    Route::post('/users/create', [UserRoleController::class, 'storeUser'])->name('users.store');
-    Route::get('/users/{user}/assign-role', [UserRoleController::class, 'edit'])->name('users.assign-role');
-    Route::post('/users/{user}/assign-role', [UserRoleController::class, 'update'])->name('users.assign-role.update');
-    Route::post('/users/{user}/change-role', [UserRoleController::class, 'changeRole'])->name('users.change-role');
-    Route::delete('/users/{user}', [UserRoleController::class, 'destroy'])->name('users.destroy');
+    Route::get('/users/assign-role', [UserRoleController::class, 'index'])
+        ->name('users.assign-role-index');
+
+    Route::get('/users/create', [UserRoleController::class, 'create'])
+        ->name('users.create');
+
+    Route::post('/users/create', [UserRoleController::class, 'storeUser'])
+        ->name('users.store');
+
+    Route::get('/users/{user}/assign-role', [UserRoleController::class, 'edit'])
+        ->name('users.assign-role');
+
+    Route::post('/users/{user}/assign-role', [UserRoleController::class, 'update'])
+        ->name('users.assign-role.update');
+
+    Route::post('/users/{user}/change-role', [UserRoleController::class, 'changeRole'])
+        ->name('users.change-role');
+
+    Route::delete('/users/{user}', [UserRoleController::class, 'destroy'])
+        ->name('users.destroy');
 });
 
 /*
@@ -114,19 +123,24 @@ Route::middleware(['auth', 'verified', 'role:admin-provinsi|superAdmin'])->group
 | WILAYAH
 |--------------------------------------------------------------------------
 */
-
-Route::get('/wilayah', [WilayahController::class, 'index'])->name('wilayah.index');
+Route::get('/wilayah', [WilayahController::class, 'index'])
+    ->name('wilayah.index');
 
 /*
 |--------------------------------------------------------------------------
-| LAPORAN
+| LAPORAN (GENERAL)
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/laporan', [LaporanController::class, 'laporan'])->name('laporan.laporan');
-    Route::get('/laporan-file', [LaporanController::class, 'index'])->name('laporan-file.index');
-    Route::get('/laporan/download', [LaporanController::class, 'downloadLaporan'])->name('laporan.download');
+
+    Route::get('/laporan', [LaporanController::class, 'laporan'])
+        ->name('laporan.laporan');
+
+    Route::get('/laporan-file', [LaporanController::class, 'index'])
+        ->name('laporan-file.index');
+
+    Route::get('/laporan/download', [LaporanController::class, 'downloadLaporan'])
+        ->name('laporan.download');
 });
 
 /*
@@ -134,7 +148,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | POST
 |--------------------------------------------------------------------------
 */
-
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/post/create', [PostController::class, 'create'])->name('post.create');
@@ -145,27 +158,24 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/post/approved', [PostController::class, 'approvedList'])->name('post.approved');
     Route::delete('/post/{id}', [PostController::class, 'destroy'])->name('post.destroy');
+
     Route::get('/post-detail/{id}', [PostController::class, 'showPublic'])
         ->name('post.public.show');
 });
-
-
 
 /*
 |--------------------------------------------------------------------------
 | ACTIVITY LOG
 |--------------------------------------------------------------------------
 */
-
 Route::get('/admin/activity-logs', [ActivityLogController::class, 'index'])
     ->name('activity.logs');
 
 /*
 |--------------------------------------------------------------------------
-| SURAT
+| SURAT & PROGRAM
 |--------------------------------------------------------------------------
 */
-
 Route::resource('surat', SuratKeluarController::class);
 Route::resource('surat-masuk', SuratMasukController::class);
 Route::resource('surat-tugas', SuratTugasController::class);
@@ -173,30 +183,24 @@ Route::resource('program-kerja', ProgramKerjaController::class);
 
 /*
 |--------------------------------------------------------------------------
-| RESERVASI PUBLIC (FIXED - ONLY ONE GROUP)
+| RESERVASI PUBLIC
 |--------------------------------------------------------------------------
 */
-
 Route::prefix('reservasi')->name('reservasi.')->group(function () {
 
     Route::get('/', [ReservationController::class, 'create'])->name('create');
     Route::post('/store', [ReservationController::class, 'store'])->name('store');
-
     Route::get('/show/{id}', [ReservationController::class, 'show'])->name('show');
-
     Route::get('/edit', [ReservationController::class, 'lookup'])->name('lookup');
-
-    Route::post('/find', [ReservationController::class, 'find'])->name('find'); // ✅ FIX
-
+    Route::post('/find', [ReservationController::class, 'find'])->name('find');
     Route::put('/update/{reservation}', [ReservationController::class, 'update'])->name('update');
 });
 
 /*
 |--------------------------------------------------------------------------
-| ADMIN RESERVASI (FIXED - NO DUPLICATE)
+| ADMIN RESERVASI
 |--------------------------------------------------------------------------
 */
-
 Route::middleware([
     'auth',
     'verified',
@@ -214,35 +218,49 @@ Route::middleware([
         Route::get('/scan', [ScanController::class, 'scan'])->name('scan');
         Route::post('/checkin', [ScanController::class, 'checkin'])->name('checkin');
     });
-Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::prefix('laporan')->name('laporan.')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| LAPORAN (DETAIL GROUP)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'verified'])->prefix('laporan')->name('laporan.')->group(function () {
 
-        Route::get('/', [LaporanController::class, 'laporan'])
-            ->name('laporan');
+    Route::get('/', [LaporanController::class, 'laporan'])->name('laporan');
 
-        Route::get('/rekap-kabupaten', [LaporanController::class, 'rekapKabupaten'])
-            ->name('rekap-kabupaten');
+    Route::get('/rekap-kabupaten', [LaporanController::class, 'rekapKabupaten'])
+        ->name('rekap-kabupaten');
 
-        Route::get('/wilayah-kosong', [LaporanController::class, 'wilayahBelumAdaPengamal'])
-            ->name('wilayah-kosong');
+    Route::get('/wilayah-kosong', [LaporanController::class, 'wilayahBelumAdaPengamal'])
+        ->name('wilayah-kosong');
 
-        Route::get('/export-kategori/{kategori}', [LaporanController::class, 'exportKategoriPdf'])
-            ->name('export-kategori');
-    });
+    Route::get('/export-kategori/{kategori}', [LaporanController::class, 'exportKategoriPdf'])
+        ->name('export-kategori');
 });
+
+/*
+|--------------------------------------------------------------------------
+| PENGAMAL SYNC
+|--------------------------------------------------------------------------
+*/
 Route::get('/pengamal/sync', [PengamalController::class, 'sync'])
     ->middleware('role:superAdmin|admin-provinsi')
     ->name('pengamal.sync');
 
-
-
+/*
+|--------------------------------------------------------------------------
+| RESERVATIONS (ALTERNATIVE ROUTES)
+|--------------------------------------------------------------------------
+*/
 Route::post('/reservations', [ReservationController::class, 'store'])
     ->name('reservations.store');
+
 Route::get('/reservasi/create', [ReservationController::class, 'create'])
     ->name('reservations.create');
+
 Route::get('/reservasi/{id}', [ReservationController::class, 'show'])
     ->name('reservations.show');
+
 Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])
     ->name('reservations.edit');
 
