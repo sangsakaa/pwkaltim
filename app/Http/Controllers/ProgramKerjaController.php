@@ -10,10 +10,15 @@ use App\Http\Requests\UpdateProgramKerjaRequest;
 
 class ProgramKerjaController extends Controller
 {
+    private array $opsiWaktu = ['bulanan', 'triwulan', 'semester', 'tahunan'];
+
     public function index(Request $request)
     {
         $q = $request->get('q');
-        $data = ProgramKerja::when($q, fn($query) => $query->search($q))
+
+        $data = ProgramKerja::when($q, function ($query) use ($q) {
+            $query->search($q);
+        })
             ->orderBy('nomor')
             ->paginate(10)
             ->withQueryString();
@@ -23,11 +28,19 @@ class ProgramKerjaController extends Controller
 
     public function create()
     {
-        $opsiWaktu = ['bulanan', 'triwulan', 'semester', 'tahunan'];
-        return view('program-kerja.create', compact('opsiWaktu'));
+        return view('program-kerja.create', [
+            'opsiWaktu' => $this->opsiWaktu
+        ]);
     }
 
+    public function store(StoreProgramKerjaRequest $request)
+    {
+        ProgramKerja::create($request->validated());
 
+        return redirect()
+            ->route('program-kerja.index')
+            ->with('success', 'Program Kerja berhasil ditambahkan.');
+    }
 
     public function show(ProgramKerja $program_kerja)
     {
@@ -36,89 +49,74 @@ class ProgramKerjaController extends Controller
 
     public function edit(ProgramKerja $program_kerja)
     {
-        $opsiWaktu = ['bulanan', 'triwulan', 'semester', 'tahunan'];
-        return view('program-kerja.edit', compact('program_kerja', 'opsiWaktu'));
-    }
-    public function store(StoreProgramKerjaRequest $request)
-    {
-
-        ProgramKerja::create($request->validated());
-        return redirect()->route('program-kerja.index')->with('success', 'Program Kerja berhasil ditambahkan.');
+        return view('program-kerja.edit', [
+            'program_kerja' => $program_kerja,
+            'opsiWaktu' => $this->opsiWaktu
+        ]);
     }
 
     public function update(UpdateProgramKerjaRequest $request, ProgramKerja $program_kerja)
     {
-        // Update data lama, bukan create baru
-
         $program_kerja->update($request->validated());
 
-        return redirect()->back()
+        return redirect()
+            ->back()
             ->with('success', 'Program Kerja berhasil diperbarui.');
     }
-
 
     public function destroy(ProgramKerja $program_kerja)
     {
         $program_kerja->delete();
-        return redirect()->route('program-kerja.index')->with('success', 'Program Kerja berhasil dihapus.');
+
+        return redirect()
+            ->route('program-kerja.index')
+            ->with('success', 'Program Kerja berhasil dihapus.');
     }
-    // public function exportPdf($waktu)
-    // {
-    //     // Validasi input
-    //     $opsi = ['bulanan', 'triwulan', 'semester', 'tahunan'];
-    //     if (! in_array($waktu, $opsi)) {
-    //         abort(404, 'Jenis waktu tidak valid');
-    //     }
 
-    //     // Ambil data sesuai waktu
-    //     $data = ProgramKerja::where('waktu_pelaksanaan', $waktu)->get();
-
-    //     // Load view PDF
-    //     // $pdf = Pdf::loadView('program-kerja.pdf', [
-    //     //     'data' => $data,
-    //     //     'waktu' => ucfirst($waktu),
-    //     // ])->setPaper('A4', 'portrait');
-    //     $pdf = Pdf::loadView('program-kerja.pdf', [
-    //         'data' => $data,
-    //         'waktu' => ucfirst($waktu),
-    //     ])
-    //         ->setPaper([0, 0, 595.28, 935.43], 'landscape'); // F4 landscape
-
-    //     return $pdf->download("program-kerja-{$waktu}.pdf");
-    // }
-    public function exportPdf($waktu)
+    /**
+     * FIXED EXPORT PDF
+     * - aman jika tanpa parameter
+     * - support: semua / bulanan / triwulan / semester / tahunan
+     */
+    public function exportPdf($waktu = 'semua')
     {
-        $opsi = ['bulanan', 'triwulan', 'semester', 'tahunan'];
-
-
-        if ($waktu !== 'semua' && ! in_array($waktu, $opsi)) {
-            abort(404, 'Jenis waktu tidak valid');
-        }
+        $waktu = strtolower($waktu);
 
         $tahun = now()->year;
 
+        // validasi
+        if ($waktu !== 'semua' && !in_array($waktu, $this->opsiWaktu)) {
+            abort(404, 'Jenis waktu tidak valid');
+        }
+
         $query = ProgramKerja::query()
             ->whereYear('created_at', $tahun)
-            ->orderByRaw("FIELD(waktu_pelaksanaan, 'bulanan', 'triwulan', 'semester', 'tahunan')");
-        $data = $waktu === 'semua'
-            ? $query->whereIn('waktu_pelaksanaan', $opsi)->get()
-            : $query->where('waktu_pelaksanaan', $waktu)->get();
+            ->orderByRaw("
+                FIELD(waktu_pelaksanaan, 'bulanan', 'triwulan', 'semester', 'tahunan')
+            ");
 
-        $label = $waktu === 'semua' ? 'Semua Waktu' : ucfirst($waktu);
+        // filter data
+        if ($waktu === 'semua') {
+            $data = $query->whereIn('waktu_pelaksanaan', $this->opsiWaktu)->get();
+        } else {
+            $data = $query->where('waktu_pelaksanaan', $waktu)->get();
+        }
+
+        $label = $waktu === 'semua'
+            ? 'Semua Waktu'
+            : ucfirst($waktu);
 
         $pdf = Pdf::loadView('program-kerja.pdf', [
             'data'  => $data,
             'waktu' => $label,
             'tahun' => $tahun,
-            // ])->setPaper([0, 0, 595.28, 935.43], 'landscape');
-        ])->setPaper([0, 0, 595.28, 935.43], 'portrait'); // F4 portrait
-
+        ])
+            ->setPaper('F4', 'portrait');
 
         $filename = $waktu === 'semua'
             ? "program-kerja-semua-{$tahun}.pdf"
             : "program-kerja-{$waktu}-{$tahun}.pdf";
 
-        // tampilkan di browser, bukan download
         return $pdf->stream($filename);
     }
 }
