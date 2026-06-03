@@ -22,7 +22,7 @@
       text-align: center;
       margin: 12px 0;
       font-size: 16px;
-      letter-spacing: 0.5px;
+      letter-spacing: .5px;
     }
 
     h3 {
@@ -74,7 +74,7 @@
     .akta {
       font-size: 10px;
       margin-top: 6px;
-      opacity: 0.95;
+      opacity: .95;
     }
 
     table {
@@ -114,21 +114,54 @@
       font-weight: bold;
     }
 
-    .text-blue {
-      color: #2563eb;
-      font-weight: bold;
-    }
-
     .page-break {
       page-break-after: always;
+    }
+
+    .footer-info {
+      margin-top: 14px;
+      font-size: 10px;
+      color: #555;
+      border-top: 1px solid #ddd;
+      padding-top: 6px;
+    }
+
+    .footer-info table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .footer-info td {
+      border: none;
+      padding: 2px 0;
+      background: transparent !important;
     }
   </style>
 </head>
 
 <body>
+  @php
+
+  use Carbon\Carbon;
+
+  $user = auth()->user();
+
+  $downloadedBy = $user->name ?? 'Tidak diketahui';
+  $downloadedAt = Carbon::now()->format('d-m-Y H:i:s');
+
+  /*
+  |--------------------------------------------------------------------------
+  | ROLE PRIVACY CONTROL
+  |--------------------------------------------------------------------------
+  */
+  $hideSensitive = $user->hasAnyRole([
+  'admin-kabupaten',
+  'admin-kecamatan',
+  'admin-desa',
+  ]);
+  @endphp
 
   @php
-  use Carbon\Carbon;
   use Illuminate\Support\Str;
 
   $user = auth()->user();
@@ -172,13 +205,10 @@
 
   foreach ($grouped as $kabupaten => $items) {
   foreach ($items as $d) {
-  $key = strtolower(
-  trim($d->nama_lengkap) . '|' .
-  trim($d->tempat_lahir ?? '') . '|' .
-  ($d->tanggal_lahir ?? '')
-  );
+  $key = strtolower(trim($d->nama_lengkap));
 
-  $duplicateMap[$key] = ($duplicateMap[$key] ?? 0) + 1;
+  $duplicateMap[$key] =
+  ($duplicateMap[$key] ?? 0) + 1;
   }
   }
   @endphp
@@ -186,8 +216,11 @@
   <!-- HEADER -->
   <table class="kop">
     <tr class="kop-box">
+
       <td class="kop-left">
-        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}" width="100">
+        <img
+          src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/image/logo.png'))) }}"
+          width="100">
       </td>
 
       <td class="kop-right">
@@ -204,6 +237,7 @@
           AKTA NOMOR 09 TAHUN 2011 - AHU-9371.AH.01.04 TAHUN 2011
         </div>
       </td>
+
     </tr>
   </table>
 
@@ -216,73 +250,88 @@
   <table>
     <thead>
       <tr>
-        <th>No</th>
+        <th style="width:40px;">No</th>
         <th>Nama</th>
-        <th>Tempat, Tanggal Lahir</th>
-        <th>JK</th>
+        <th style="width:60px;">JK</th>
         <th>Alamat</th>
-        <th>HP</th>
+
+        @unless($hideSensitive)
+        <th style="width:90px;">HP</th>
+        @endunless
       </tr>
     </thead>
 
     <tbody>
+
       @foreach ($items as $i => $d)
 
       @php
-      $key = strtolower(
-      trim($d->nama_lengkap) . '|' .
-      trim($d->tempat_lahir ?? '') . '|' .
-      ($d->tanggal_lahir ?? '')
-      );
-
+      $key = strtolower(trim($d->nama_lengkap));
       $isDuplicate = ($duplicateMap[$key] ?? 0) > 1;
-      $isEmptyBirth = empty($d->tempat_lahir) || empty($d->tanggal_lahir);
       @endphp
 
       <tr>
-        <td class="center">{{ $i + 1 }}</td>
+
+        <td class="center">
+          {{ $i + 1 }}
+        </td>
 
         <td class="{{ $isDuplicate ? 'text-red' : '' }}">
           {{ ucwords(strtolower($d->nama_lengkap)) }}
         </td>
 
-        {{-- TTL (HIDE BY ROLE) --}}
-        <td class="{{ $isEmptyBirth ? 'text-blue' : '' }}">
-          @if($hideSensitive)
-          -
-          @else
-          {{ $d->tempat_lahir ?? '-' }},
-          {{ $d->tanggal_lahir ? Carbon::parse($d->tanggal_lahir)->format('d-m-Y') : '-' }}
-          @endif
+        <td class="center">
+          {{ $d->jenis_kelamin ?? '-' }}
         </td>
-
-        <td class="center">{{ $d->jenis_kelamin ?? '-' }}</td>
 
         <td>
           {{ $d->village->name ?? '-' }},
           {{ $d->district->name ?? '-' }}
         </td>
 
-        {{-- HP (HIDE BY ROLE) --}}
+        {{-- HP hidden for admin wilayah --}}
+        @unless($hideSensitive)
         <td class="center">
-          @if($hideSensitive)
-          -
-          @else
           {{
-            $d->no_hp
-              ? preg_replace('/^\+62/', '0', str_replace([' ', '-'], '', trim($d->no_hp)))
-              : '-'
-          }}
-          @endif
+      $d->no_hp
+          ? preg_replace(
+              '/^\+62/',
+              '0',
+              str_replace(
+                  [' ', '-'],
+                  '',
+                  trim($d->no_hp)
+              )
+          )
+          : '-'
+  }}
         </td>
+        @endunless
 
       </tr>
 
       @endforeach
+
     </tbody>
   </table>
+  <div class="footer-info">
+    <table>
+      <tr>
+        <td>
+          <strong>Diunduh oleh:</strong>
+          {{ $downloadedBy }}
+        </td>
 
-  {{-- REKAP TETAP NORMAL --}}
+        <td style="text-align:right;">
+          <strong>Tanggal Download:</strong>
+          {{ $downloadedAt }}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="page-break"></div>
+
+  {{-- REKAP --}}
   <h3>Rekap Usia - {{ $kabupaten }}</h3>
 
   <table>
@@ -309,7 +358,12 @@
       @foreach ($kategoriGlobal[$kabupaten] ?? [] as $kecamatan => $data)
 
       @php
-      $total = $data['Kanak-kanak'] + $data['Remaja'] + $data['Bapak-bapak'] + $data['Ibu-ibu'] + $data['Tidak diketahui'];
+      $total =
+      $data['Kanak-kanak']
+      + $data['Remaja']
+      + $data['Bapak-bapak']
+      + $data['Ibu-ibu']
+      + $data['Tidak diketahui'];
 
       $sumK += $data['Kanak-kanak'];
       $sumR += $data['Remaja'];
@@ -318,12 +372,29 @@
       @endphp
 
       <tr>
-        <td class="uppercase">{{ $kecamatan }}</td>
-        <td class="center">{{ $data['Kanak-kanak'] }}</td>
-        <td class="center">{{ $data['Remaja'] }}</td>
-        <td class="center">{{ $data['Bapak-bapak'] }}</td>
-        <td class="center">{{ $data['Ibu-ibu'] }}</td>
-        <td class="center">{{ $total }}</td>
+        <td class="uppercase">
+          {{ $kecamatan }}
+        </td>
+
+        <td class="center">
+          {{ $data['Kanak-kanak'] }}
+        </td>
+
+        <td class="center">
+          {{ $data['Remaja'] }}
+        </td>
+
+        <td class="center">
+          {{ $data['Bapak-bapak'] }}
+        </td>
+
+        <td class="center">
+          {{ $data['Ibu-ibu'] }}
+        </td>
+
+        <td class="center">
+          {{ $total }}
+        </td>
       </tr>
 
       @endforeach
@@ -334,11 +405,28 @@
         <td class="center">{{ $sumR }}</td>
         <td class="center">{{ $sumB }}</td>
         <td class="center">{{ $sumI }}</td>
-        <td class="center">{{ $sumK + $sumR + $sumB + $sumI }}</td>
+        <td class="center">
+          {{ $sumK + $sumR + $sumB + $sumI }}
+        </td>
       </tr>
 
     </tbody>
   </table>
+  <div class="footer-info">
+    <table>
+      <tr>
+        <td>
+          <strong>Diunduh oleh:</strong>
+          {{ $downloadedBy }}
+        </td>
+
+        <td style="text-align:right;">
+          <strong>Tanggal Download:</strong>
+          {{ $downloadedAt }}
+        </td>
+      </tr>
+    </table>
+  </div>
 
   @if (!$loop->last)
   <div class="page-break"></div>
