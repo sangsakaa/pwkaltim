@@ -141,6 +141,10 @@ Route::delete(
     '/program-kerja/{program_kerja}',
     [ProgramKerjaController::class, 'destroy']
 )->name('program-kerja.destroy');
+Route::get(
+    '/program-kerja/export/pdf/{type}',
+    [ProgramKerjaController::class, 'exportPdf']
+)->name('program-kerja.exportPdf');
 /*
 |--------------------------------------------------------------------------
 | ROLES & USERS
