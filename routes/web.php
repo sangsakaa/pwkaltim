@@ -145,6 +145,8 @@ Route::get(
     '/program-kerja/export/pdf/{type}',
     [ProgramKerjaController::class, 'exportPdf']
 )->name('program-kerja.exportPdf');
+Route::get('/surat-tugas/pdf/{id?}', [SuratTugasController::class, 'exportPdf'])
+    ->name('surat-tugas.pdf');
 /*
 |--------------------------------------------------------------------------
 | ROLES & USERS

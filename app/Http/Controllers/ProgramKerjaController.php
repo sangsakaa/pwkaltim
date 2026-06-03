@@ -14,16 +14,19 @@ class ProgramKerjaController extends Controller
 
     public function index(Request $request)
     {
-        $q = $request->get('q');
+        $q = $request->q;
+        $tahun = $request->tahun ?? now()->year;
+        $waktu = $request->waktu;
 
-        $data = ProgramKerja::when($q, function ($query) use ($q) {
-            $query->search($q);
-        })
+        $data = ProgramKerja::query()
+            ->when($q, fn($qBuilder) => $qBuilder->search($q))
+            ->when($tahun, fn($qBuilder) => $qBuilder->whereYear('created_at', $tahun))
+            ->when($waktu && $waktu !== 'semua', fn($qBuilder) => $qBuilder->where('waktu_pelaksanaan', $waktu))
             ->orderBy('nomor')
             ->paginate(10)
             ->withQueryString();
 
-        return view('program-kerja.index', compact('data', 'q'));
+        return view('program-kerja.index', compact('data', 'q', 'tahun', 'waktu'));
     }
 
     public function create()
@@ -37,8 +40,7 @@ class ProgramKerjaController extends Controller
     {
         ProgramKerja::create($request->validated());
 
-        return redirect()
-            ->route('program-kerja.index')
+        return redirect()->route('program-kerja.index')
             ->with('success', 'Program Kerja berhasil ditambahkan.');
     }
 
@@ -59,8 +61,7 @@ class ProgramKerjaController extends Controller
     {
         $program_kerja->update($request->validated());
 
-        return redirect()
-            ->back()
+        return redirect()->back()
             ->with('success', 'Program Kerja berhasil diperbarui.');
     }
 
@@ -68,55 +69,35 @@ class ProgramKerjaController extends Controller
     {
         $program_kerja->delete();
 
-        return redirect()
-            ->route('program-kerja.index')
+        return redirect()->route('program-kerja.index')
             ->with('success', 'Program Kerja berhasil dihapus.');
     }
 
-    /**
-     * FIXED EXPORT PDF
-     * - aman jika tanpa parameter
-     * - support: semua / bulanan / triwulan / semester / tahunan
-     */
-    public function exportPdf($waktu = 'semua')
+    public function exportPdf(Request $request, $waktu = 'semua')
     {
-        $waktu = strtolower($waktu);
+        $tahun = $request->tahun ?? now()->year;
+        $opsi = $this->opsiWaktu;
 
-        $tahun = now()->year;
-
-        // validasi
-        if ($waktu !== 'semua' && !in_array($waktu, $this->opsiWaktu)) {
-            abort(404, 'Jenis waktu tidak valid');
+        if ($waktu !== 'semua' && !in_array($waktu, $opsi)) {
+            abort(404);
         }
 
-        $query = ProgramKerja::query()
+        $data = ProgramKerja::query()
             ->whereYear('created_at', $tahun)
-            ->orderByRaw("
-                FIELD(waktu_pelaksanaan, 'bulanan', 'triwulan', 'semester', 'tahunan')
-            ");
-
-        // filter data
-        if ($waktu === 'semua') {
-            $data = $query->whereIn('waktu_pelaksanaan', $this->opsiWaktu)->get();
-        } else {
-            $data = $query->where('waktu_pelaksanaan', $waktu)->get();
-        }
-
-        $label = $waktu === 'semua'
-            ? 'Semua Waktu'
-            : ucfirst($waktu);
+            ->when(
+                $waktu === 'semua',
+                fn($q) => $q->whereIn('waktu_pelaksanaan', $opsi),
+                fn($q) => $q->where('waktu_pelaksanaan', $waktu)
+            )
+            ->orderByRaw("FIELD(waktu_pelaksanaan,'bulanan','triwulan','semester','tahunan')")
+            ->get();
 
         $pdf = Pdf::loadView('program-kerja.pdf', [
             'data'  => $data,
-            'waktu' => $label,
+            'waktu' => $waktu === 'semua' ? 'Semua Waktu' : ucfirst($waktu),
             'tahun' => $tahun,
-        ])
-            ->setPaper('F4', 'portrait');
+        ])->setPaper('F4', 'portrait');
 
-        $filename = $waktu === 'semua'
-            ? "program-kerja-semua-{$tahun}.pdf"
-            : "program-kerja-{$waktu}-{$tahun}.pdf";
-
-        return $pdf->stream($filename);
+        return $pdf->stream("program-kerja-{$waktu}-{$tahun}.pdf");
     }
 }
