@@ -97,15 +97,50 @@ Route::middleware('auth')->group(function () {
     )->name('users.profile.update');
 });
 
-Route::resource(
-    'program-kerja',
-    ProgramKerjaController::class
-);
+Route::get(
+    '/program-kerja',
+    [ProgramKerjaController::class, 'index']
+)->name('program-kerja.index');
 
 Route::get(
-    'program-kerja/export/pdf',
+    '/program-kerja/create',
+    [ProgramKerjaController::class, 'create']
+)->name('program-kerja.create');
+
+Route::post(
+    '/program-kerja',
+    [ProgramKerjaController::class, 'store']
+)->name('program-kerja.store');
+
+Route::get(
+    '/program-kerja/export/pdf',
     [ProgramKerjaController::class, 'exportPdf']
 )->name('program-kerja.export.pdf');
+
+Route::get(
+    '/program-kerja/{program_kerja}',
+    [ProgramKerjaController::class, 'show']
+)->name('program-kerja.show');
+
+Route::get(
+    '/program-kerja/{program_kerja}/edit',
+    [ProgramKerjaController::class, 'edit']
+)->name('program-kerja.edit');
+
+Route::put(
+    '/program-kerja/{program_kerja}',
+    [ProgramKerjaController::class, 'update']
+)->name('program-kerja.update');
+
+Route::patch(
+    '/program-kerja/{program_kerja}',
+    [ProgramKerjaController::class, 'update']
+)->name('program-kerja.update');
+
+Route::delete(
+    '/program-kerja/{program_kerja}',
+    [ProgramKerjaController::class, 'destroy']
+)->name('program-kerja.destroy');
 /*
 |--------------------------------------------------------------------------
 | ROLES & USERS
