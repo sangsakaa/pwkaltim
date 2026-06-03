@@ -97,11 +97,15 @@ Route::middleware('auth')->group(function () {
     )->name('users.profile.update');
 });
 
+Route::resource(
+    'program-kerja',
+    ProgramKerjaController::class
+);
+
 Route::get(
-    '/program-kerja/export/pdf',
+    'program-kerja/export/pdf',
     [ProgramKerjaController::class, 'exportPdf']
 )->name('program-kerja.export.pdf');
-
 /*
 |--------------------------------------------------------------------------
 | ROLES & USERS
