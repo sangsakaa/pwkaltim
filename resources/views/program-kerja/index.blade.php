@@ -1,6 +1,8 @@
 <x-app-layout>
 
   @php
+
+
   $user = auth()->user();
 
   $wilayah = 'Tidak diketahui';
@@ -17,216 +19,258 @@
   $wilayah = $user->province->name;
   }
 
-  $tahun = request('tahun', now()->year);
   $waktu = request('waktu', 'semua');
   @endphp
 
-  @section('title', 'PW ' . $wilayah)
-
-  {{-- HEADER --}}
   <x-slot name="header">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
       <div class="flex items-center gap-3">
-        <img src="{{ asset('image/logo.png') }}" class="w-10 h-10 sm:w-12 sm:h-12" />
+        <img
+          src="{{ asset('image/logo.png') }}"
+          alt="Logo"
+          class="w-12 h-12">
 
         <div>
-          <h2 class="text-lg font-semibold text-gray-800">
-            Dashboard <span class="text-green-700">PW {{ $wilayah }}</span>
+          <h2 class="text-xl font-bold text-gray-800">
+            Dashboard Program Kerja
           </h2>
-          <p class="text-xs text-gray-500">
-            Sistem administrasi program kerja
+
+          <p class="text-sm text-gray-500">
+            PW {{ $wilayah }}
           </p>
         </div>
       </div>
 
-      <a href="{{ route('program-kerja.create') }}"
-        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg shadow">
+      <a
+        href="{{ route('program-kerja.create') }}"
+        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow">
         + Tambah Program
       </a>
+      <form
+        action="{{ route('program-kerja.transfer-periode') }}"
+        method="POST"
+        onsubmit="return confirm(
+        'Transfer seluruh program kerja dari periode sebelumnya ke periode aktif?'
+    )">
 
-    </div>
-  </x-slot>
+        @csrf
 
-  {{-- CONTENT --}}
-  <div class="p-4 sm:p-6 space-y-6">
+        <button
+          type="submit"
+          class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow">
 
-    {{-- STATS --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          Transfer Program Tahun Sebelumnya
 
-      <div class="bg-gradient-to-r from-green-700 to-green-800 text-white rounded-xl p-5 shadow">
-        <div class="flex items-center gap-3">
-          <img src="{{ asset('image/logo.png') }}" class="w-10 h-10">
-          <div>
-            <h3 class="font-semibold">PW {{ $wilayah }}</h3>
-            <p class="text-xs text-green-100">Dashboard program kerja</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl p-5 shadow flex justify-between">
-        <div>
-          <p class="text-xs text-gray-500">Status</p>
-          <p class="font-semibold text-gray-800">Aktif</p>
-        </div>
-        <div class="text-right">
-          <p class="text-xs text-gray-500">Data</p>
-          <p class="font-semibold text-green-700">Terkelola</p>
-        </div>
-      </div>
-
-    </div>
-
-    {{-- FILTER + SEARCH + EXPORT --}}
-    <div class="bg-white rounded-xl shadow p-4 space-y-4 sticky top-2 z-10">
-
-      <form method="GET"
-        action="{{ route('program-kerja.index') }}"
-        class="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
-
-        {{-- SEARCH --}}
-        <input type="text"
-          name="q"
-          value="{{ request('q') }}"
-          placeholder="Cari program kerja..."
-          class="border rounded-lg px-3 py-2 col-span-1 md:col-span-2 focus:ring-2 focus:ring-blue-500">
-
-        {{-- TAHUN --}}
-        <select name="tahun" class="border rounded-lg px-3 py-2">
-          @for ($i = now()->year; $i >= now()->year - 5; $i--)
-          <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
-            {{ $i }}
-          </option>
-          @endfor
-        </select>
-
-        {{-- WAKTU --}}
-        <select name="waktu" class="border rounded-lg px-3 py-2">
-          <option value="semua" {{ $waktu == 'semua' ? 'selected' : '' }}>Semua</option>
-          @foreach (['bulanan','triwulan','semester','tahunan'] as $w)
-          <option value="{{ $w }}" {{ $waktu == $w ? 'selected' : '' }}>
-            {{ ucfirst($w) }}
-          </option>
-          @endforeach
-        </select>
-
-        <button class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 md:col-span-4">
-          Terapkan Filter
         </button>
 
       </form>
 
-      {{-- EXPORT --}}
-      <div class="flex flex-wrap gap-2 pt-2">
+    </div>
+  </x-slot>
 
-        @foreach (['bulanan','triwulan','semester','tahunan'] as $type)
-        <a href="{{ route('program-kerja.export.pdf', [
-                        'waktu' => $type,
-                        'tahun' => $tahun
-                    ]) }}"
-          target="_blank"
-          class="px-3 py-1 text-xs bg-red-600 hover:bg-red-700 text-white rounded-lg">
-          {{ ucfirst($type) }}
-        </a>
-        @endforeach
+  <div class="py-6">
 
-        <a href="{{ route('program-kerja.export.pdf', [
-                    'waktu' => 'semua',
-                    'tahun' => $tahun
-                ]) }}"
-          target="_blank"
-          class="px-3 py-1 text-xs bg-red-700 hover:bg-red-800 text-white rounded-lg">
-          Semua
-        </a>
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+
+      {{-- ALERT --}}
+      @if(session('success'))
+      <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+        {{ session('success') }}
+      </div>
+      @endif
+
+      {{-- STATISTIK --}}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+        <div class="bg-white rounded-xl shadow p-5">
+          <p class="text-sm text-gray-500">
+            Total Program Kerja
+          </p>
+
+          <h3 class="mt-2 text-3xl font-bold text-blue-600">
+            {{ $data->total() }}
+          </h3>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-5">
+          <p class="text-sm text-gray-500">
+            Periode Aktif
+          </p>
+
+          <h3 class="mt-2 font-semibold text-green-600">
+            {{ $periodeAktif?->nama_periode ?? 'Belum ada periode aktif' }}
+          </h3>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-5">
+          <p class="text-sm text-gray-500">
+            Wilayah
+          </p>
+
+          <h3 class="mt-2 font-semibold text-gray-800">
+            {{ $wilayah }}
+          </h3>
+        </div>
 
       </div>
 
-    </div>
+      {{-- FILTER --}}
+      <div class="bg-white rounded-xl shadow p-5">
 
-    {{-- TABLE --}}
-    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <form
+          method="GET"
+          action="{{ route('program-kerja.index') }}"
+          class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-      <div class="overflow-x-auto">
+          <div class="md:col-span-2">
+            <input
+              type="text"
+              name="q"
+              value="{{ request('q') }}"
+              placeholder="Cari program kerja..."
+              class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+          </div>
 
-        <table class="min-w-full text-sm">
+          <div>
+            <select
+              name="waktu"
+              class="w-full rounded-lg border-gray-300">
 
-          <thead class="bg-gray-100">
-            <tr>
-              @foreach (['No','Uraian','Waktu','Target','Sasaran','Biaya','PJ','Aksi'] as $col)
-              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-600">
-                {{ $col }}
-              </th>
+              <option value="semua">
+                Semua Waktu
+              </option>
+
+              @foreach (['bulanan', 'triwulan', 'semester', 'tahunan'] as $item)
+              <option
+                value="{{ $item }}"
+                @selected($waktu==$item)>
+                {{ ucfirst($item) }}
+              </option>
               @endforeach
-            </tr>
-          </thead>
 
-          <tbody class="divide-y">
+            </select>
+          </div>
 
-            @forelse ($data as $row)
-            <tr class="hover:bg-gray-50">
+          <button
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2">
+            Terapkan Filter
+          </button>
 
-              <td class="px-4 py-3">{{ $row->nomor }}</td>
-
-              <td class="px-4 py-3 max-w-xs">
-                <div class="line-clamp-2 text-gray-700">
-                  {{ $row->uraian_kegiatan }}
-                </div>
-              </td>
-
-              <td class="px-4 py-3 capitalize text-gray-600">
-                {{ $row->waktu_pelaksanaan }}
-              </td>
-
-              <td class="px-4 py-3">{{ $row->target }}</td>
-              <td class="px-4 py-3">{{ $row->sasaran }}</td>
-              <td class="px-4 py-3">{{ $row->biaya_rupiah }}</td>
-              <td class="px-4 py-3">{{ $row->penanggung_jawab }}</td>
-
-              <td class="px-4 py-3 flex gap-2">
-
-                <a href="{{ route('program-kerja.show', $row) }}"
-                  class="px-2 py-1 bg-gray-200 rounded text-xs">
-                  Detail
-                </a>
-
-                <a href="{{ route('program-kerja.edit', $row) }}"
-                  class="px-2 py-1 bg-blue-600 text-white rounded text-xs">
-                  Edit
-                </a>
-
-                <form method="POST"
-                  action="{{ route('program-kerja.destroy', $row) }}"
-                  onsubmit="return confirm('Hapus data?')">
-                  @csrf
-                  @method('DELETE')
-
-                  <button class="px-2 py-1 bg-red-600 text-white rounded text-xs">
-                    Hapus
-                  </button>
-                </form>
-
-              </td>
-
-            </tr>
-            @empty
-            <tr>
-              <td colspan="8" class="text-center py-6 text-gray-500">
-                Tidak ada data program kerja
-              </td>
-            </tr>
-            @endforelse
-
-          </tbody>
-
-        </table>
+        </form>
 
       </div>
 
-    </div>
+      {{-- TABEL --}}
+      <div class="bg-white rounded-xl shadow overflow-hidden">
 
-    {{-- PAGINATION --}}
-    <div>
-      {{ $data->links() }}
+        <div class="overflow-x-auto">
+
+          <table class="min-w-full divide-y divide-gray-200 text-sm">
+
+            <thead class="bg-gray-50">
+
+              <tr>
+                <th class="px-4 py-3 text-left font-semibold text-gray-600">No</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-600">Periode</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-600">Uraian Kegiatan</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-600">Waktu</th>
+                <th class="px-4 py-3 text-left font-semibold text-gray-600">Penanggung Jawab</th>
+                <th class="px-4 py-3 text-center font-semibold text-gray-600">Aksi</th>
+              </tr>
+
+            </thead>
+
+            <tbody class="divide-y divide-gray-100">
+
+              @forelse($data as $row)
+
+              <tr class="hover:bg-gray-50">
+
+                <td class="px-4 py-3">
+                  {{ $row->nomor }}
+                </td>
+
+                <td class="px-4 py-3">
+                  <span class="inline-flex px-2 py-1 rounded-full text-xs bg-green-100 text-green-700">
+                    {{ $row->periodeTahunan?->nama_periode ?? '-' }}
+                  </span>
+                </td>
+
+                <td class="px-4 py-3">
+                  {{ $row->uraian_kegiatan }}
+                </td>
+
+                <td class="px-4 py-3 capitalize">
+                  {{ $row->waktu_pelaksanaan }}
+                </td>
+
+                <td class="px-4 py-3">
+                  {{ $row->penanggung_jawab }}
+                </td>
+
+                <td class="px-4 py-3">
+
+                  <div class="flex justify-center gap-2">
+
+                    <a
+                      href="{{ route('program-kerja.show', $row) }}"
+                      class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs">
+                      Detail
+                    </a>
+
+                    <a
+                      href="{{ route('program-kerja.edit', $row) }}"
+                      class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                      Edit
+                    </a>
+
+                    <form
+                      method="POST"
+                      action="{{ route('program-kerja.destroy', $row) }}"
+                      onsubmit="return confirm('Hapus program kerja ini?')">
+
+                      @csrf
+                      @method('DELETE')
+
+                      <button
+                        type="submit"
+                        class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-xs">
+                        Hapus
+                      </button>
+
+                    </form>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+              @empty
+
+              <tr>
+                <td colspan="6" class="text-center py-10 text-gray-500">
+                  Belum ada data program kerja.
+                </td>
+              </tr>
+
+              @endforelse
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+      {{-- PAGINATION --}}
+      <div>
+        {{ $data->withQueryString()->links() }}
+      </div>
+
     </div>
 
   </div>

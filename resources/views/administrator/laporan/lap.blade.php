@@ -205,7 +205,14 @@
 
   foreach ($grouped as $kabupaten => $items) {
   foreach ($items as $d) {
-  $key = strtolower(trim($d->nama_lengkap));
+
+  $key = strtolower(
+  trim($d->nama_lengkap ?? '') . '|' .
+  trim($d->tempat_lahir ?? '') . '|' .
+  ($d->tanggal_lahir
+  ? \Carbon\Carbon::parse($d->tanggal_lahir)->format('Y-m-d')
+  : '')
+  );
 
   $duplicateMap[$key] =
   ($duplicateMap[$key] ?? 0) + 1;
@@ -250,13 +257,14 @@
   <table>
     <thead>
       <tr>
-        <th style="width:40px;">No</th>
+        <th style="width:30px;">No</th>
         <th>Nama</th>
-        <th style="width:60px;">JK</th>
+        <th style="width:20px;">JK</th>
         <th>Alamat</th>
 
         @unless($hideSensitive)
-        <th style="width:90px;">HP</th>
+        <th>TTL</th>
+        <th style="width:70px;">HP</th>
         @endunless
       </tr>
     </thead>
@@ -266,7 +274,14 @@
       @foreach ($items as $i => $d)
 
       @php
-      $key = strtolower(trim($d->nama_lengkap));
+      $key = strtolower(
+      trim($d->nama_lengkap ?? '') . '|' .
+      trim($d->tempat_lahir ?? '') . '|' .
+      ($d->tanggal_lahir
+      ? \Carbon\Carbon::parse($d->tanggal_lahir)->format('Y-m-d')
+      : '')
+      );
+
       $isDuplicate = ($duplicateMap[$key] ?? 0) > 1;
       @endphp
 
@@ -287,10 +302,15 @@
         <td>
           {{ $d->village->name ?? '-' }},
           {{ $d->district->name ?? '-' }}
+
         </td>
 
         {{-- HP hidden for admin wilayah --}}
         @unless($hideSensitive)
+        <td class="">
+          {{ $d->tempat_lahir ?? '-' }} , {{ $d->tanggal_lahir ? \Carbon\Carbon::parse($d->tanggal_lahir)->format('d-m-Y') : '-' }}
+        </td>
+
         <td class="center">
           {{
       $d->no_hp
@@ -305,7 +325,12 @@
           )
           : '-'
   }}
+
         </td>
+
+
+
+
         @endunless
 
       </tr>

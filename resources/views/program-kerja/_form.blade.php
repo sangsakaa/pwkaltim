@@ -9,12 +9,12 @@ $opsi = $opsiWaktu ?? ['bulanan', 'triwulan', 'semester', 'tahunan'];
     <label class="block text-sm font-medium text-gray-700 mb-1">
       Nomor <span class="text-red-500">*</span>
     </label>
+
     <input
       type="text"
       name="nomor"
       value="{{ old('nomor', $program_kerja->nomor ?? '') }}"
-      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
-      placeholder="Masukkan nomor">
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2">
   </div>
 
   {{-- WAKTU --}}
@@ -30,8 +30,9 @@ $opsi = $opsiWaktu ?? ['bulanan', 'triwulan', 'semester', 'tahunan'];
       <option value="">-- Pilih Waktu --</option>
 
       @foreach ($opsi as $opt)
-      <option value="{{ $opt }}"
-        @selected(old('waktu_pelaksanaan', $program_kerja->waktu_pelaksanaan ?? '') === $opt)>
+      <option
+        value="{{ $opt }}"
+        @selected(old('waktu_pelaksanaan', $program_kerja->waktu_pelaksanaan ?? '') == $opt)>
         {{ ucfirst($opt) }}
       </option>
       @endforeach
@@ -48,8 +49,7 @@ $opsi = $opsiWaktu ?? ['bulanan', 'triwulan', 'semester', 'tahunan'];
     <textarea
       name="uraian_kegiatan"
       rows="4"
-      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
-      placeholder="Deskripsi kegiatan...">{{ old('uraian_kegiatan', $program_kerja->uraian_kegiatan ?? '') }}</textarea>
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2">{{ old('uraian_kegiatan', $program_kerja->uraian_kegiatan ?? '') }}</textarea>
   </div>
 
   {{-- SASARAN --}}
@@ -62,22 +62,20 @@ $opsi = $opsiWaktu ?? ['bulanan', 'triwulan', 'semester', 'tahunan'];
       type="text"
       name="sasaran"
       value="{{ old('sasaran', $program_kerja->sasaran ?? '') }}"
-      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
-      placeholder="Sasaran kegiatan">
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2">
   </div>
 
-  {{-- TUJUAN --}}
+  {{-- TARGET --}}
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-1">
-      Tujuan <span class="text-red-500">*</span>
+      Target <span class="text-red-500">*</span>
     </label>
 
     <input
       type="text"
       name="target"
       value="{{ old('target', $program_kerja->target ?? '') }}"
-      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
-      placeholder="Tujuan kegiatan">
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2">
   </div>
 
   {{-- BIAYA --}}
@@ -90,10 +88,8 @@ $opsi = $opsiWaktu ?? ['bulanan', 'triwulan', 'semester', 'tahunan'];
       type="number"
       name="biaya"
       min="0"
-      step="1"
       value="{{ old('biaya', $program_kerja->biaya ?? 0) }}"
-      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
-      placeholder="0">
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2">
   </div>
 
   {{-- PENANGGUNG JAWAB --}}
@@ -106,22 +102,23 @@ $opsi = $opsiWaktu ?? ['bulanan', 'triwulan', 'semester', 'tahunan'];
       type="text"
       name="penanggung_jawab"
       value="{{ old('penanggung_jawab', $program_kerja->penanggung_jawab ?? '') }}"
-      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2"
-      placeholder="Nama penanggung jawab">
+      class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 px-3 py-2">
   </div>
 
 </div>
 
-{{-- ACTION BUTTONS --}}
-<div class="mt-6 flex flex-col sm:flex-row gap-3">
+<div class="mt-6 flex gap-3">
 
-  <button type="submit"
-    class="inline-flex justify-center items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow text-sm font-medium">
-    Simpan Data
+  <button
+    type="submit"
+    class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+
+    {{ isset($program_kerja) ? 'Perbarui Data' : 'Simpan Data' }}
+
   </button>
 
   <a href="{{ route('program-kerja.index') }}"
-    class="inline-flex justify-center items-center px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
+    class="px-5 py-2.5 border rounded-lg text-gray-700 hover:bg-gray-50">
     Batal
   </a>
 

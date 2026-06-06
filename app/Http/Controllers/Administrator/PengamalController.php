@@ -177,8 +177,11 @@ class PengamalController extends Controller
         }
 
         return redirect()
-            ->route('pengamal.index')
-            ->with('success', 'Pengamal berhasil ditambahkan.');
+            ->route('pengamal.public.create')
+            ->with(
+                'success',
+                'Terima kasih. Data pengamal atas nama ' . $pengamal->nama_lengkap . ' berhasil dikirim.'
+            );
     }
 
     /*

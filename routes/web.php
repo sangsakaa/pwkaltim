@@ -1,28 +1,9 @@
 <?php
 
+use App\Http\Controllers\{ActivityLogController, ProfileController, RoleController, WilayahController, LaporanController, PostController, DepartemenController, ProgramKerjaController, ReservationController, ScanController, SuratKeluarController, SuratMasukController, SuratTugasController};
+use App\Http\Controllers\Administrator\{DashboardController, PengamalController, UserRoleController};
+use App\Http\Controllers\PeriodeTahunanController;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\{
-    ActivityLogController,
-    ProfileController,
-    RoleController,
-    WilayahController,
-    LaporanController,
-    PostController,
-    DepartemenController,
-    ProgramKerjaController,
-    ReservationController,
-    ScanController,
-    SuratKeluarController,
-    SuratMasukController,
-    SuratTugasController
-};
-
-use App\Http\Controllers\Administrator\{
-    DashboardController,
-    PengamalController,
-    UserRoleController
-};
 
 /*
 |--------------------------------------------------------------------------
@@ -47,27 +28,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | PENGAMAL
 |--------------------------------------------------------------------------
 */
+/*
+|--------------------------------------------------------------------------
+| PUBLIC
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/daftar-pengamal', [PengamalController::class, 'createPublic'])
     ->name('pengamal.public.create');
+
+Route::post('/daftar-pengamal', [PengamalController::class, 'store'])
+    ->name('pengamal.public.store');
+
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN
+|--------------------------------------------------------------------------
+*/
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('pengamal', PengamalController::class);
 
-    Route::post('/pengamal/store', [PengamalController::class, 'store'])
-        ->name('pengamal.store');
-
-    Route::delete('/pengamal/show/{pengamal}', [PengamalController::class, 'destroy'])
-        ->name('pengamal.destroy');
-
-    Route::get('/pengamal/{pengamal}/edit', [PengamalController::class, 'edit'])
-        ->name('pengamal.edit');
-
-    Route::put('/pengamal/{pengamal}', [PengamalController::class, 'update'])
-        ->name('pengamal.update');
-    Route::get('/pengamal/export/excel', [PengamalController::class, 'exportExcel'])->name('pengamal.export.excel');
+    Route::get('/pengamal/export/excel', [PengamalController::class, 'exportExcel'])
+        ->name('pengamal.export.excel');
 });
-
 /*
 |--------------------------------------------------------------------------
 | WILAYAH API
@@ -83,70 +69,96 @@ Route::get('/get-villages/{district}', [PengamalController::class, 'getVillages'
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get(
-        '/users/{user}/edit-profile',
-        [ProfileController::class, 'editUser']
-    )->name('users.profile.edit');
 
-    Route::patch(
-        '/users/{user}/edit-profile',
-        [ProfileController::class, 'updateUser']
-    )->name('users.profile.update');
+    Route::get('/users/{user}/edit-profile', [ProfileController::class, 'editUser'])
+        ->name('users.profile.edit');
+
+    Route::patch('/users/{user}/edit-profile', [ProfileController::class, 'updateUser'])
+        ->name('users.profile.update');
 });
 
-Route::get(
-    '/program-kerja',
-    [ProgramKerjaController::class, 'index']
-)->name('program-kerja.index');
-
-Route::get(
-    '/program-kerja/create',
-    [ProgramKerjaController::class, 'create']
-)->name('program-kerja.create');
-
-Route::post(
-    '/program-kerja',
-    [ProgramKerjaController::class, 'store']
-)->name('program-kerja.store');
-
-Route::get(
-    '/program-kerja/export/pdf',
-    [ProgramKerjaController::class, 'exportPdf']
-)->name('program-kerja.export.pdf');
-
-Route::get(
-    '/program-kerja/{program_kerja}',
-    [ProgramKerjaController::class, 'show']
-)->name('program-kerja.show');
-
-Route::get(
-    '/program-kerja/{program_kerja}/edit',
-    [ProgramKerjaController::class, 'edit']
-)->name('program-kerja.edit');
-
-Route::put(
-    '/program-kerja/{program_kerja}',
-    [ProgramKerjaController::class, 'update']
-)->name('program-kerja.update');
-
-Route::patch(
-    '/program-kerja/{program_kerja}',
-    [ProgramKerjaController::class, 'update']
-)->name('program-kerja.update');
-
-Route::delete(
-    '/program-kerja/{program_kerja}',
-    [ProgramKerjaController::class, 'destroy']
-)->name('program-kerja.destroy');
-Route::get(
-    '/program-kerja/export/pdf/{type}',
-    [ProgramKerjaController::class, 'exportPdf']
-)->name('program-kerja.exportPdf');
+/*
+|--------------------------------------------------------------------------
+| SURAT TUGAS PDF
+|--------------------------------------------------------------------------
+*/
 Route::get('/surat-tugas/pdf/{id?}', [SuratTugasController::class, 'exportPdf'])
     ->name('surat-tugas.pdf');
+
+Route::prefix('program-kerja/realisasi')
+    ->name('program-kerja.realisasi.')
+    ->group(function () {
+
+        Route::get('/', [ProgramKerjaController::class, 'realisasiIndex'])
+            ->name('index');
+
+        Route::get('/{program_kerja}/edit', [ProgramKerjaController::class, 'realisasiEdit'])
+            ->name('edit');
+
+        Route::put('/{program_kerja}', [ProgramKerjaController::class, 'realisasiUpdate'])
+            ->name('update');
+    });
+Route::prefix('program-kerja')
+    ->name('program-kerja.')
+    ->group(function () {
+
+        Route::get('/', [ProgramKerjaController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [ProgramKerjaController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [ProgramKerjaController::class, 'store'])
+            ->name('store');
+
+        Route::get('/export/pdf/{waktu?}', [ProgramKerjaController::class, 'exportPdf'])
+            ->name('export.pdf');
+
+        Route::post('/transfer-periode', [ProgramKerjaController::class, 'transferPeriodeSebelumnya'])
+            ->name('transfer-periode');
+
+        // 🔥 WAJIB PALING BAWAH (anti konflik)
+        Route::get('/{program_kerja}', [ProgramKerjaController::class, 'show'])
+            ->name('show');
+
+        Route::get('/{program_kerja}/edit', [ProgramKerjaController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{program_kerja}', [ProgramKerjaController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{program_kerja}', [ProgramKerjaController::class, 'destroy'])
+            ->name('destroy');
+    });
+
+
+
+
+
+Route::resource(
+    'periode-tahunan',
+    PeriodeTahunanController::class
+);
+
+Route::put(
+    'periode-tahunan/{id}/activate',
+    [PeriodeTahunanController::class, 'activate']
+)->name('periode-tahunan.activate');
+
+Route::put(
+    'periode-tahunan/{id}/finish',
+    [PeriodeTahunanController::class, 'finish']
+)->name('periode-tahunan.finish');
+Route::post(
+    '/periode-tahunan/generate',
+    [PeriodeTahunanController::class, 'generate']
+)->name('periode-tahunan.generate');
+
+
 /*
 |--------------------------------------------------------------------------
 | ROLES & USERS
@@ -176,10 +188,9 @@ Route::middleware(['auth', 'verified', 'role:admin-provinsi|superAdmin'])->group
 
     Route::delete('/users/{user}', [UserRoleController::class, 'destroy'])
         ->name('users.destroy');
-    Route::post(
-        '/users/reset-password',
-        [UserRoleController::class, 'resetPassword']
-    )->name('users.reset-password');
+
+    Route::post('/users/reset-password', [UserRoleController::class, 'resetPassword'])
+        ->name('users.reset-password');
 });
 
 /*
@@ -192,27 +203,41 @@ Route::get('/wilayah', [WilayahController::class, 'index'])
 
 /*
 |--------------------------------------------------------------------------
-| LAPORAN (GENERAL)
+| LAPORAN
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])
+    ->prefix('laporan')
+    ->name('laporan.')
+    ->group(function () {
 
-    Route::get('/laporan', [LaporanController::class, 'laporan'])
-        ->name('laporan.laporan');
+        Route::get('/', [LaporanController::class, 'laporan'])
+            ->name('index');
 
-    Route::get('/laporan-file', [LaporanController::class, 'index'])
-        ->name('laporan-file.index');
+        Route::get('/rekap-kabupaten', [LaporanController::class, 'rekapKabupaten'])
+            ->name('rekap-kabupaten');
 
-    Route::get('/laporan/download', [LaporanController::class, 'downloadLaporan'])
-        ->name('laporan.download');
-});
+        Route::get('/wilayah-kosong', [LaporanController::class, 'wilayahBelumAdaPengamal'])
+            ->name('wilayah-kosong');
+
+        Route::get('/export-kategori/{kategori}', [LaporanController::class, 'exportKategoriPdf'])
+            ->name('export-kategori');
+    });
+
+
+// Alias untuk route lama
+
+Route::get('/laporan-file', [LaporanController::class, 'index'])
+    ->name('laporan-file.index');
+Route::get('/laporan/download', [LaporanController::class, 'downloadLaporan'])
+    ->name('laporan.download');
 
 /*
 |--------------------------------------------------------------------------
 | POST
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+Route::middleware('auth')->group(function () {
 
     Route::get('/post/create', [PostController::class, 'create'])->name('post.create');
     Route::post('/post/store', [PostController::class, 'store'])->name('post.store');
@@ -237,14 +262,12 @@ Route::get('/admin/activity-logs', [ActivityLogController::class, 'index'])
 
 /*
 |--------------------------------------------------------------------------
-| SURAT & PROGRAM
+| SURAT
 |--------------------------------------------------------------------------
 */
 Route::resource('surat', SuratKeluarController::class);
 Route::resource('surat-masuk', SuratMasukController::class);
 Route::resource('surat-tugas', SuratTugasController::class);
-Route::resource('program-kerja', ProgramKerjaController::class);
-
 
 /*
 |--------------------------------------------------------------------------
@@ -286,47 +309,7 @@ Route::middleware([
 
 /*
 |--------------------------------------------------------------------------
-| LAPORAN (DETAIL GROUP)
+| AUTH
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->prefix('laporan')->name('laporan.')->group(function () {
-
-    Route::get('/', [LaporanController::class, 'laporan'])->name('laporan');
-
-    Route::get('/rekap-kabupaten', [LaporanController::class, 'rekapKabupaten'])
-        ->name('rekap-kabupaten');
-
-    Route::get('/wilayah-kosong', [LaporanController::class, 'wilayahBelumAdaPengamal'])
-        ->name('wilayah-kosong');
-
-    Route::get('/export-kategori/{kategori}', [LaporanController::class, 'exportKategoriPdf'])
-        ->name('export-kategori');
-});
-
-/*
-|--------------------------------------------------------------------------
-| PENGAMAL SYNC
-|--------------------------------------------------------------------------
-*/
-Route::get('/pengamal/sync', [PengamalController::class, 'sync'])
-    ->middleware('role:superAdmin|admin-provinsi')
-    ->name('pengamal.sync');
-
-/*
-|--------------------------------------------------------------------------
-| RESERVATIONS (ALTERNATIVE ROUTES)
-|--------------------------------------------------------------------------
-*/
-Route::post('/reservations', [ReservationController::class, 'store'])
-    ->name('reservations.store');
-
-Route::get('/reservasi/create', [ReservationController::class, 'create'])
-    ->name('reservations.create');
-
-Route::get('/reservasi/{id}', [ReservationController::class, 'show'])
-    ->name('reservations.show');
-
-Route::get('/reservations/{reservation}/edit', [ReservationController::class, 'edit'])
-    ->name('reservations.edit');
-
 require __DIR__ . '/auth.php';
