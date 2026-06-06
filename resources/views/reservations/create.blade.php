@@ -150,7 +150,7 @@
 
     {{-- FORM --}}
     <form
-      action="{{ route('reservations.store') }}"
+      action="{{ route('reservasi.store') }}"
       method="POST">
 
       @csrf
