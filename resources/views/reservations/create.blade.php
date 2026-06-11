@@ -396,80 +396,113 @@
 
   {{-- AJAX --}}
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', function() {
 
-      const input = document.getElementById('ketua_rombongan');
+      const province = document.getElementById('province');
+      const regency = document.getElementById('regency');
+      const district = document.getElementById('district');
+      const village = document.getElementById('village');
 
-      if (!input) return;
+      async function loadSelect(url, targetElement, placeholder) {
 
-      // =========================
-      // SMART FOCUS (ANTI HILANG)
-      // =========================
+        targetElement.innerHTML =
+          `<option value="">Loading...</option>`;
 
-      function safeFocus() {
-        // hanya fokus jika user tidak sedang di field lain
-        const active = document.activeElement;
-
-        const ignoreTags = ['SELECT', 'TEXTAREA', 'INPUT'];
-
-        if (!active || !ignoreTags.includes(active.tagName)) {
-          input.focus({
-            preventScroll: true
-          });
-        }
-      }
-
-      // fokus awal setelah render stabil
-      requestAnimationFrame(() => {
-        input.focus({
-          preventScroll: true
-        });
-      });
-
-      // backup sekali saja (bukan spam interval)
-      setTimeout(safeFocus, 800);
-
-      // =========================
-      // AJAX SELECT FIX (NO BLUR EFFECT)
-      // =========================
-
-      async function loadSelect(url, target, placeholder) {
         try {
-          const res = await fetch(url);
-          const data = await res.json();
 
-          const el = document.getElementById(target);
+          const response = await fetch(url);
 
-          // simpan fokus sebelum update DOM
-          const active = document.activeElement;
+          if (!response.ok) {
+            throw new Error('Gagal mengambil data');
+          }
 
-          el.innerHTML = `<option value="">${placeholder}</option>`;
+          const data = await response.json();
 
-          data.forEach(i => {
-            el.innerHTML += `<option value="${i.code}">${i.name}</option>`;
+          targetElement.innerHTML =
+            `<option value="">${placeholder}</option>`;
+
+          if (!data.length) {
+
+            targetElement.innerHTML =
+              `<option value="">Data tidak tersedia</option>`;
+
+            return;
+          }
+
+          data.forEach(item => {
+
+            targetElement.innerHTML += `
+                    <option value="${item.code}">
+                        ${item.name}
+                    </option>
+                `;
+
           });
 
-          // restore focus kalau terganggu
-          if (active) active.focus();
+        } catch (error) {
 
-        } catch (err) {
-          console.error(err);
+          console.error(error);
+
+          targetElement.innerHTML =
+            `<option value="">Gagal memuat data</option>`;
         }
       }
 
-      document.getElementById('province')?.addEventListener('change', function() {
-        loadSelect(`/get-regencies/${this.value}`, 'regency', 'Pilih Kabupaten');
+      province.addEventListener('change', function() {
 
-        document.getElementById('district').innerHTML = '<option value="">Pilih Kecamatan</option>';
-        document.getElementById('village').innerHTML = '<option value="">Pilih Desa</option>';
+        const value = this.value;
+
+        regency.innerHTML =
+          '<option value="">Pilih Kabupaten</option>';
+
+        district.innerHTML =
+          '<option value="">Pilih Kecamatan</option>';
+
+        village.innerHTML =
+          '<option value="">Pilih Desa</option>';
+
+        if (!value) return;
+
+        loadSelect(
+          `/get-regencies/${value}`,
+          regency,
+          'Pilih Kabupaten'
+        );
       });
 
-      document.getElementById('regency')?.addEventListener('change', function() {
-        loadSelect(`/get-districts/${this.value}`, 'district', 'Pilih Kecamatan');
+      regency.addEventListener('change', function() {
+
+        const value = this.value;
+
+        district.innerHTML =
+          '<option value="">Pilih Kecamatan</option>';
+
+        village.innerHTML =
+          '<option value="">Pilih Desa</option>';
+
+        if (!value) return;
+
+        loadSelect(
+          `/get-districts/${value}`,
+          district,
+          'Pilih Kecamatan'
+        );
       });
 
-      document.getElementById('district')?.addEventListener('change', function() {
-        loadSelect(`/get-villages/${this.value}`, 'village', 'Pilih Desa');
+      district.addEventListener('change', function() {
+
+        const value = this.value;
+
+        village.innerHTML =
+          '<option value="">Pilih Desa</option>';
+
+        if (!value) return;
+
+        loadSelect(
+          `/get-villages/${value}`,
+          village,
+          'Pilih Desa'
+        );
       });
 
     });

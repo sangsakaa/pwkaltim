@@ -95,7 +95,7 @@
           Download Kartu Reservasi
         </button>
 
-        <a href="{{ route('reservations.edit', $reservation->id) }}"
+        <a href="{{ route('reservasi.edit', $reservation->id) }}"
           class="block text-center bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-xl font-semibold">
 
           Update Data Reservasi

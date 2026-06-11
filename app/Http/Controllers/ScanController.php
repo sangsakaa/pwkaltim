@@ -22,12 +22,18 @@ class ScanController extends Controller
             'pending'
         )->count();
 
+        $cancelled = Reservation::where(
+            'status',
+            'no_show'
+        )->count();
+
         return view(
             'panitia.dashboard',
             compact(
                 'totalReservation',
                 'checkedIn',
-                'pending'
+                'pending',
+                'cancelled'
             )
         );
     }
@@ -50,15 +56,27 @@ class ScanController extends Controller
             )->first();
 
             if (!$reservation) {
+
                 return response()->json([
+                    'success' => false,
                     'message' => 'Kode reservasi tidak ditemukan'
                 ], 404);
             }
 
             if ($reservation->status === 'checked_in') {
+
                 return response()->json([
+                    'success' => false,
                     'message' => 'Pengunjung sudah check-in'
-                ], 409);
+                ], 422);
+            }
+
+            if ($reservation->status === 'no_show') {
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Reservasi telah dibatalkan'
+                ], 422);
             }
 
             $reservation->update([
@@ -74,22 +92,24 @@ class ScanController extends Controller
             ]);
 
             return response()->json([
+                'success' => true,
                 'message' => 'Check-in berhasil',
                 'data' => [
                     'ketua_rombongan' => $reservation->ketua_rombongan,
                     'reservation_number' => $reservation->reservation_number,
                     'reservation_code' => $reservation->reservation_code,
-                    'participant' => $reservation->total_participant ?? '-'
+                    'participant' => $reservation->total_participant,
+                    'status' => $reservation->status,
                 ]
             ]);
         } catch (\Throwable $e) {
 
             return response()->json([
+                'success' => false,
                 'message' => $e->getMessage()
             ], 500);
         }
     }
-
     public function reservations()
     {
         $reservations = Reservation::query()
@@ -137,6 +157,20 @@ class ScanController extends Controller
             'panitia.reservations.index',
             [
                 'title' => 'Belum Check-in',
+                'reservations' => $reservations
+            ]
+        );
+    }
+    public function cancelledReservations()
+    {
+        $reservations = Reservation::where('status', 'no_show')
+            ->latest()
+            ->paginate(20);
+
+        return view(
+            'panitia.reservations.index',
+            [
+                'title' => 'Reservasi Dibatalkan',
                 'reservations' => $reservations
             ]
         );

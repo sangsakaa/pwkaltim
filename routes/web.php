@@ -102,42 +102,51 @@ Route::prefix('program-kerja/realisasi')
         Route::put('/{program_kerja}', [ProgramKerjaController::class, 'realisasiUpdate'])
             ->name('update');
     });
+
 Route::prefix('program-kerja')
     ->name('program-kerja.')
     ->group(function () {
 
-        Route::get('/', [ProgramKerjaController::class, 'index'])
+    // Daftar Program Kerja
+    Route::get('/', [ProgramKerjaController::class, 'index'])
             ->name('index');
 
-        Route::get('/create', [ProgramKerjaController::class, 'create'])
+    // Tambah Program Kerja
+    Route::get('/create', [ProgramKerjaController::class, 'create'])
             ->name('create');
 
         Route::post('/', [ProgramKerjaController::class, 'store'])
             ->name('store');
 
-        Route::get('/export/pdf/{waktu?}', [ProgramKerjaController::class, 'exportPdf'])
+    // Export PDF
+    Route::get('/export/pdf/{waktu?}', [ProgramKerjaController::class, 'exportPdf'])
             ->name('export.pdf');
 
-        Route::post('/transfer-periode', [ProgramKerjaController::class, 'transferPeriodeSebelumnya'])
+    // Transfer Periode Sebelumnya
+    Route::post('/transfer-periode', [ProgramKerjaController::class, 'transferPeriodeSebelumnya'])
             ->name('transfer-periode');
 
-        // 🔥 WAJIB PALING BAWAH (anti konflik)
-        Route::get('/{program_kerja}', [ProgramKerjaController::class, 'show'])
-            ->name('show');
-
-        Route::get('/{program_kerja}/edit', [ProgramKerjaController::class, 'edit'])
+    // Edit & Update
+    Route::get('/{program_kerja}/edit', [ProgramKerjaController::class, 'edit'])
             ->name('edit');
 
         Route::put('/{program_kerja}', [ProgramKerjaController::class, 'update'])
             ->name('update');
 
-        Route::delete('/{program_kerja}', [ProgramKerjaController::class, 'destroy'])
+    // Hapus
+    Route::delete('/{program_kerja}', [ProgramKerjaController::class, 'destroy'])
             ->name('destroy');
+
+    // Detail (harus paling bawah)
+    Route::get('/{program_kerja}', [ProgramKerjaController::class, 'show'])
+        ->name('show');
     });
 
-
-
-
+// Export PDF Realisasi
+Route::get(
+    '/program-kerja/realisasi/pdf',
+    [ProgramKerjaController::class, 'exportRealisasiPdf']
+)->name('program-kerja.realisasi.pdf');
 
 Route::resource(
     'periode-tahunan',
@@ -268,21 +277,57 @@ Route::get('/admin/activity-logs', [ActivityLogController::class, 'index'])
 Route::resource('surat', SuratKeluarController::class);
 Route::resource('surat-masuk', SuratMasukController::class);
 Route::resource('surat-tugas', SuratTugasController::class);
+Route::post(
+    '/surat/upload',
+    [SuratKeluarController::class, 'upload']
+)->name('surat.upload');
+Route::get(
+    '/surat/file/{file}/download',
+    [SuratKeluarController::class, 'downloadFile']
+)->name('surat.file.download');
+
+
+Route::delete(
+    '/surat/file/{file}',
+    [SuratKeluarController::class, 'deleteFile']
+)->name('surat.file.delete');
 
 /*
 |--------------------------------------------------------------------------
 | RESERVASI PUBLIC
 |--------------------------------------------------------------------------
 */
-Route::prefix('reservasi')->name('reservasi.')->group(function () {
+Route::prefix('reservasi')
+    ->name('reservasi.')
+    ->group(function () {
 
-    Route::get('/', [ReservationController::class, 'create'])->name('create');
-    Route::post('/store', [ReservationController::class, 'store'])->name('store');
-    Route::get('/show/{id}', [ReservationController::class, 'show'])->name('show');
-    Route::get('/edit', [ReservationController::class, 'lookup'])->name('lookup');
-    Route::post('/find', [ReservationController::class, 'find'])->name('find');
-    Route::put('/update/{reservation}', [ReservationController::class, 'update'])->name('update');
-});
+        Route::get('/', [ReservationController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [ReservationController::class, 'store'])
+            ->name('store');
+
+        Route::get('/show/{id}', [ReservationController::class, 'show'])
+            ->name('show');
+
+        Route::get('/edit', [ReservationController::class, 'lookup'])
+            ->name('lookup');
+
+        Route::post('/find', [ReservationController::class, 'find'])
+            ->name('find');
+
+        Route::get('/edit/{id}', [ReservationController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/update/{id}', [ReservationController::class, 'update'])
+            ->name('update');
+
+        Route::put('/cancel/{id}', [ReservationController::class, 'cancel'])
+            ->name('cancel');
+
+        Route::delete('/delete/{id}', [ReservationController::class, 'destroy'])
+            ->name('destroy');
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -305,6 +350,8 @@ Route::middleware([
 
         Route::get('/scan', [ScanController::class, 'scan'])->name('scan');
         Route::post('/checkin', [ScanController::class, 'checkin'])->name('checkin');
+    Route::get('/cancelled', [ScanController::class, 'cancelledReservations'])
+        ->name('cancelled');
     });
 
 /*

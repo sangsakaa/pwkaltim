@@ -113,6 +113,7 @@ class ProgramKerjaController extends Controller
 
     public function edit(ProgramKerja $program_kerja)
     {
+        // dd($program_kerja);
         return view('program-kerja.edit', [
             'program_kerja' => $program_kerja,
             'opsiWaktu'     => $this->opsiWaktu,
@@ -126,6 +127,7 @@ class ProgramKerjaController extends Controller
         $program_kerja->update(
             $request->validated()
         );
+        dd($request->all(), $program_kerja);
 
         return redirect()
             ->route('program-kerja.index')
@@ -272,9 +274,6 @@ class ProgramKerjaController extends Controller
             ->route('program-kerja.realisasi.index')
             ->with('success', 'Realisasi berhasil diperbarui.');
     }
-
-
-
     // ==================================================
     // HELPER
     // ==================================================
@@ -376,6 +375,33 @@ class ProgramKerjaController extends Controller
                 . $periodeSebelumnya->nama_periode
                 . ' ke '
                 . $periodeAktif->nama_periode
+        );
+    }
+    public function exportRealisasiPdf(Request $request)
+    {
+        $periodeAktif = PeriodeTahunan::where('is_active', true)->first();
+
+        $data = ProgramKerja::with('periodeTahunan')
+            ->when(
+                $periodeAktif,
+                fn($query) => $query->where(
+                    'periode_tahunan_id',
+                    $periodeAktif->id
+                )
+            )
+            ->orderBy('nomor')
+            ->get();
+
+        $pdf = Pdf::loadView(
+            'program-kerja.realisasi.realisasi-pdf',
+            [
+                'data' => $data,
+                'periode' => $periodeAktif,
+            ]
+        )->setPaper('F4', 'landscape');
+
+        return $pdf->stream(
+            'laporan-realisasi-program-kerja.pdf'
         );
     }
 }

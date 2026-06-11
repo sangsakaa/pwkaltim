@@ -229,50 +229,105 @@
                 {{-- STATUS --}}
                 <td class="px-5 py-4 text-center">
 
-                  @if($item->status === 'checked_in')
-                  <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                    Sudah Hadir
-                  </span>
-                  @else
+                  @switch($item->status)
+
+                  @case('pending')
                   <span class="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
                     Pending
                   </span>
-                  @endif
+                  @break
+
+                  @case('checked_in')
+                  <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                    Sudah Hadir
+                  </span>
+                  @break
+
+                  @case('no_show')
+                  <span class="inline-flex rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+                    Dibatalkan
+                  </span>
+                  @break
+
+                  @endswitch
 
                 </td>
 
                 {{-- AKSI --}}
                 <td class="px-5 py-4 text-center">
 
-                  @if($item->status !== 'checked_in')
+                  <div class="flex items-center justify-center gap-2 flex-wrap">
 
-                  <form
-                    action="{{ route('admin.reservasi.checkin') }}"
-                    method="POST">
 
-                    @csrf
+                    @if($item->status === 'pending')
 
-                    <input
-                      type="hidden"
-                      name="reservation_code"
-                      value="{{ $item->reservation_code }}">
+                    {{-- Check In --}}
+                    <form action="{{ route('admin.reservasi.checkin') }}" method="POST">
+                      @csrf
 
-                    <button
-                      class="bg-green-600 hover:bg-green-700 text-white text-xs px-4 py-2 rounded-lg">
-                      Check-in
-                    </button>
+                      <input
+                        type="hidden"
+                        name="reservation_code"
+                        value="{{ $item->reservation_code }}">
 
-                  </form>
+                      <button
+                        type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-2 rounded-lg">
+                        Check-in
+                      </button>
+                    </form>
 
-                  @else
+                    {{-- Batalkan --}}
+                    <form
+                      action="{{ route('reservasi.cancel', $item->id) }}"
+                      method="POST"
+                      class="cancel-form">
 
-                  <span class="text-xs text-gray-400">
-                    selesai
-                  </span>
+                      @csrf
+                      @method('PUT')
 
-                  @endif
+                      <button
+                        type="submit"
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-2 rounded-lg">
+                        Batalkan
+                      </button>
+                    </form>
+
+                    @elseif($item->status === 'checked_in')
+
+                    <span class="bg-green-100 text-green-700 text-xs px-3 py-2 rounded-lg font-medium">
+                      Sudah Hadir
+                    </span>
+
+                    @elseif($item->status === 'no_show')
+
+                    <span class="bg-red-100 text-red-700 text-xs px-3 py-2 rounded-lg font-medium">
+                      Dibatalkan
+                    </span>
+
+                    @endif
+
+                    {{-- Hapus --}}
+                    <form
+                      action="{{ route('reservasi.destroy', $item->id) }}"
+                      method="POST"
+                      class="delete-form">
+
+                      @csrf
+                      @method('DELETE')
+
+                      <button
+                        type="submit"
+                        class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 rounded-lg">
+                        Hapus
+                      </button>
+                    </form>
+
+
+                  </div>
 
                 </td>
+
 
               </tr>
 
@@ -303,5 +358,77 @@
 
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    document.querySelectorAll('.delete-form').forEach(form => {
+
+      form.addEventListener('submit', function(e) {
+
+        e.preventDefault();
+
+        Swal.fire({
+          title: 'Hapus Reservasi?',
+          text: 'Data yang dihapus tidak dapat dikembalikan.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#dc2626',
+          cancelButtonColor: '#6b7280',
+          confirmButtonText: 'Ya, Hapus',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+
+          if (result.isConfirmed) {
+            form.submit();
+          }
+
+        });
+
+      });
+
+    });
+
+
+    document.querySelectorAll('.cancel-form').forEach(form => {
+
+      form.addEventListener('submit', function(e) {
+
+        e.preventDefault();
+
+        Swal.fire({
+          title: 'Batalkan Reservasi?',
+          text: 'Status reservasi akan berubah menjadi Dibatalkan.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#eab308',
+          cancelButtonColor: '#6b7280',
+          confirmButtonText: 'Ya, Batalkan',
+          cancelButtonText: 'Tutup'
+        }).then((result) => {
+
+          if (result.isConfirmed) {
+            form.submit();
+          }
+
+        });
+
+      });
+
+    });
+
+
+    @if(session('success'))
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: '{{ session('
+      success ') }}',
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+    @endif
+  </script>
 
 </x-app-layout>

@@ -326,6 +326,51 @@
 
         </div>
     </div>
+    <div
+        x-data="{ open: {{ request()->routeIs('periode-tahunan.*') ? 'true' : 'false' }} }">
+
+        <button
+            @click="open = !open"
+            class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition">
+
+            <div class="flex items-center gap-2">
+                <x-heroicon-o-calendar-days class="w-5 h-5 text-gray-600" />
+                <span>Periode Tahunan</span>
+            </div>
+
+            <svg
+                class="w-4 h-4 text-gray-500 transition-transform duration-200"
+                :class="{ 'rotate-180': open }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+
+                <path stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+
+        <div
+            x-show="open"
+            x-transition
+            class="mt-1 ml-6 pl-2 border-l border-gray-200 space-y-1">
+
+            <x-sidebar.link
+                title="Periode Tahunan"
+                href="{{ route('periode-tahunan.index') }}"
+                :isActive="request()->routeIs('periode-tahunan.index')">
+
+                <x-slot name="icon">
+                    <x-heroicon-o-calendar class="w-4 h-4" />
+                </x-slot>
+            </x-sidebar.link>
+
+
+
+        </div>
+    </div>
 
     @endrole
 

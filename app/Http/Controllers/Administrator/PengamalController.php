@@ -253,21 +253,47 @@ class PengamalController extends Controller
     | AJAX
     |--------------------------------------------------------------------------
     */
-    public function getRegencies($province_code)
+    // public function getRegencies($province_code)
+    // {
+    //     return Regency::where('province_code', $province_code)->get();
+    // }
+
+    // public function getDistricts($regency_code)
+    // {
+    //     return District::where('regency_code', $regency_code)->get();
+    // }
+
+    // public function getVillages($district_code)
+    // {
+    //     return Village::where('district_code', $district_code)->get();
+    // }
+
+    public function getRegencies($province)
     {
-        return Regency::where('province_code', $province_code)->get();
+        return response()->json(
+            Regency::where('province_code', $province)
+                ->orderBy('name')
+                ->get()
+        );
     }
 
-    public function getDistricts($regency_code)
+    public function getDistricts($regency)
     {
-        return District::where('regency_code', $regency_code)->get();
+        return response()->json(
+            District::where('regency_code', $regency)
+                ->orderBy('name')
+                ->get()
+        );
     }
 
-    public function getVillages($district_code)
+    public function getVillages($district)
     {
-        return Village::where('district_code', $district_code)->get();
+        return response()->json(
+            Village::where('district_code', $district)
+                ->orderBy('name')
+                ->get()
+        );
     }
-
     /*
     |--------------------------------------------------------------------------
     | HELPERS

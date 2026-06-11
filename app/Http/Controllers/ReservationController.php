@@ -134,7 +134,7 @@ class ReservationController extends Controller
             DB::commit();
 
             return redirect()->route(
-                'reservations.show',
+                'reservasi.show',
                 $reservation->id
             );
         } catch (\Exception $e) {
@@ -169,7 +169,7 @@ class ReservationController extends Controller
     
 public function lookup()
 {
-    return view('reservations.lookup');
+        return view('reservations.lookup');
 }
 
 public function edit($id)
@@ -177,33 +177,56 @@ public function edit($id)
     $reservation = Reservation::findOrFail($id);
 
     return view(
-        'reservations.edit',
+            'reservations.edit',
         compact('reservation')
     );
 }
 
-public function find(Request $request)
-{
-    $request->validate([
-        'reservation_code' => 'required'
-    ]);
+    public function find(Request $request)
+    {
+        $request->validate([
+            'reservation_code' => 'required'
+        ]);
 
-    $reservation = Reservation::where(
-        'reservation_code',
-        trim($request->reservation_code)
-    )->first();
+        $reservation = Reservation::where(
+            'reservation_code',
+            trim($request->reservation_code)
+        )->first();
 
-    if (!$reservation) {
+        if (!$reservation) {
+            return back()->with(
+                'error',
+                'Kode reservasi tidak ditemukan'
+            );
+        }
 
-        return back()->with(
-            'error',
-            'Kode reservasi tidak ditemukan'
+        return redirect()->route(
+            'reservasi.edit',
+            $reservation->id
         );
     }
+    public function cancel($id)
+    {
+        $reservation = Reservation::findOrFail($id);
 
-    return redirect()->route(
-        'reservations.edit',
-        $reservation->id
-    );
-}
+        $reservation->update([
+            'status' => 'no_show'
+        ]);
+
+        return back()->with(
+            'success',
+            'Reservasi berhasil dibatalkan'
+        );
+    }
+    public function destroy($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+
+        $reservation->delete();
+
+        return back()->with(
+            'success',
+            'Reservasi berhasil dihapus'
+        );
+    }
 }
