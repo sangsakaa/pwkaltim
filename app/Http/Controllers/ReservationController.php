@@ -16,7 +16,7 @@ class ReservationController extends Controller
         return view(
             'reservations.create',
             [
-                'provinces' => Province::where('code', 64)->get()
+                'provinces' => Province::whereIn('code', [61, 62, 63, 64])->get()
             ]
         );
     }

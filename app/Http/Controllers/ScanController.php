@@ -10,32 +10,34 @@ class ScanController extends Controller
 {
     public function index()
     {
-        $totalReservation = Reservation::count();
+        $reservations = Reservation::query();
 
-        $checkedIn = Reservation::where(
-            'status',
-            'checked_in'
-        )->count();
+        return view('panitia.dashboard', [
+            'totalReservation' => (clone $reservations)->count(),
 
-        $pending = Reservation::where(
-            'status',
-            'pending'
-        )->count();
+            'checkedIn' => (clone $reservations)
+                ->where('status', 'checked_in')
+                ->count(),
 
-        $cancelled = Reservation::where(
-            'status',
-            'no_show'
-        )->count();
+            'pending' => (clone $reservations)
+                ->where('status', 'pending')
+                ->count(),
 
-        return view(
-            'panitia.dashboard',
-            compact(
-                'totalReservation',
-                'checkedIn',
-                'pending',
-                'cancelled'
-            )
-        );
+            'totalParticipant' => (clone $reservations)
+                ->sum('total_participant'),
+
+            'totalFather' => (clone $reservations)
+                ->sum('total_father'),
+
+            'totalMother' => (clone $reservations)
+                ->sum('total_mother'),
+
+            'totalTeenager' => (clone $reservations)
+                ->sum('total_teenager'),
+
+            'totalChild' => (clone $reservations)
+                ->sum('total_child'),
+        ]);
     }
 
     public function scan()
@@ -110,19 +112,40 @@ class ScanController extends Controller
             ], 500);
         }
     }
-    public function reservations()
-    {
-        $reservations = Reservation::query()
-            ->latest()
-            ->paginate(20);
 
-        return view(
-            'panitia.reservations.index',
-            [
-                'title' => 'Data Reservasi',
-                'reservations' => $reservations
-            ]
-        );
+    public function reservations(\Illuminate\Http\Request $request)
+    {
+        $search = trim($request->input('search', ''));
+
+        $reservations = Reservation::query()
+            ->with(['regency', 'district', 'village'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('reservation_number', 'like', "%{$search}%")
+                        ->orWhere('reservation_code', 'like', "%{$search}%")
+                        ->orWhere('ketua_rombongan', 'like', "%{$search}%")
+                        ->orWhere('type', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhereHas('regency', function ($r) use ($search) {
+                            $r->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('district', function ($d) use ($search) {
+                            $d->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('village', function ($v) use ($search) {
+                            $v->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('panitia.reservations.index', [
+            'title' => 'Data Reservasi',
+            'reservations' => $reservations,
+            'search' => $search,
+        ]);
     }
 
     public function checkedIn()

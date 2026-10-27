@@ -1,492 +1,381 @@
 <x-app-layout>
 
+  {{-- HEADER --}}
   <x-slot name="header">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       <div>
-        <h2 class="text-3xl font-bold text-slate-800">
-          {{ $title }}
-        </h2>
-
-        <p class="text-sm text-slate-500 mt-1">
-          Kelola data reservasi pengunjung
-        </p>
+        <h2 class="text-xl font-bold text-slate-800">{{ $title }}</h2>
+        <p class="text-xs text-slate-500 mt-1">Kelola reservasi dan check-in pengunjung</p>
       </div>
     </div>
   </x-slot>
 
-  <div class="py-6">
-    <div class="max-w-7xl mx-auto px-4">
-      {{-- INFORMASI STATUS --}}
-      <div class="mb-6">
+  <div class="py-4">
+    <div class="max-w-[1600px] mx-auto px-3 sm:px-5 space-y-4">
 
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-3xl p-6">
-
-          <h3 class="text-lg font-bold text-slate-800 mb-4">
-            Informasi Status Reservasi
-          </h3>
-
-          <div class="grid md:grid-cols-3 gap-4">
-
-            <div class="bg-yellow-100 border border-yellow-200 rounded-2xl p-4">
-              <div class="font-semibold text-yellow-800">
-                🟡 Pending
-              </div>
-
-              <div class="text-sm text-yellow-700 mt-2">
-                Reservasi sudah dibuat dan menunggu kedatangan peserta.
-              </div>
-            </div>
-
-            <div class="bg-green-100 border border-green-200 rounded-2xl p-4">
-              <div class="font-semibold text-green-800">
-                🟢 Hadir
-              </div>
-
-              <div class="text-sm text-green-700 mt-2">
-                Peserta telah melakukan check-in.
-              </div>
-            </div>
-
-            <div class="bg-red-100 border border-red-200 rounded-2xl p-4">
-              <div class="font-semibold text-red-800">
-                🔴 Dibatalkan
-              </div>
-
-              <div class="text-sm text-red-700 mt-2">
-                Reservasi dibatalkan dan tidak dapat digunakan kembali.
-              </div>
-            </div>
-
-          </div>
-
-          <div class="mt-5 text-sm text-slate-600">
-
-            <strong>Cara Kerja Tombol:</strong>
-
-            <ul class="list-disc ml-5 mt-2 space-y-1">
-
-              <li>
-                <b>Check-in</b> → Status berubah menjadi Hadir.
-              </li>
-
-              <li>
-                <b>Batalkan</b> → Status berubah menjadi Dibatalkan.
-              </li>
-
-              <li>
-                <b>Hapus</b> → Data reservasi dihapus permanen.
-              </li>
-
-            </ul>
-
-          </div>
-
+      {{-- INFORMASI STATUS RINGKAS --}}
+      <div class="bg-white border border-slate-200 rounded-xl p-3">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+          <h3 class="text-sm font-bold text-slate-700">Informasi Status Reservasi</h3>
+          <p class="text-xs text-slate-500">
+            Check-in: hadir &nbsp;·&nbsp; Batalkan: ubah status &nbsp;·&nbsp; Hapus: permanen
+          </p>
         </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div class="flex items-center gap-3 rounded-lg bg-amber-50 border border-amber-100 px-3 py-2">
+            <span class="text-lg">🟡</span>
+            <div>
+              <div class="text-sm font-semibold text-amber-800">Pending</div>
+              <p class="text-xs text-amber-700">Menunggu kedatangan</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 rounded-lg bg-green-50 border border-green-100 px-3 py-2">
+            <span class="text-lg">🟢</span>
+            <div>
+              <div class="text-sm font-semibold text-green-800">Hadir</div>
+              <p class="text-xs text-green-700">Sudah check-in</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 rounded-lg bg-red-50 border border-red-100 px-3 py-2">
+            <span class="text-lg">🔴</span>
+            <div>
+              <div class="text-sm font-semibold text-red-800">Dibatalkan</div>
+              <p class="text-xs text-red-700">Tidak dapat digunakan kembali</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+      {{-- TABEL RESERVASI --}}
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
 
-        {{-- HEADER --}}
-        <div class="border-b border-slate-200 bg-slate-50 p-6">
+        {{-- TOOLBAR --}}
+        <div class="p-3 sm:p-4 border-b border-slate-200 space-y-3">
 
-          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
 
-            <div>
-              <h3 class="text-xl font-bold text-slate-800">
-                {{ $title }}
-              </h3>
-
-              <p class="text-sm text-slate-500 mt-1">
-                Total Reservasi :
-                <span class="font-semibold">
-                  {{ $reservations->total() }}
-                </span>
+            <div class="flex-shrink-0">
+              <h3 class="text-base font-bold text-slate-800">{{ $title }}</h3>
+              <p class="text-xs text-slate-500 mt-1">
+                Total hasil:
+                <span class="font-bold text-slate-700">{{ $reservations->total() }}</span>
+                reservasi
               </p>
             </div>
 
-            {{-- FILTER --}}
-            <div class="flex flex-wrap gap-2">
+            {{-- PENCARIAN OTOMATIS --}}
+            <form action="{{ url()->current() }}" method="GET"
+              id="liveSearchForm" class="w-full xl:max-w-sm">
 
-              <a href="{{ route('admin.reservasi.data') }}"
-                class="px-5 py-2 rounded-xl text-sm font-medium transition
-                                {{ request()->routeIs('admin.reservasi.data')
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-white border text-slate-700 hover:bg-slate-100' }}">
-                Semua
-              </a>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-3 flex items-center text-slate-400 pointer-events-none">
+                  🔎
+                </span>
 
-              <a href="{{ route('admin.reservasi.pending') }}"
-                class="px-5 py-2 rounded-xl text-sm font-medium transition
-                                {{ request()->routeIs('admin.reservasi.pending')
-                                    ? 'bg-yellow-500 text-white'
-                                    : 'bg-white border text-slate-700 hover:bg-slate-100' }}">
-                Pending
-              </a>
+                <input
+                  type="search"
+                  name="search"
+                  id="liveSearch"
+                  value="{{ $search ?? request('search', '') }}"
+                  placeholder="Cari nomor, kode, wilayah, ketua..."
+                  autocomplete="off"
+                  class="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-20 text-sm
+                                           focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none">
 
-              <a href="{{ route('admin.reservasi.checked-in') }}"
-                class="px-5 py-2 rounded-xl text-sm font-medium transition
-                                {{ request()->routeIs('admin.reservasi.checked-in')
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-white border text-slate-700 hover:bg-slate-100' }}">
-                Sudah Hadir
-              </a>
+                <span id="searchIndicator"
+                  class="hidden absolute inset-y-0 right-3 items-center text-xs text-blue-600">
+                  Mencari...
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Hasil diperbarui otomatis saat Anda mengetik.
+              </p>
+            </form>
+          </div>
 
-              <a href="{{ route('admin.reservasi.cancelled') }}"
-                class="px-5 py-2 rounded-xl text-sm font-medium transition
-                                {{ request()->routeIs('admin.reservasi.cancelled')
-                                    ? 'bg-red-600 text-white'
-                                    : 'bg-white border text-slate-700 hover:bg-slate-100' }}">
-                Dibatalkan
-              </a>
+          {{-- FILTER STATUS --}}
+          <div class="flex flex-wrap items-center gap-1.5">
+            <a href="{{ route('admin.reservasi.data') }}"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
+                           {{ request()->routeIs('admin.reservasi.data')
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+              Semua
+            </a>
 
-              <a href="{{ route('admin.reservasi.scan') }}"
-                class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium shadow">
-                Scan QR
-              </a>
+            <a href="{{ route('admin.reservasi.pending') }}"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
+                           {{ request()->routeIs('admin.reservasi.pending')
+                                ? 'bg-amber-500 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+              Pending
+            </a>
 
-            </div>
+            <a href="{{ route('admin.reservasi.checked-in') }}"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
+                           {{ request()->routeIs('admin.reservasi.checked-in')
+                                ? 'bg-green-600 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+              Sudah Hadir
+            </a>
 
+            <a href="{{ route('admin.reservasi.cancelled') }}"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold transition
+                           {{ request()->routeIs('admin.reservasi.cancelled')
+                                ? 'bg-red-600 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+              Dibatalkan
+            </a>
+
+            <a href="{{ route('admin.reservasi.scan') }}"
+              class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold">
+              Scan QR
+            </a>
           </div>
         </div>
 
-        {{-- TABLE --}}
+        {{-- TABEL --}}
         <div class="overflow-x-auto">
+          <table class="min-w-full text-sm whitespace-nowrap">
 
-          <table class="min-w-full text-sm">
-
-            <thead class="bg-slate-100">
-
+            <thead class="bg-slate-50 text-slate-600">
               <tr>
-                <th class="px-6 py-4 text-left">No</th>
-                <th class="px-6 py-4 text-left">Reservasi</th>
-                <th class="px-6 py-4 text-left">Wilayah</th>
-                <th class="px-6 py-4 text-left">Jenis</th>
-                <th class="px-6 py-4 text-left">Peserta</th>
-                <th class="px-6 py-4 text-center">Status</th>
-                <th class="px-6 py-4 text-center">Aksi</th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase">No</th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Reservasi</th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Wilayah</th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Jenis</th>
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Peserta</th>
+                <th class="px-4 py-3 text-center text-xs font-bold uppercase">Status</th>
+                <th class="px-4 py-3 text-center text-xs font-bold uppercase">Aksi</th>
               </tr>
-
             </thead>
 
-            <tbody class="divide-y divide-slate-200">
+            <tbody class="divide-y divide-slate-100">
 
               @forelse($reservations as $item)
+              <tr class="hover:bg-slate-50 transition
+                                    @if($item->status == 'checked_in') bg-green-50/30
+                                    @elseif($item->status == 'no_show') bg-red-50/30
+                                    @endif">
 
-              <tr class="
-        transition-all duration-200 hover:bg-slate-50
-
-        @if($item->status == 'checked_in')
-            bg-green-50/30
-        @elseif($item->status == 'no_show')
-            bg-red-50/30
-        @endif
-    ">
-
-                {{-- NO --}}
-                <td class="px-6 py-5 font-medium text-slate-600">
+                {{-- NOMOR --}}
+                <td class="px-4 py-3 text-slate-500">
                   {{ $reservations->firstItem() + $loop->index }}
                 </td>
 
                 {{-- RESERVASI --}}
-                <td class="px-6 py-5">
-
+                <td class="px-4 py-3">
                   <div class="font-semibold text-slate-800">
                     {{ $item->reservation_number }}
                   </div>
-
-                  <div class="mt-1">
-                    <span class="inline-flex px-2 py-1 text-xs rounded-lg bg-slate-100 text-slate-600 font-medium">
+                  <div class="text-xs text-slate-500 mt-1">
+                    Kode:
+                    <span class="font-medium text-slate-700">
                       {{ $item->reservation_code }}
                     </span>
                   </div>
-
                 </td>
 
                 {{-- WILAYAH --}}
-                <td class="px-6 py-5">
-
-                  <div class="space-y-1">
-
-                    <div class="font-semibold text-slate-700">
-                      {{ $item->regency?->name ?? '-' }}
-                    </div>
-
-                    <div class="text-xs text-slate-500">
-                      {{ $item->district?->name ?? '-' }}
-                    </div>
-
-                    <div class="text-xs text-slate-400">
-                      {{ $item->village?->name ?? '-' }}
-                    </div>
-
+                <td class="px-4 py-3">
+                  <div class="font-medium text-slate-700">
+                    {{ $item->regency?->name ?? '-' }}
                   </div>
-
+                  <div class="text-xs text-slate-500">
+                    {{ $item->district?->name ?? '-' }}
+                  </div>
+                  <div class="text-xs text-slate-400">
+                    {{ $item->village?->name ?? '-' }}
+                  </div>
                 </td>
 
                 {{-- JENIS --}}
-                <td class="px-6 py-5">
-
+                <td class="px-4 py-3">
                   @if($item->type == 'group')
-
-                  <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                  <span class="inline-flex px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
                     👥 Rombongan
                   </span>
-
                   @else
-
-                  <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                  <span class="inline-flex px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
                     👤 Perseorangan
                   </span>
-
                   @endif
-
                 </td>
 
                 {{-- PESERTA --}}
-                <td class="px-6 py-5">
-
-                  <div class="font-bold text-slate-800 mb-2">
-                    {{ $item->total_participant }} Orang
+                <td class="px-4 py-3">
+                  <div class="font-bold text-slate-800 mb-1.5">
+                    {{ $item->total_participant }} orang
                   </div>
 
-                  <div class="grid grid-cols-2 gap-1 text-xs">
-
-                    <div class="bg-blue-50 rounded px-2 py-1">
-                      B: {{ $item->total_father }}
-                    </div>
-
-                    <div class="bg-pink-50 rounded px-2 py-1">
-                      I: {{ $item->total_mother }}
-                    </div>
-
-                    <div class="bg-green-50 rounded px-2 py-1">
-                      R: {{ $item->total_teenager }}
-                    </div>
-
-                    <div class="bg-yellow-50 rounded px-2 py-1">
-                      A: {{ $item->total_child }}
-                    </div>
-
+                  <div class="grid grid-cols-2 gap-1 text-[11px]">
+                    <span class="bg-blue-50 text-blue-700 rounded px-1.5 py-1">B: {{ $item->total_father }}</span>
+                    <span class="bg-pink-50 text-pink-700 rounded px-1.5 py-1">I: {{ $item->total_mother }}</span>
+                    <span class="bg-green-50 text-green-700 rounded px-1.5 py-1">R: {{ $item->total_teenager }}</span>
+                    <span class="bg-amber-50 text-amber-700 rounded px-1.5 py-1">A: {{ $item->total_child }}</span>
                   </div>
-
                 </td>
 
                 {{-- STATUS --}}
-                <td class="px-6 py-5 text-center">
-
+                <td class="px-4 py-3 text-center">
                   @switch($item->status)
-
                   @case('pending')
-                  <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
-                    🟡 Pending
+                  <span class="inline-flex px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                    Pending
                   </span>
                   @break
 
                   @case('checked_in')
-                  <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
-                    🟢 Hadir
+                  <span class="inline-flex px-2.5 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                    Hadir
                   </span>
                   @break
 
                   @case('no_show')
-                  <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
-                    🔴 Dibatalkan
+                  <span class="inline-flex px-2.5 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+                    Dibatalkan
                   </span>
                   @break
 
                   @default
-                  <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
-                    Unknown
+                  <span class="inline-flex px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs">
+                    Tidak diketahui
                   </span>
-
                   @endswitch
-
                 </td>
 
                 {{-- AKSI --}}
-                <td class="px-6 py-5">
-
-                  <div class="flex flex-wrap justify-center gap-2">
+                <td class="px-4 py-3">
+                  <div class="flex justify-center items-center gap-1.5">
 
                     @if($item->status == 'pending')
-
-                    {{-- CHECK IN --}}
+                    {{-- CHECK-IN --}}
                     <form action="{{ route('admin.reservasi.checkin') }}" method="POST">
-
                       @csrf
-
-                      <input
-                        type="hidden"
-                        name="reservation_code"
+                      <input type="hidden" name="reservation_code"
                         value="{{ $item->reservation_code }}">
 
-                      <button
-                        type="submit"
-                        class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm">
-
+                      <button type="submit"
+                        class="px-2.5 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-xs font-semibold">
                         ✓ Check-in
-
                       </button>
-
                     </form>
 
-                    {{-- CANCEL --}}
-                    <form
-                      action="{{ route('reservasi.cancel',$item->id) }}"
-                      method="POST"
-                      class="cancel-form">
-
+                    {{-- BATALKAN --}}
+                    <form action="{{ route('reservasi.cancel', $item->id) }}"
+                      method="POST" class="cancel-form">
                       @csrf
                       @method('PUT')
 
-                      <button
-                        type="submit"
-                        class="inline-flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm">
-
-                        ⚠ Batalkan
-
+                      <button type="submit"
+                        class="px-2.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold">
+                        Batalkan
                       </button>
-
                     </form>
 
                     @elseif($item->status == 'checked_in')
-
-                    <span class="px-4 py-2 rounded-xl bg-green-100 text-green-700 text-xs font-semibold">
-                      ✓ Sudah Check-in
-                    </span>
+                    <span class="text-xs font-medium text-green-700">✓ Sudah hadir</span>
 
                     @elseif($item->status == 'no_show')
-
-                    <span class="px-4 py-2 rounded-xl bg-red-100 text-red-700 text-xs font-semibold">
-                      ✕ Dibatalkan
-                    </span>
-
+                    <span class="text-xs font-medium text-red-700">✕ Dibatalkan</span>
                     @endif
 
                     {{-- HAPUS --}}
-                    <form
-                      action="{{ route('reservasi.destroy',$item->id) }}"
-                      method="POST"
-                      class="delete-form">
-
+                    <form action="{{ route('reservasi.destroy', $item->id) }}"
+                      method="POST" class="delete-form">
                       @csrf
                       @method('DELETE')
 
-                      <button
-                        type="submit"
-                        class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm">
-
-                        🗑 Hapus
-
+                      <button type="submit"
+                        class="px-2.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold">
+                        Hapus
                       </button>
-
                     </form>
 
                   </div>
-
                 </td>
-
               </tr>
 
               @empty
-
               <tr>
-
-                <td colspan="7" class="py-20 text-center">
-
-                  <div class="flex flex-col items-center">
-
-                    <div class="text-5xl mb-3">
-                      📭
-                    </div>
-
-                    <div class="font-semibold text-slate-600">
-                      Tidak ada data reservasi
-                    </div>
-
-                    <div class="text-sm text-slate-400 mt-1">
-                      Belum ada reservasi yang dapat ditampilkan
-                    </div>
-
-                  </div>
-
+                <td colspan="7" class="px-4 py-12 text-center">
+                  <div class="text-3xl mb-2">📭</div>
+                  <p class="font-semibold text-slate-600">Tidak ada data reservasi</p>
+                  <p class="text-xs text-slate-400 mt-1">
+                    Coba ubah kata pencarian atau pilih filter lainnya.
+                  </p>
                 </td>
-
               </tr>
-
               @endforelse
 
             </tbody>
-
           </table>
-
         </div>
 
         {{-- PAGINATION --}}
-        <div class="border-t border-slate-200 bg-slate-50 px-6 py-4">
-          {{ $reservations->links() }}
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 py-3 border-t border-slate-200 bg-slate-50">
+          <p class="text-xs text-slate-500">
+            Menampilkan {{ $reservations->firstItem() ?? 0 }}–{{ $reservations->lastItem() ?? 0 }}
+            dari {{ $reservations->total() }} data
+          </p>
+          <div>
+            {{ $reservations->withQueryString()->links() }}
+          </div>
         </div>
 
       </div>
-
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
+    // Konfirmasi pembatalan
     document.querySelectorAll('.cancel-form').forEach(form => {
-
       form.addEventListener('submit', function(e) {
-
         e.preventDefault();
 
         Swal.fire({
-          title: 'Batalkan Reservasi?',
-          text: 'Status akan berubah menjadi Dibatalkan',
+          title: 'Batalkan reservasi?',
+          text: 'Status akan berubah menjadi Dibatalkan.',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Ya, Batalkan',
-          cancelButtonText: 'Tidak'
-        }).then((result) => {
-
+          cancelButtonText: 'Tidak',
+          confirmButtonColor: '#d97706'
+        }).then(result => {
           if (result.isConfirmed) {
             form.submit();
           }
-
         });
-
       });
-
     });
 
+    // Konfirmasi hapus
     document.querySelectorAll('.delete-form').forEach(form => {
-
       form.addEventListener('submit', function(e) {
-
         e.preventDefault();
 
         Swal.fire({
-          title: 'Hapus Reservasi?',
-          text: 'Data tidak dapat dikembalikan',
+          title: 'Hapus reservasi?',
+          text: 'Data yang dihapus tidak dapat dikembalikan.',
           icon: 'warning',
           showCancelButton: true,
-          confirmButtonColor: '#dc2626',
           confirmButtonText: 'Ya, Hapus',
-          cancelButtonText: 'Batal'
-        }).then((result) => {
-
+          cancelButtonText: 'Batal',
+          confirmButtonColor: '#dc2626'
+        }).then(result => {
           if (result.isConfirmed) {
             form.submit();
           }
-
         });
-
       });
-
     });
 
+    // Notifikasi
     @if(session('success'))
     Swal.fire({
       icon: 'success',
@@ -504,6 +393,48 @@
       text: @json(session('error'))
     });
     @endif
+
+    // Pencarian otomatis saat mengetik
+    document.addEventListener('DOMContentLoaded', function() {
+      const input = document.getElementById('liveSearch');
+      const indicator = document.getElementById('searchIndicator');
+
+      if (!input) return;
+
+      let timer;
+
+      input.addEventListener('input', function() {
+        clearTimeout(timer);
+
+        if (indicator) {
+          indicator.classList.remove('hidden');
+          indicator.classList.add('flex');
+        }
+
+        timer = setTimeout(function() {
+          const params = new URLSearchParams(window.location.search);
+          const value = input.value.trim();
+
+          if (value) {
+            params.set('search', value);
+          } else {
+            params.delete('search');
+          }
+
+          params.delete('page');
+
+          const query = params.toString();
+          const url = window.location.pathname + (query ? '?' + query : '');
+
+          if (url !== window.location.pathname + window.location.search) {
+            window.location.href = url;
+          } else if (indicator) {
+            indicator.classList.add('hidden');
+            indicator.classList.remove('flex');
+          }
+        }, 400);
+      });
+    });
   </script>
 
 </x-app-layout>
