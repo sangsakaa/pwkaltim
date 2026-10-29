@@ -16,7 +16,7 @@ class ReservationController extends Controller
         return view(
             'reservations.create',
             [
-                'provinces' => Province::whereIn('code', [61, 62, 63, 64])->get()
+                'provinces' => Province::whereIn('code', [61, 62, 63, 64, 65])->get()
             ]
         );
     }
@@ -228,5 +228,13 @@ public function edit($id)
             'success',
             'Reservasi berhasil dihapus'
         );
+    }
+    public function report()
+    {
+        $reservations = Reservation::with([
+            'regency.province'
+        ])->latest()->get();
+
+        return view('reservations.report', compact('reservations'));
     }
 }

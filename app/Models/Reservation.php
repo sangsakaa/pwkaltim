@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\District;
+use App\Models\Province;
+use App\Models\Regency;
+use App\Models\ReservationScan;
+use App\Models\Village;
 use Illuminate\Database\Eloquent\Model;
 
 class Reservation extends Model
@@ -34,6 +39,10 @@ class Reservation extends Model
     public function scans()
     {
         return $this->hasMany(ReservationScan::class);
+    }
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'province_code', 'code');
     }
 
     public function regency()

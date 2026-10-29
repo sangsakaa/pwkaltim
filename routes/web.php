@@ -297,6 +297,7 @@ Route::delete(
 | RESERVASI PUBLIC
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('reservasi')
     ->name('reservasi.')
     ->group(function () {
@@ -327,7 +328,13 @@ Route::prefix('reservasi')
 
         Route::delete('/delete/{id}', [ReservationController::class, 'destroy'])
             ->name('destroy');
+
+    // Laporan reservasi
+    Route::get('/laporan', [ReservationController::class, 'report'])
+        ->name('report');
     });
+
+
 
 /*
 |--------------------------------------------------------------------------
