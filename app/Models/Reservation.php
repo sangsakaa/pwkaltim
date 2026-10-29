@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\District;
+use App\Models\Regency;
+use App\Models\ReservationScan;
+use App\Models\Village;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -37,19 +41,18 @@ class Reservation extends Model
     {
         return $this->hasMany(ReservationScan::class);
     }
-
     public function regency(): BelongsTo
     {
-        return $this->belongsTo(Regency::class, 'regency_id', 'id');
+        return $this->belongsTo(Regency::class, 'regency_id', 'code');
     }
 
     public function district(): BelongsTo
     {
-        return $this->belongsTo(District::class, 'district_id', 'id');
+        return $this->belongsTo(District::class, 'district_id', 'code');
     }
 
     public function village(): BelongsTo
     {
-        return $this->belongsTo(Village::class, 'village_id', 'id');
+        return $this->belongsTo(Village::class, 'village_id', 'code');
     }
 }

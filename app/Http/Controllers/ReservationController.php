@@ -234,6 +234,8 @@ public function edit($id)
     {
         $reservations = Reservation::with([
             'regency.province',
+            'district',
+            'village',
         ])
             ->orderBy('ketua_rombongan')
             ->get();
@@ -242,7 +244,6 @@ public function edit($id)
         $totalIbu = $reservations->sum('total_mother');
         $totalRemaja = $reservations->sum('total_teenager');
         $totalAnak = $reservations->sum('total_child');
-
         $totalPeserta = $reservations->sum('total_participant');
 
         return view('reservations.report', compact(
