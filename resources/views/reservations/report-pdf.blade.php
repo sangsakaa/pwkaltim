@@ -129,7 +129,7 @@
       @endforeach
 
       <tr class="subtotal">
-        <td colspan="3">Subtotal {{ $namaKabupaten }}</td>
+        <td colspan="2">Subtotal {{ $namaKabupaten }}</td>
         <td class="number">{{ $items->sum('total_father') }}</td>
         <td class="number">{{ $items->sum('total_mother') }}</td>
         <td class="number">{{ $items->sum('total_teenager') }}</td>
