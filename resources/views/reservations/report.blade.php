@@ -1,11 +1,11 @@
 <x-app-layout>
   <x-slot name="header">
-    <div class="flex flex-col gap-1">
+    <div>
       <h2 class="text-2xl font-bold text-slate-800">
-        Laporan Data Reservasi
+        Laporan Reservasi
       </h2>
       <p class="text-sm text-slate-500">
-        Rekap peserta berdasarkan ketua rombongan dan wilayah.
+        Rekap ketua rombongan dan jumlah peserta berdasarkan wilayah.
       </p>
     </div>
   </x-slot>
@@ -13,132 +13,132 @@
   <div class="py-8">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-      @php
-      $totalBapak = $reservations->sum('total_father');
-      $totalIbu = $reservations->sum('total_mother');
-      $totalRemaja = $reservations->sum('total_teenager');
-      $totalAnak = $reservations->sum('total_child');
-      $totalPeserta = $reservations->sum('total_participant');
-      @endphp
-
       {{-- Ringkasan --}}
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-4 mb-6">
-        <div class="rounded-xl bg-white p-5 shadow">
-          <p class="text-sm text-slate-500">Jumlah Rombongan</p>
-          <p class="mt-2 text-2xl font-bold text-slate-800">
+      <div class="mb-6 grid grid-cols-2 gap-4 md:grid-cols-5 print:hidden">
+        <div class="rounded-xl bg-white p-4 shadow">
+          <p class="text-sm text-slate-500">Rombongan</p>
+          <p class="text-2xl font-bold">
             {{ $reservations->count() }}
           </p>
         </div>
 
-        <div class="rounded-xl bg-white p-5 shadow">
-          <p class="text-sm text-slate-500">Total Bapak</p>
-          <p class="mt-2 text-2xl font-bold text-blue-600">
+        <div class="rounded-xl bg-white p-4 shadow">
+          <p class="text-sm text-slate-500">Bapak</p>
+          <p class="text-2xl font-bold text-blue-600">
             {{ number_format($totalBapak) }}
           </p>
         </div>
 
-        <div class="rounded-xl bg-white p-5 shadow">
-          <p class="text-sm text-slate-500">Total Ibu</p>
-          <p class="mt-2 text-2xl font-bold text-pink-600">
+        <div class="rounded-xl bg-white p-4 shadow">
+          <p class="text-sm text-slate-500">Ibu</p>
+          <p class="text-2xl font-bold text-pink-600">
             {{ number_format($totalIbu) }}
           </p>
         </div>
 
-        <div class="rounded-xl bg-white p-5 shadow">
-          <p class="text-sm text-slate-500">Total Remaja</p>
-          <p class="mt-2 text-2xl font-bold text-emerald-600">
+        <div class="rounded-xl bg-white p-4 shadow">
+          <p class="text-sm text-slate-500">Remaja</p>
+          <p class="text-2xl font-bold text-emerald-600">
             {{ number_format($totalRemaja) }}
+          </p>
+        </div>
+
+        <div class="rounded-xl bg-white p-4 shadow">
+          <p class="text-sm text-slate-500">Total Peserta</p>
+          <p class="text-2xl font-bold text-indigo-600">
+            {{ number_format($totalPeserta) }}
           </p>
         </div>
       </div>
 
       {{-- Tombol --}}
-      <div class="mb-4 flex flex-wrap gap-3 print:hidden">
+      <div class="mb-4 flex gap-3 print:hidden">
         <button
+          type="button"
           onclick="window.print()"
-          class="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
-          Cetak Laporan
+          class="rounded-lg bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700">
+          Cetak / Simpan PDF
         </button>
-
-        <a href="{{ route('reservasi.report') }}"
-          class="rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-          Muat Ulang
-        </a>
       </div>
 
-      {{-- Tabel --}}
-      <div class="overflow-x-auto rounded-xl bg-white shadow">
+      {{-- Tabel laporan --}}
+      <div class="overflow-x-auto rounded-xl bg-white shadow print:overflow-visible print:shadow-none">
         <table class="w-full border-collapse text-sm">
-          <thead class="bg-slate-800 text-white">
+          <thead class="bg-slate-800 text-white print:bg-white print:text-black">
             <tr>
-              <th class="border px-3 py-3 text-center">No.</th>
+              <th class="border px-3 py-3">No.</th>
               <th class="border px-3 py-3 text-left">
                 Ketua Rombongan
               </th>
-              <th class="border px-3 py-3 text-center">Bapak</th>
-              <th class="border px-3 py-3 text-center">Ibu</th>
-              <th class="border px-3 py-3 text-center">Remaja</th>
-              <th class="border px-3 py-3 text-center">Anak</th>
+              <th class="border px-3 py-3">Bapak</th>
+              <th class="border px-3 py-3">Ibu</th>
+              <th class="border px-3 py-3">Remaja</th>
+              <th class="border px-3 py-3">Anak</th>
               <th class="border px-3 py-3 text-left">Provinsi</th>
               <th class="border px-3 py-3 text-left">
                 Kabupaten/Kota
               </th>
-              <th class="border px-3 py-3 text-center">
-                Total Peserta
-              </th>
+              <th class="border px-3 py-3">Total Peserta</th>
             </tr>
           </thead>
 
           <tbody>
             @forelse ($reservations as $reservation)
             <tr class="hover:bg-slate-50">
-              <td class="border px-3 py-3 text-center">
+              <td class="border px-3 py-2 text-center">
                 {{ $loop->iteration }}
               </td>
 
-              <td class="border px-3 py-3 font-medium">
+              <td class="border px-3 py-2">
                 {{ $reservation->ketua_rombongan ?: '-' }}
               </td>
 
-              <td class="border px-3 py-3 text-center">
+              <td class="border px-3 py-2 text-center">
                 {{ $reservation->total_father ?? 0 }}
               </td>
 
-              <td class="border px-3 py-3 text-center">
+              <td class="border px-3 py-2 text-center">
                 {{ $reservation->total_mother ?? 0 }}
               </td>
 
-              <td class="border px-3 py-3 text-center">
+              <td class="border px-3 py-2 text-center">
                 {{ $reservation->total_teenager ?? 0 }}
               </td>
 
-              <td class="border px-3 py-3 text-center">
+              <td class="border px-3 py-2 text-center">
                 {{ $reservation->total_child ?? 0 }}
               </td>
 
-              <td class="border px-3 py-3">
+              <td class="border px-3 py-2">
                 {{ $reservation->regency?->province?->name ?? '-' }}
               </td>
 
-              <td class="border px-3 py-3">
+              <td class="border px-3 py-2">
                 {{ $reservation->regency?->name ?? '-' }}
               </td>
 
-              <td class="border px-3 py-3 text-center font-bold">
-                {{ $reservation->total_participant ?? 0 }}
+              <td class="border px-3 py-2 text-center font-bold">
+                {{ $reservation->total_participant
+                                        ?? (
+                                            ($reservation->total_father ?? 0) +
+                                            ($reservation->total_mother ?? 0) +
+                                            ($reservation->total_teenager ?? 0) +
+                                            ($reservation->total_child ?? 0)
+                                        )
+                                    }}
               </td>
             </tr>
             @empty
             <tr>
               <td colspan="9"
-                class="border px-4 py-10 text-center text-slate-500">
+                class="border px-4 py-8 text-center text-slate-500">
                 Belum ada data reservasi.
               </td>
             </tr>
             @endforelse
           </tbody>
 
-          <tfoot class="bg-slate-100 font-bold">
+          <tfoot class="bg-slate-100 font-bold print:bg-white">
             <tr>
               <td colspan="2" class="border px-3 py-3 text-right">
                 TOTAL
@@ -171,18 +171,22 @@
 
   <style>
     @media print {
+      @page {
+        size: landscape;
+        margin: 10mm;
+      }
+
       body {
         background: white !important;
       }
 
       nav,
-      header button,
       .print\:hidden {
         display: none !important;
       }
 
-      .shadow {
-        box-shadow: none !important;
+      .max-w-7xl {
+        max-width: none !important;
       }
 
       table {
@@ -195,9 +199,8 @@
         padding: 5px !important;
       }
 
-      @page {
-        size: landscape;
-        margin: 10mm;
+      tr {
+        break-inside: avoid;
       }
     }
   </style>
