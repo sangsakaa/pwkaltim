@@ -285,7 +285,8 @@ class ScanController extends Controller
             'totalPeserta'
         ));
 
-        $pdf->setPaper('a4', 'landscape');
+        // $pdf->setPaper('a4', 'landscape');
+        $pdf->setPaper([0, 0, 595.28, 935.43], 'portrait');
 
         return $pdf->stream('laporan-reservasi.pdf');
     }

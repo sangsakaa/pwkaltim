@@ -105,7 +105,7 @@
       <tr>
         <th>No.</th>
         <th>Ketua Rombongan</th>
-        <th>No. Reservasi</th>
+        <!-- <th>No. Reservasi</th> -->
         <th>Bapak</th>
         <th>Ibu</th>
         <th>Remaja</th>
@@ -119,7 +119,7 @@
       <tr>
         <td class="number">{{ $loop->iteration }}</td>
         <td>{{ $reservation->ketua_rombongan }}</td>
-        <td>{{ $reservation->reservation_number }}</td>
+        <!-- <td>{{ $reservation->reservation_number }}</td> -->
         <td class="number">{{ $reservation->total_father }}</td>
         <td class="number">{{ $reservation->total_mother }}</td>
         <td class="number">{{ $reservation->total_teenager }}</td>
