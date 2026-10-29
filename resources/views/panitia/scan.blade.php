@@ -1,118 +1,127 @@
 <x-app-layout>
 
   <x-slot name="header">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between py-1">
       <div>
-        <h2 class="text-2xl font-bold text-gray-800">
+        <h2 class="text-xl font-bold text-gray-800">
           Scan QR Reservasi
         </h2>
-        <p class="text-sm text-gray-500">
+        <p class="text-xs text-gray-500">
           Scan QR untuk check-in pengunjung
         </p>
       </div>
     </div>
   </x-slot>
 
-  <div class="py-6 px-4">
-    <div class="max-w-5xl mx-auto">
+  <div class="h-[calc(100dvh-100px)] min-h-0 overflow-hidden px-4 py-3">
+    <div class="mx-auto flex h-full max-w-7xl flex-col">
 
       {{-- ALERT --}}
       @foreach (['error' => 'red', 'warning' => 'yellow', 'success' => 'green'] as $type => $color)
       @if(session($type))
-      <div class="mb-5 rounded-2xl border border-{{ $color }}-200 bg-{{ $color }}-50 p-4 text-{{ $color }}-700">
+      <div class="mb-3 shrink-0 rounded-xl border border-{{ $color }}-200 bg-{{ $color }}-50 p-3 text-sm text-{{ $color }}-700">
         {{ session($type) }}
       </div>
       @endif
       @endforeach
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {{-- MAIN LAYOUT --}}
+      <div class="grid min-h-0 flex-1 grid-cols-1 gap-4 overflow-y-auto lg:grid-cols-3 lg:overflow-hidden">
 
         {{-- SCANNER --}}
-        <div class="lg:col-span-2">
-          <div class="bg-white rounded-3xl shadow border overflow-hidden">
+        <div class="flex min-h-0 flex-col lg:col-span-2">
+          <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-white shadow-sm">
 
-            <div class="bg-gradient-to-r from-green-700 to-green-600 px-6 py-5 text-white">
-              <h3 class="font-bold text-xl">QR Scanner</h3>
-              <p class="text-green-100 text-sm">Arahkan kamera ke QR reservasi</p>
+            <div class="shrink-0 bg-gradient-to-r from-green-700 to-green-600 px-5 py-3 text-white">
+              <h3 class="text-lg font-bold">QR Scanner</h3>
+              <p class="text-xs text-green-100">
+                Arahkan kamera ke QR reservasi
+              </p>
             </div>
 
-            <div class="p-5">
-              <div class="rounded-3xl border bg-gray-50 overflow-hidden">
-                <div id="reader"></div>
+            <div class="flex min-h-0 flex-1 flex-col p-3">
+              <div class="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-xl border bg-gray-50">
+                <div id="reader" class="w-full max-w-2xl"></div>
               </div>
 
-              <div class="mt-5 bg-blue-50 border border-blue-200 p-4 rounded-2xl">
-                <h4 class="font-semibold text-blue-700">Tips Scan</h4>
-                <ul class="text-sm text-blue-600 mt-2 list-disc ml-4">
-                  <li>Pastikan QR jelas</li>
-                  <li>Jarak 15–30 cm</li>
-                  <li>Tunggu auto detect</li>
-                </ul>
+              <div class="mt-3 shrink-0 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2">
+                <h4 class="text-sm font-semibold text-blue-700">Tips Scan</h4>
+                <p class="mt-1 text-xs text-blue-600">
+                  Pastikan QR jelas • Jarak 15–30 cm • Tunggu auto detect
+                </p>
               </div>
             </div>
 
           </div>
         </div>
 
-        {{-- PANEL --}}
-        <div>
+        {{-- PANEL CHECK-IN --}}
+        <div class="flex min-h-0 flex-col">
+          <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-white shadow-sm">
 
-          <div class="bg-white rounded-3xl shadow border sticky top-5 overflow-hidden">
-
-            <div class="bg-gray-900 text-white px-6 py-5">
-              <h3 class="font-bold text-lg">Check-in Reservasi</h3>
-              <p class="text-sm text-gray-300">Scan atau manual</p>
+            <div class="shrink-0 bg-gray-900 px-5 py-4 text-white">
+              <h3 class="text-lg font-bold">Check-in Reservasi</h3>
+              <p class="text-xs text-gray-300">Scan atau input manual</p>
             </div>
 
-            <div class="p-6">
+            <div class="flex min-h-0 flex-1 flex-col overflow-y-auto p-4">
 
               {{-- STATUS --}}
-              <div class="mb-5 bg-green-50 border border-green-200 p-4 rounded-2xl">
-                <p class="text-xs text-green-700 font-semibold uppercase">Status</p>
-                <div id="scan-status" class="text-sm text-green-700 mt-1">
+              <div class="mb-4 shrink-0 rounded-xl border border-green-200 bg-green-50 p-3">
+                <p class="text-xs font-semibold uppercase text-green-700">
+                  Status
+                </p>
+                <div id="scan-status" class="mt-1 text-sm text-green-700">
                   Menunggu QR code...
                 </div>
               </div>
 
               {{-- INPUT --}}
-              <label class="block font-semibold mb-2">Kode Reservasi</label>
-              <input
-                id="reservation_code"
-                type="text"
-                class="w-full rounded-2xl border-gray-300 focus:ring-green-600 focus:border-green-600"
-                placeholder="Scan atau input manual" />
+              <div class="shrink-0">
+                <label for="reservation_code" class="mb-2 block text-sm font-semibold">
+                  Kode Reservasi
+                </label>
+
+                <input
+                  id="reservation_code"
+                  type="text"
+                  class="w-full rounded-xl border-gray-300 text-sm focus:border-green-600 focus:ring-green-600"
+                  placeholder="Scan atau input manual" />
+              </div>
 
               {{-- BUTTON --}}
               <button
+                type="button"
                 onclick="manualCheckin()"
-                class="w-full mt-5 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-2xl">
+                class="mt-4 w-full shrink-0 rounded-xl bg-green-600 py-3 text-sm font-semibold text-white transition hover:bg-green-700">
                 ✓ Check-in
               </button>
 
               {{-- ACTION --}}
-              <div class="grid grid-cols-2 gap-3 mt-4">
-
-                <button onclick="clearInput()" class="bg-gray-100 rounded-2xl py-3">
+              <div class="mt-3 grid shrink-0 grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onclick="clearInput()"
+                  class="rounded-xl bg-gray-100 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-200">
                   Reset
                 </button>
 
-                <a href="{{ route('admin.reservasi.data') }}"
-                  class="bg-blue-600 text-white text-center rounded-2xl py-3">
+                <a
+                  href="{{ route('admin.reservasi.data') }}"
+                  class="rounded-xl bg-blue-600 py-3 text-center text-sm font-semibold text-white hover:bg-blue-700">
                   Data
                 </a>
-
               </div>
 
             </div>
           </div>
-
         </div>
 
       </div>
     </div>
   </div>
 
-  {{-- LIB --}}
+  {{-- LIBRARY SCANNER --}}
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   {{-- SOUND --}}
@@ -123,11 +132,11 @@
     let lastScan = '';
 
     function playSuccess() {
-      document.getElementById('success-sound').play();
+      document.getElementById('success-sound').play().catch(() => {});
     }
 
     function playError() {
-      document.getElementById('error-sound').play();
+      document.getElementById('error-sound').play().catch(() => {});
     }
 
     function updateStatus(html) {
@@ -137,6 +146,7 @@
     function clearInput() {
       document.getElementById('reservation_code').value = '';
       updateStatus('Menunggu QR code...');
+      lastScan = '';
     }
 
     async function manualCheckin() {
@@ -144,11 +154,11 @@
 
       if (!code) {
         playError();
-        updateStatus(`<div class="text-red-600 font-semibold">⚠️ Kode kosong</div>`);
+        updateStatus('<div class="font-semibold text-red-600">⚠️ Kode kosong</div>');
         return;
       }
 
-      updateStatus(`<div class="text-blue-600 animate-pulse">⏳ Memproses...</div>`);
+      updateStatus('<div class="animate-pulse text-blue-600">⏳ Memproses...</div>');
 
       try {
         const res = await fetch("{{ route('admin.reservasi.checkin') }}", {
@@ -167,49 +177,41 @@
 
         if (!res.ok) {
           playError();
-          updateStatus(`<div class="text-red-600 font-semibold">❌ ${data.message}</div>`);
+          updateStatus(`<div class="font-semibold text-red-600">❌ ${data.message ?? 'Check-in gagal'}</div>`);
           return;
         }
 
         playSuccess();
 
+        const result = data.data ?? {};
+
         updateStatus(`
-          <div class="text-green-700 space-y-2">
-
-            <div class="font-bold text-lg">
-              ✅ CHECK-IN BERHASIL
-            </div>
-
-            <div class="bg-white border rounded-xl p-3 text-sm space-y-1">
-
+          <div class="space-y-2 text-green-700">
+            <div class="text-lg font-bold">✅ CHECK-IN BERHASIL</div>
+            <div class="space-y-1 rounded-xl border bg-white p-3 text-sm">
               <div>
                 <span class="font-semibold">Ketua Rombongan:</span><br>
-                ${data.data.ketua_rombongan ?? '-'}
+                ${result.ketua_rombongan ?? '-'}
               </div>
-
               <div>
                 <span class="font-semibold">No Reservasi:</span><br>
-                ${data.data.reservation_number}
+                ${result.reservation_number ?? '-'}
               </div>
-
               <div>
                 <span class="font-semibold">Kode:</span><br>
-                ${data.data.reservation_code}
+                ${result.reservation_code ?? '-'}
               </div>
-
               <div>
                 <span class="font-semibold">Total Peserta:</span><br>
-                ${data.data.participant ?? 0}
+                ${result.participant ?? 0}
               </div>
-
             </div>
-
           </div>
         `);
 
       } catch (err) {
         playError();
-        updateStatus(`<div class="text-red-600">❌ Server error</div>`);
+        updateStatus('<div class="text-red-600">❌ Server error</div>');
       }
     }
 
@@ -221,16 +223,49 @@
 
       manualCheckin();
 
-      setTimeout(() => lastScan = '', 2500);
+      setTimeout(() => {
+        lastScan = '';
+      }, 2500);
     }
 
     new Html5QrcodeScanner("reader", {
       fps: 10,
       qrbox: {
-        width: 260,
-        height: 260
+        width: 220,
+        height: 220
       }
     }).render(onScanSuccess);
   </script>
+
+  {{-- BATASI TINGGI AREA SCANNER --}}
+  <style>
+    #reader {
+      border: 0 !important;
+    }
+
+    #reader video {
+      max-height: 48vh !important;
+      object-fit: cover;
+    }
+
+    #reader img {
+      display: inline-block;
+    }
+
+    #reader__scan_region {
+      min-height: 0 !important;
+    }
+
+    #reader__dashboard_section_csr button,
+    #reader__dashboard_section_swaplink {
+      margin: 4px !important;
+    }
+
+    @media (min-width: 1024px) {
+      #reader video {
+        max-height: 48vh !important;
+      }
+    }
+  </style>
 
 </x-app-layout>

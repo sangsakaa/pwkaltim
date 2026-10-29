@@ -363,6 +363,19 @@ Route::middleware([
         Route::post('/checkin', [ScanController::class, 'checkin'])->name('checkin');
     Route::get('/cancelled', [ScanController::class, 'cancelledReservations'])
         ->name('cancelled');
+    Route::get('/reservasi/{reservation}/kartu', [
+        ScanController::class,
+        'printCard'
+    ])->name('admin.reservasi.card');
+
+    Route::post('/reservasi/{reservation}/kembali-pending', [
+        ScanController::class,
+        'restorePending'
+    ])->name('admin.reservasi.restore-pending');
+
+    // DOWNLOAD PDF
+    Route::get('/pdf', [ScanController::class, 'exportPdf'])
+        ->name('pdf');
     });
 
 /*

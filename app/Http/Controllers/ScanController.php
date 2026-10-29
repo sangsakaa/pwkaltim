@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservation;
 use App\Models\ReservationScan;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ScanController extends Controller
@@ -197,5 +198,61 @@ class ScanController extends Controller
                 'reservations' => $reservations
             ]
         );
+    }
+
+
+    public function printCard(Reservation $reservation)
+    {
+        if ($reservation->status === 'no_show') {
+            return redirect()
+                ->route('admin.reservasi.data')
+                ->with('error', 'Reservasi dibatalkan. Kartu aktif tidak dapat dicetak.');
+        }
+
+        $reservation->load(['regency', 'district', 'village']);
+
+        return view('panitia.reservations.card', compact('reservation'));
+    }
+
+
+    public function restorePending(Reservation $reservation)
+    {
+        // Hanya reservasi Dibatalkan atau Sudah Check-in yang dapat dipulihkan
+        if (!in_array($reservation->status, ['no_show', 'checked_in'], true)) {
+            return redirect()
+                ->route('admin.reservasi.data')
+                ->with('error', 'Hanya reservasi Dibatalkan atau Sudah Check-in yang dapat dikembalikan ke Pending.');
+        }
+
+        try {
+            // Kembalikan status reservasi
+            $reservation->status = 'pending';
+            $reservation->marked_no_show_at = null;
+            $reservation->checked_in_at = null;
+            $reservation->save();
+
+            return redirect()
+                ->route('admin.reservasi.data')
+                ->with('success', 'Reservasi berhasil dikembalikan ke Pending.');
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->route('admin.reservasi.data')
+                ->with('error', 'Gagal mengembalikan reservasi. Silakan periksa log aplikasi.');
+        }
+    }
+    public function exportPdf()
+    {
+        $reservations = Reservation::latest()->get();
+
+        $pdf = Pdf::loadView(
+            'admin.reservasi.pdf',
+            compact('reservations')
+        );
+
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-reservasi.pdf');
     }
 }
