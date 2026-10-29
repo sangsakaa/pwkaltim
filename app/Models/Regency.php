@@ -3,29 +3,50 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Regency extends Model
 {
     protected $fillable = [
         'code',
         'name',
-        'province_code'
+        'province_code',
     ];
-    public function province()
+
+    public function province(): BelongsTo
     {
-        return $this->belongsTo(Province::class, 'province_code', 'code');
+        return $this->belongsTo(
+            Province::class,
+            'province_code',
+            'code'
+        );
     }
 
-    public function districts()
+    public function districts(): HasMany
     {
-        return $this->hasMany(District::class, 'regency_code', 'code');
+        return $this->hasMany(
+            District::class,
+            'regency_code',
+            'code'
+        );
     }
-    public function users()
+
+    public function users(): HasMany
     {
-        return $this->hasMany(User::class, 'province_code', 'code');
+        return $this->hasMany(
+            User::class,
+            'province_code',
+            'code'
+        );
     }
-    public function pengamal()
+
+    public function pengamal(): HasMany
     {
-        return $this->hasMany(Pengamal::class, 'kabupaten', 'code');
+        return $this->hasMany(
+            Pengamal::class,
+            'kabupaten',
+            'code'
+        );
     }
 }

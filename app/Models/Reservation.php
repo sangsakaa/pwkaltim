@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\District;
-use App\Models\Province;
-use App\Models\Regency;
-use App\Models\ReservationScan;
-use App\Models\Village;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Reservation extends Model
 {
@@ -36,36 +33,23 @@ class Reservation extends Model
         'checked_in_at' => 'datetime',
     ];
 
-    public function scans()
+    public function scans(): HasMany
     {
         return $this->hasMany(ReservationScan::class);
     }
-    public function province()
+
+    public function regency(): BelongsTo
     {
-        return $this->belongsTo(Province::class, 'province_code', 'code');
+        return $this->belongsTo(Regency::class, 'regency_id', 'id');
     }
 
-    public function regency()
+    public function district(): BelongsTo
     {
-        return $this->belongsTo(
-            Regency::class,
-            'regency_id'
-        );
+        return $this->belongsTo(District::class, 'district_id', 'id');
     }
 
-    public function district()
+    public function village(): BelongsTo
     {
-        return $this->belongsTo(
-            District::class,
-            'district_id'
-        );
-    }
-
-    public function village()
-    {
-        return $this->belongsTo(
-            Village::class,
-            'village_id'
-        );
+        return $this->belongsTo(Village::class, 'village_id', 'id');
     }
 }

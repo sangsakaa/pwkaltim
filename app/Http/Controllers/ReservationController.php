@@ -229,12 +229,29 @@ public function edit($id)
             'Reservasi berhasil dihapus'
         );
     }
+
     public function report()
     {
         $reservations = Reservation::with([
-            'regency.province'
-        ])->latest()->get();
+            'regency.province',
+        ])
+            ->orderBy('ketua_rombongan')
+            ->get();
 
-        return view('reservations.report', compact('reservations'));
+        $totalBapak = $reservations->sum('total_father');
+        $totalIbu = $reservations->sum('total_mother');
+        $totalRemaja = $reservations->sum('total_teenager');
+        $totalAnak = $reservations->sum('total_child');
+
+        $totalPeserta = $reservations->sum('total_participant');
+
+        return view('reservations.report', compact(
+            'reservations',
+            'totalBapak',
+            'totalIbu',
+            'totalRemaja',
+            'totalAnak',
+            'totalPeserta'
+        ));
     }
 }
