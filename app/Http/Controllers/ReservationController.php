@@ -299,6 +299,7 @@ public function edit($id)
 
         $pdf->setPaper('a4', 'landscape');
 
-        return $pdf->download('laporan-reservasi.pdf');
+        // return $pdf->download('laporan-reservasi.pdf');
+        return $pdf->stream('laporan-reservasi.pdf');
     }
 }

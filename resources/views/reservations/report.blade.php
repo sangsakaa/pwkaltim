@@ -54,7 +54,7 @@
       {{-- Tombol --}}
       <div class="mb-4 flex gap-3 print:hidden">
 
-        <a href="{{ route('reservasi.report.pdf') }}"
+        <a href="{{ route('reservasi.report.pdf') }}" target="_blank"
           class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2
           text-sm font-semibold text-white hover:bg-red-700">
           Unduh Laporan PDF
