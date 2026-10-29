@@ -332,6 +332,10 @@ Route::prefix('reservasi')
     // Laporan reservasi
     Route::get('/laporan', [ReservationController::class, 'report'])
         ->name('report');
+    Route::get('/laporan/pdf', [
+        ReservationController::class,
+        'reportPdf'
+    ])->name('report.pdf');
     });
 
 

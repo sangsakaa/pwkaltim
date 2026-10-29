@@ -2,7 +2,7 @@
   <x-slot name="header">
     <div>
       <h2 class="text-2xl font-bold text-slate-800">
-        Laporan Reservasi
+        Laporan Pendaftaran Rombongan
       </h2>
       <p class="text-sm text-slate-500">
         Rekap ketua rombongan dan jumlah peserta berdasarkan wilayah.
@@ -53,12 +53,13 @@
 
       {{-- Tombol --}}
       <div class="mb-4 flex gap-3 print:hidden">
-        <button
-          type="button"
-          onclick="window.print()"
-          class="rounded-lg bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700">
-          Cetak / Simpan PDF
-        </button>
+
+        <a href="{{ route('reservasi.report.pdf') }}"
+          class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2
+          text-sm font-semibold text-white hover:bg-red-700">
+          Unduh Laporan PDF
+        </a>
+
       </div>
 
       {{-- Tabel laporan --}}

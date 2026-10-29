@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class ReservationController extends Controller
 {
@@ -254,5 +256,49 @@ public function edit($id)
             'totalAnak',
             'totalPeserta'
         ));
+    }
+
+    public function reportPdf()
+    {
+        $reservations = Reservation::with([
+            'regency.province',
+            'district',
+            'village',
+        ])
+            ->orderBy('ketua_rombongan')
+            ->get();
+
+        // Kelompok utama: provinsi, lalu kabupaten/kota
+        $grouped = $reservations
+            ->groupBy(function ($reservation) {
+                return $reservation->regency?->province?->name
+                    ?? 'Provinsi tidak diketahui';
+            })
+            ->map(function ($provinceReservations) {
+                return $provinceReservations->groupBy(function ($reservation) {
+                    return $reservation->regency?->name
+                        ?? 'Kabupaten tidak diketahui';
+                });
+            })
+            ->sortKeys();
+
+        $totalBapak = $reservations->sum('total_father');
+        $totalIbu = $reservations->sum('total_mother');
+        $totalRemaja = $reservations->sum('total_teenager');
+        $totalAnak = $reservations->sum('total_child');
+        $totalPeserta = $reservations->sum('total_participant');
+
+        $pdf = Pdf::loadView('reservations.report-pdf', compact(
+            'grouped',
+            'totalBapak',
+            'totalIbu',
+            'totalRemaja',
+            'totalAnak',
+            'totalPeserta'
+        ));
+
+        $pdf->setPaper('a4', 'landscape');
+
+        return $pdf->download('laporan-reservasi.pdf');
     }
 }
