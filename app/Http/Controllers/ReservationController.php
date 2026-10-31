@@ -18,36 +18,51 @@ class ReservationController extends Controller
         return view(
             'reservations.create',
             [
-                'provinces' => Province::whereIn('code', [61, 62, 63, 64, 65])->get()
+                'provinces' => Province::whereIn(
+                    'code',
+                    [61, 62, 63, 64, 65]
+                )->orderBy('name')->get()
             ]
         );
     }
 
+    /**
+     * Simpan reservasi
+     */
     public function store(Request $request)
     {
-        $request->validate([
-            'type' => 'required',
+        // VALIDASI
+        $validated = $request->validate([
+
+            'type' => 'required|in:personal,group',
+
+            'ketua_rombongan' => 'nullable|string|max:255',
 
             'regency_id' => 'required',
             'district_id' => 'required',
             'village_id' => 'required',
 
-            'vehicle_type' => 'nullable',
+            'address' => 'nullable|string',
+
+            // DATA KENDARAAN
+            'vehicle_type' => 'nullable|string|max:100',
             'vehicle_name' => 'nullable|string|max:255',
             'vehicle_number' => 'nullable|string|max:255',
 
+            // JUMLAH PESERTA
             'total_father' => 'nullable|integer|min:0',
             'total_mother' => 'nullable|integer|min:0',
             'total_teenager' => 'nullable|integer|min:0',
             'total_child' => 'nullable|integer|min:0',
-            'ketua_rombongan' => 'nullable|string|max:255'
+
         ]);
 
         DB::beginTransaction();
 
         try {
 
-            $lastId = Reservation::max('id') + 1;
+            // NOMOR RESERVASI
+            $lastId = (Reservation::max('id') ?? 0) + 1;
 
             $reservationNumber =
                 'RSV-' .
@@ -60,71 +75,93 @@ class ReservationController extends Controller
                     STR_PAD_LEFT
                 );
 
-            $reservationCode =
-                strtoupper(
-                    Str::random(8)
-                );
+            // KODE RESERVASI
+            $reservationCode = strtoupper(
+                Str::random(8)
+            );
+
+            // TOTAL PESERTA
+            $totalFather = $validated['total_father'] ?? 0;
+            $totalMother = $validated['total_mother'] ?? 0;
+            $totalTeenager = $validated['total_teenager'] ?? 0;
+            $totalChild = $validated['total_child'] ?? 0;
 
             $totalParticipant =
-                ($request->total_father ?? 0) +
-                ($request->total_mother ?? 0) +
-                ($request->total_teenager ?? 0) +
-                ($request->total_child ?? 0);
+                $totalFather +
+                $totalMother +
+                $totalTeenager +
+                $totalChild;
 
+            // SIMPAN DATA RESERVASI
             $reservation = Reservation::create([
-                'ketua_rombongan' => $request->ketua_rombongan,
-                'reservation_number'
-                => $reservationNumber,
 
-                'reservation_code'
-                => $reservationCode,
+                'ketua_rombongan' =>
+                $validated['ketua_rombongan'] ?? null,
 
-                'type'
-                => $request->type,
+                'reservation_number' =>
+                $reservationNumber,
 
-                'regency_id'
-                => $request->regency_id,
+                'reservation_code' =>
+                $reservationCode,
 
-                'district_id'
-                => $request->district_id,
+                'type' =>
+                $validated['type'],
 
-                'village_id'
-                => $request->village_id,
+                'regency_id' =>
+                $validated['regency_id'],
 
-                'address'
-                => $request->address,
+                'district_id' =>
+                $validated['district_id'],
 
-                'vehicle_type' => $request->vehicle_type ?? null,
-                'vehicle_name' => $request->vehicle_name ?? null,
-                'vehicle_number' => $request->vehicle_number ?? null,
+                'village_id' =>
+                $validated['village_id'],
 
-                'total_father'
-                => $request->total_father ?? 0,
+                'address' =>
+                $validated['address'] ?? null,
 
-                'total_mother'
-                => $request->total_mother ?? 0,
+                // KENDARAAN
+                'vehicle_type' =>
+                $validated['vehicle_type'] ?? null,
 
-                'total_teenager'
-                => $request->total_teenager ?? 0,
+                'vehicle_name' =>
+                $validated['vehicle_name'] ?? null,
 
-                'total_child'
-                => $request->total_child ?? 0,
+                'vehicle_number' =>
+                $validated['vehicle_number'] ?? null,
 
-                'total_participant'
-                => $totalParticipant,
+                // JUMLAH PESERTA
+                'total_father' =>
+                $totalFather,
 
-                'status'
-                => 'pending',
+                'total_mother' =>
+                $totalMother,
+
+                'total_teenager' =>
+                $totalTeenager,
+
+                'total_child' =>
+                $totalChild,
+
+                'total_participant' =>
+                $totalParticipant,
+
+                // STATUS
+                'status' => 'pending',
+
             ]);
 
-            $fileName =
-                $reservationCode . '.svg';
+            // GENERATE QR CODE
+            $directory = storage_path(
+                'app/public/qrcodes'
+            );
 
-            $path =
-                storage_path(
-                    'app/public/qrcodes/' .
-                        $fileName
-                );
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            $fileName = $reservationCode . '.svg';
+
+            $path = $directory . '/' . $fileName;
 
             QrCode::format('svg')
                 ->size(300)
@@ -133,20 +170,24 @@ class ReservationController extends Controller
                     $path
                 );
 
+            // COMMIT
             DB::commit();
 
+            // REDIRECT
             return redirect()->route(
                 'reservasi.show',
                 $reservation->id
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
 
             DB::rollBack();
 
-            return back()->with(
-                'error',
-                $e->getMessage()
-            );
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
         }
     }
 
