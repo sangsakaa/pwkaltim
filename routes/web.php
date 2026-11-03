@@ -360,7 +360,7 @@ Route::middleware([
     Route::get('/pending', [ScanController::class, 'pending'])->name('pending');
 
     // Route::get('/scan', [ScanController::class, 'scan'])->name('scan');
-    Route::post('/checkin', [ScanController::class, 'checkin'])->name('checkin');
+    // Route::post('/checkin', [ScanController::class, 'checkin'])->name('checkin');
     Route::get('/cancelled', [ScanController::class, 'cancelledReservations'])
         ->name('cancelled');
     Route::get('/reservasi/{reservation}/kartu', [
@@ -377,10 +377,11 @@ Route::middleware([
     Route::get('/pdf', [ScanController::class, 'exportPdf'])
         ->name('pdf');
     });
-Route::get('/admin/reservasi/scan', [
-    ScanController::class,
-    'scan'
-])->name('admin.reservasi.scan');
+Route::get('/admin/reservasi/scan', [ScanController::class, 'scan'])
+    ->name('admin.reservasi.scan');
+
+Route::post('/admin/reservasi/checkin', [ScanController::class, 'checkin'])
+    ->name('admin.reservasi.checkin');
 
 /*
 |--------------------------------------------------------------------------
