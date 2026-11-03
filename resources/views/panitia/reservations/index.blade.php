@@ -196,11 +196,14 @@
                 <td class="px-4 py-3">
                   @if($item->type == 'group')
                   <span class="inline-flex px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
-                    👥 Rombongan
+                    👥 Rombongan <br>
+                    {{$item->ketua_rombongan}}
                   </span>
                   @else
                   <span class="inline-flex px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
-                    👤 Perseorangan
+                    👤 Perseorangan <br>
+                    {{$item->ketua_rombongan}}
+
                   </span>
                   @endif
                 </td>
